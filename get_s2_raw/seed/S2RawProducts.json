@@ -1,0 +1,9 @@
+{"control":{
+    "start":"2017-11-01T00:00:00.000Z",
+    "end":"2017-11-01T00:00:00.000Z"
+},
+"products":[{"productId":"seed",
+    "startCapture": "2017-11-01T00:00:00.000Z",
+    "endCapture": "2017-11-01T00:00:00.000Z",
+    "sourceUrl": "ftp://zip/url",
+    "location":"s3://location/path"}]}

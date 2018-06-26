@@ -1,0 +1,91 @@
+- hosts: all
+  tasks:
+    ####
+    # Common deployment tasks clear out existing install and checkout latest version
+    ####
+    - name: Ensure base luigi folder exists
+      file:
+        path: /luigi
+        state: directory
+        owner: ubuntu
+
+    - name: Ensure temp luigi folder exists
+      file:
+        path: /luigi/temp/workflows
+        state: directory
+        owner: ubuntu
+        recurse: yes
+
+    - name: Delete Existing folder
+      file:
+        path: /luigi/workflows
+        state: absent
+
+    - name: config http.sslVerify false
+      command: git config --global http.sslVerify false
+
+    - name: Clone Workflow Git Repo
+      git:
+        repo: {{ git-repo-url }}
+        dest: /luigi/workflows
+        version: "{{ git_branch }}"
+
+    - name: Clear existing workflow virtualenv
+      file:
+        path: /luigi/workflow-venv
+        state: absent
+    
+    - name: Create workflow virtualenv
+      pip:
+        requirements: /luigi/workflows/requirements.txt
+        virtualenv: /luigi/workflow-venv
+        virtualenv_python: python3
+
+    ###
+    # AWS configuration for ubuntu and root users
+    ###
+    - name: Create AWS profile for ubunutu user
+      import_tasks: ./deployment/aws/deploy.yml 
+      vars: 
+        aws_cli_user: ubuntu 
+        aws_cli_group: ubuntu
+        aws_region: eu-west-1
+        aws_access_key: '{{ aws_luigi_access_key }}'
+        aws_secret_key: '{{ aws_luigi_secret_access_key }}'
+
+    - name: Create AWS profile for ubunutu user
+      import_tasks: ./deployment/aws/deploy.yml
+      vars: 
+        aws_cli_user: root 
+        aws_cli_group: root
+        aws_region: eu-west-1
+        aws_access_key: '{{ aws_luigi_access_key }}'
+        aws_secret_key: '{{ aws_luigi_secret_access_key }}'
+
+    #### 
+    # Test Workflow - Should probably be disabled now
+    ####
+    # - import_tasks: ./deployment/test_workflow/deploy.yml
+
+    ####
+    # S1 Downloader workflow
+    ####
+    - import_tasks: ./deployment/get_s1_raw/deploy.yml
+    
+    ####
+    # Make S1 Backscatter ARD import, cronjob setup
+    ####
+    - import_tasks: ./deployment/make_s1_ard/deploy.yml
+
+    ####
+    # S2 Downloader workflow
+    ####
+    - import_tasks: ./deployment/get_s2_raw/deploy.yml
+
+    ####
+    # Reload cron to make sure any new Cron tasks are picked up
+    ####
+    - name: reload cron to make sure any new tasks are picked up
+      service:
+        name: cron
+        state: restarted
