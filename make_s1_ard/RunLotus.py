@@ -70,7 +70,7 @@ class RunLotus(luigi.Task):
             if not os.path.isfile(luigiScriptPath):
                 self.createLuigiScript(inputFile, processingFileRoot, stateFileRoot, luigiScriptPath)
 
-            lotusCmd = "bsub -q short-serial -R 'rusage[mem=18000]' -M 18000000 -W 10:00 -o {}/%J.out -e {}/%J.err {}" \
+            lotusCmd = "bsub -q short-serial -R 'rusage[mem=18000]' -M 18000 -W 10:00 -o {}/%J.out -e {}/%J.err {}" \
                 .format(
                     workspaceRoot,
                     workspaceRoot,
