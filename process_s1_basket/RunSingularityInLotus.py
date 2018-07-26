@@ -5,7 +5,7 @@ import json
 import os
 import stat
 import glob
-import make_s1_ard.common as wc
+import process_s1_basket.common as wc
 from os.path import join
 
 log = logging.getLogger('luigi-interface')
@@ -20,7 +20,7 @@ class RunSingularityInLotus(luigi.Task):
         singularityDir = self.pathRoots["singularityDir"]
         singularityImgDir = self.pathRoots["singularityImgDir"]
 
-        realRawDir = os.path.realpath(inputFile)
+        realRawDir = os.path.dirname(os.path.realpath(inputFile))
         productId = wc.getProductIdFromLocalSourceFile(inputFile)
 
         singularityCmd = "{}/singularity exec --bind {}:/data/sentinel/1 --bind {}:/data/states --bind {}:/data/raw --bind {}:/data/dem --bind {}:/data/processed {}/s1-ard-processor.simg /app/exec.sh --productId {} --sourceFile '{}' --outputFile '{}'" \
@@ -33,13 +33,13 @@ class RunSingularityInLotus(luigi.Task):
                 singularityImgDir,
                 productId,
                 inputFile,
-                outputFile)
+                outputDir)
         
         with open(singularityScriptPath, 'w') as singularityScript:
             singularityScript.write(singularityCmd)
 
         st = os.stat(singularityScriptPath)
-        os.chmod(singularityScriptPath, st.st_mode | 0110 )
+        os.chmod(singularityScriptPath, st.st_mode | 0o110 )
 
         log.info("Created run_singularity_workflow.sh for " + inputFile + " with command " + singularityCmd)
 
@@ -74,10 +74,10 @@ class RunSingularityInLotus(luigi.Task):
                 )
 
             try:
-                subprocess.check_output(
-                    lotusCmd,
-                    stderr=subprocess.STDOUT,
-                    shell=True)
+                # subprocess.check_output(
+                #     lotusCmd,
+                #     stderr=subprocess.STDOUT,
+                #     shell=True)
                 log.info("Successfully submitted lotus job for " + inputFile + " using command: " + lotusCmd)
             except subprocess.CalledProcessError as e:
                 errStr = "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output)
@@ -85,5 +85,5 @@ class RunSingularityInLotus(luigi.Task):
                 raise RuntimeError(errStr)
 
     def output(self):
-        outputFolder = self.pathRoots["state-localRoot"]
+        outputFolder = self.pathRoots["processingDir"]
         return wc.getLocalStateTarget(outputFolder, "lotus_submit_success.json")
