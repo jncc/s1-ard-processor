@@ -74,10 +74,10 @@ class RunSingularityInLotus(luigi.Task):
                 )
 
             try:
-                # subprocess.check_output(
-                #     lotusCmd,
-                #     stderr=subprocess.STDOUT,
-                #     shell=True)
+                subprocess.check_output(
+                    lotusCmd,
+                    stderr=subprocess.STDOUT,
+                    shell=True)
                 log.info("Successfully submitted lotus job for " + inputFile + " using command: " + lotusCmd)
             except subprocess.CalledProcessError as e:
                 errStr = "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output)
