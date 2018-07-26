@@ -1,4 +1,4 @@
-import common as wc
+import container.process_s1_scene.common as wc
 import json
 import logging
 import luigi
@@ -7,10 +7,9 @@ import subprocess
 import xml.etree.ElementTree
 import zipfile
 
-from CheckFileExists import CheckFileExists
-from common import getFullDEMPath
-from GetRawProduct import GetRawProduct
-from FetchSourceDem import FetchSourceDEM
+from container.process_s1_scene.CheckFileExists import CheckFileExists
+from container.process_s1_scene.GetRawProduct import GetRawProduct
+from container.process_s1_scene.FetchSourceDEM import FetchSourceDEM
 from luigi.util import inherits
 
 log = logging.getLogger('luigi-interface')
@@ -53,7 +52,7 @@ class CutDEM(luigi.Task):
 
                 try:
                     subprocess.check_output(
-                        "gdalwarp -of GTiff -crop_to_cutline -overwrite --config CHECK_DISK_FREE_SPACE NO -cutline %s %s %s" % (os.path.join(self.pathRoots["fileRoot"], "dem/cutline.geojson"), getFullDEMPath(self.pathRoots['local-dem-path']), os.path.join(self.pathRoots["fileRoot"], "dem/cut_dem.tif")), 
+                        "gdalwarp -of GTiff -crop_to_cutline -overwrite --config CHECK_DISK_FREE_SPACE NO -cutline %s %s %s" % (os.path.join(self.pathRoots["fileRoot"], "dem/cutline.geojson"), self.pathRoots['local-dem-path'], os.path.join(self.pathRoots["fileRoot"], "dem/cut_dem.tif")), 
                         stderr=subprocess.STDOUT,
                         shell=True)
                 except subprocess.CalledProcessError as e:

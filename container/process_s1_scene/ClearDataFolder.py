@@ -1,7 +1,7 @@
 import luigi
 import os
 import shutil
-import common as wc
+import container.process_s1_scene.common as wc
 
 class ClearDataFolder(luigi.Task):
     productId = luigi.Parameter()

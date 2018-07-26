@@ -2,12 +2,12 @@ import luigi
 import os
 import errno
 import json
-import docker.make_s1_ard.common as wc
+import container.process_s1_scene.common as wc
 import subprocess
 from luigi.util import requires
-from SetupScripts import SetupScripts
-from InitialiseDataFolder import InitialiseDataFolder
-from CheckFileExists import CheckFileExists
+from container.process_s1_scene.SetupScripts import SetupScripts
+from container.process_s1_scene.InitialiseDataFolder import InitialiseDataFolder
+from container.process_s1_scene.CheckFileExists import CheckFileExists
 
 @requires(SetupScripts)
 class ProcessRawToArd(luigi.Task):

@@ -4,11 +4,11 @@ import luigi
 import os
 import logging
 import json
-import common as wc
+import container.process_s1_scene.common as wc
 
 from workflow_common.s3 import getPathFromS3Path, getBucketNameFromS3Path
 from luigi.util import requires
-from InitialiseDataFolder import InitialiseDataFolder
+from container.process_s1_scene.InitialiseDataFolder import InitialiseDataFolder
 from shutil import copyfile
 
 log = logging.getLogger('luigi-interface')

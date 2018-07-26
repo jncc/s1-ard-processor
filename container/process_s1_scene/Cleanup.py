@@ -4,9 +4,9 @@ import re
 import json
 import logging
 import shutil
-import common as wc
+import container.process_s1_scene.common as wc
 from luigi.util import requires
-from TransferFinalOutput import TransferFinalOutput
+from container.process_s1_scene.TransferFinalOutput import TransferFinalOutput
 
 log = logging.getLogger('luigi-interface')
 

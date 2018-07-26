@@ -1,8 +1,8 @@
 import luigi
 import os
-import common as wc
+import container.process_s1_scene.common as wc
 from luigi.util import requires
-from ClearDataFolder import ClearDataFolder
+from container.process_s1_scene.ClearDataFolder import ClearDataFolder
 
 @requires(ClearDataFolder)
 class InitialiseDataFolder(luigi.Task):
@@ -15,12 +15,10 @@ class InitialiseDataFolder(luigi.Task):
             os.makedirs(newPath)
 
     def run(self):
-        folders = ["raw_zip",
-                    "raw",
+        folders = [ "raw",
                     "output",
                     "zip_processed",
-                    "dem",
-                    "processed"]
+                    "dem"]
         
         for f in folders:
             newPath = os.path.join(self.pathRoots["fileRoot"], f)

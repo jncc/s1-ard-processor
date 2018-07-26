@@ -3,14 +3,14 @@ import json
 import re
 import logging
 import os
-import common as wc
+import container.process_s1_scene.common as wc
 import luigi
 import subprocess
 from luigi.util import requires
 from functional import seq
 from os.path import join
 from luigi import LocalTarget
-from ReprojectToOSGB import ReprojectToOSGB
+from container.process_s1_scene.ReprojectToOSGB import ReprojectToOSGB
 
 log = logging.getLogger('luigi-interface')
 

@@ -4,13 +4,12 @@ import luigi
 import os
 import logging
 import json
-import common as wc
+import container.process_s1_scene.common as wc
 
 from workflow_common.s3 import getPathFromS3Path, getBucketNameFromS3Path
 from luigi.util import requires
 from luigi import LocalTarget
-from InitialiseDataFolder import InitialiseDataFolder
-from common import getFullDEMPath
+from container.process_s1_scene.InitialiseDataFolder import InitialiseDataFolder
 
 log = logging.getLogger('luigi-interface')
 
@@ -24,8 +23,8 @@ class FetchSourceDEM(luigi.Task):
     def run(self):
         if self.processToS3:
             s3 = boto3.resource('s3')
-            s3.Bucket(getBucketNameFromS3Path(self.pathRoots["source-dem-s3-path"])).download_file(getPathFromS3Path(self.pathRoots["source-dem-s3-path"]), getFullDEMPath(self.pathRoots['local-dem-path']))
+            s3.Bucket(getBucketNameFromS3Path(self.pathRoots["source-dem-s3-path"])).download_file(getPathFromS3Path(self.pathRoots["source-dem-s3-path"]), self.pathRoots['local-dem-path'])
 
     def output(self):
-        return LocalTarget(getFullDEMPath(self.pathRoots['local-dem-path']))
+        return LocalTarget(self.pathRoots['local-dem-path'])
         
