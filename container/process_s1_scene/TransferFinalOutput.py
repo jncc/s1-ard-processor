@@ -27,7 +27,7 @@ class TransferFinalOutput(luigi.Task):
                 'merged' : ''
             }
 
-            generatedProductPath = self.getPathFromProductId(self.pathRoots["wafRoot"], self.productId)
+            generatedProductPath = self.getPathFromProductId(self.pathRoots["outputRoot"], self.productId)
 
             self.copyPolarisationFiles("VH", generatedProductPath, current_progress)
             self.copyPolarisationFiles("VV", generatedProductPath, current_progress)

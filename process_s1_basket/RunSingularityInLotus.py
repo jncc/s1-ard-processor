@@ -21,9 +21,10 @@ class RunSingularityInLotus(luigi.Task):
         singularityImgDir = self.pathRoots["singularityImgDir"]
 
         realRawDir = os.path.dirname(os.path.realpath(inputFile))
+        rawFilename = os.path.basename(inputFile)
         productId = wc.getProductIdFromLocalSourceFile(inputFile)
 
-        singularityCmd = "{}/singularity exec --bind {}:/data/sentinel/1 --bind {}:/data/states --bind {}:/data/raw --bind {}:/data/dem --bind {}:/data/processed {}/s1-ard-processor.simg /app/exec.sh --productId {} --sourceFile '{}' --outputFile '{}'" \
+        singularityCmd = "{}/singularity exec --bind {}:/data/sentinel/1 --bind {}:/data/states --bind {}:/data/raw --bind {}:/data/dem --bind {}:/data/processed {}/s1-ard-processor.simg /app/exec.sh --productId {} --sourceFile '/data/raw/{}' --outputFile '{}'" \
             .format(singularityDir,
                 processingFileRoot,
                 stateFileRoot,
@@ -32,7 +33,7 @@ class RunSingularityInLotus(luigi.Task):
                 outputDir,
                 singularityImgDir,
                 productId,
-                inputFile,
+                rawFilename,
                 outputDir)
         
         with open(singularityScriptPath, 'w') as singularityScript:
@@ -74,10 +75,10 @@ class RunSingularityInLotus(luigi.Task):
                 )
 
             try:
-                subprocess.check_output(
-                    lotusCmd,
-                    stderr=subprocess.STDOUT,
-                    shell=True)
+                # subprocess.check_output(
+                #     lotusCmd,
+                #     stderr=subprocess.STDOUT,
+                #     shell=True)
                 log.info("Successfully submitted lotus job for " + inputFile + " using command: " + lotusCmd)
             except subprocess.CalledProcessError as e:
                 errStr = "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output)
