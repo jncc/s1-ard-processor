@@ -1,2 +1,0 @@
-# Run Every Day at 01:00
-0 1 * * * /usr/bin/make_s1_ard

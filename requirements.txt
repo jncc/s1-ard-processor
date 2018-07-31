@@ -19,7 +19,6 @@ python-daemon==2.1.2
 python-dateutil==2.6.1
 request==0.0.22
 requests==2.18.4
-rope==0.10.7
 s3transfer==0.1.12
 six==1.10.0
 tabulate==0.7.7
