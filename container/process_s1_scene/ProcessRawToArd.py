@@ -2,12 +2,15 @@ import luigi
 import os
 import errno
 import json
+import logging
 import container.process_s1_scene.common as wc
 import subprocess
 from luigi.util import requires
 from container.process_s1_scene.SetupScripts import SetupScripts
 from container.process_s1_scene.InitialiseDataFolder import InitialiseDataFolder
 from container.process_s1_scene.CheckFileExists import CheckFileExists
+
+log = logging.getLogger('luigi-interface')
 
 @requires(SetupScripts)
 class ProcessRawToArd(luigi.Task):

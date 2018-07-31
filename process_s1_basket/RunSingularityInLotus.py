@@ -24,7 +24,7 @@ class RunSingularityInLotus(luigi.Task):
         rawFilename = os.path.basename(inputFile)
         productId = wc.getProductIdFromLocalSourceFile(inputFile)
 
-        singularityCmd = "{}/singularity exec --bind {}:/data/sentinel/1 --bind {}:/data/states --bind {}:/data/raw --bind {}:/data/dem --bind {}:/data/processed {}/s1-ard-processor.simg /app/exec.sh --productId {} --sourceFile '/data/raw/{}' --outputFile '/data/processed'" \
+        singularityCmd = "{}/singularity exec --bind {}:/data/sentinel/1 --bind {}:/data/states --bind {}:/data/raw --bind {}:/data/dem --bind {}:/data/processed {}/s1-ard-processor.simg /app/exec.sh --productId {} --sourceFile '/data/raw/{}' --outputFile '{}'" \
             .format(singularityDir,
                 processingFileRoot,
                 stateFileRoot,
@@ -33,7 +33,8 @@ class RunSingularityInLotus(luigi.Task):
                 outputDir,
                 singularityImgDir,
                 productId,
-                rawFilename)
+                rawFilename,
+                outputFile)
         
         with open(singularityScriptPath, 'w') as singularityScript:
             singularityScript.write(singularityCmd)
