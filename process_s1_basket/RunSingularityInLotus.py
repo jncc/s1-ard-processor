@@ -34,7 +34,7 @@ class RunSingularityInLotus(luigi.Task):
                 singularityImgDir,
                 productId,
                 rawFilename,
-                outputFile)
+                self.outputFile)
         
         with open(singularityScriptPath, 'w') as singularityScript:
             singularityScript.write(singularityCmd)
