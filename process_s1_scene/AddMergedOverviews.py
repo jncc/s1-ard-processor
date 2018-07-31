@@ -3,10 +3,10 @@ import json
 import logging
 import subprocess
 import os
-import container.process_s1_scene.common as wc
+import process_s1_scene.common as wc
 from luigi.util import requires
-from container.process_s1_scene.MergeBands import MergeBands
-from container.process_s1_scene.CheckFileExists import CheckFileExists
+from process_s1_scene.MergeBands import MergeBands
+from process_s1_scene.CheckFileExists import CheckFileExists
 
 log = logging.getLogger('luigi-interface')
 

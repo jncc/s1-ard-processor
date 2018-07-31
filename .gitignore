@@ -1,4 +1,4 @@
-/eo-s1-workflows-venv/
+/eo-s1-workflow-venv/
 __pycache__
 *.pyc
 *.pem

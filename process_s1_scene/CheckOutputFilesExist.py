@@ -1,10 +1,10 @@
 import luigi
-import container.process_s1_scene.common as wc
+import process_s1_scene.common as wc
 import os
 import json
 from luigi.util import requires
-from container.process_s1_scene.ProcessRawToArd import ProcessRawToArd
-from container.process_s1_scene.CheckFileExists import CheckFileExists
+from process_s1_scene.ProcessRawToArd import ProcessRawToArd
+from process_s1_scene.CheckFileExists import CheckFileExists
 
 @requires(ProcessRawToArd)
 class CheckOutputFilesExist(luigi.Task):

@@ -3,9 +3,9 @@ import os
 import re
 import json
 import logging
-import container.process_s1_scene.common as wc
+import process_s1_scene.common as wc
 from luigi.util import requires
-from container.process_s1_scene.AddMergedOverviews import AddMergedOverviews
+from process_s1_scene.AddMergedOverviews import AddMergedOverviews
 from shutil import copyfile
 
 log = logging.getLogger('luigi-interface')

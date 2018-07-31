@@ -3,10 +3,10 @@ import os
 import errno
 import json
 import logging
-import container.process_s1_scene.common as wc
+import process_s1_scene.common as wc
 import distutils.dir_util as distutils
 from luigi.util import requires
-from container.process_s1_scene.CutDEM import CutDEM
+from process_s1_scene.CutDEM import CutDEM
 
 log = logging.getLogger('luigi-interface')
 

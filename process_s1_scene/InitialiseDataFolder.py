@@ -1,8 +1,8 @@
 import luigi
 import os
-import container.process_s1_scene.common as wc
+import process_s1_scene.common as wc
 from luigi.util import requires
-from container.process_s1_scene.ClearDataFolder import ClearDataFolder
+from process_s1_scene.ClearDataFolder import ClearDataFolder
 
 @requires(ClearDataFolder)
 class InitialiseDataFolder(luigi.Task):

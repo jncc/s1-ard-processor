@@ -1,4 +1,4 @@
-import container.process_s1_scene.common as wc
+import process_s1_scene.common as wc
 import json
 import logging
 import luigi
@@ -7,9 +7,9 @@ import subprocess
 import xml.etree.ElementTree
 import zipfile
 
-from container.process_s1_scene.CheckFileExists import CheckFileExists
-from container.process_s1_scene.GetRawProduct import GetRawProduct
-from container.process_s1_scene.FetchSourceDEM import FetchSourceDEM
+from process_s1_scene.CheckFileExists import CheckFileExists
+from process_s1_scene.GetRawProduct import GetRawProduct
+from process_s1_scene.FetchSourceDEM import FetchSourceDEM
 from luigi.util import inherits
 
 log = logging.getLogger('luigi-interface')

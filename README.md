@@ -22,11 +22,11 @@ PYTHONPATH='.' luigi --module container Cleanup --productId <productId> --source
 ### Setup
 Create virtual env
 ```
-virtualenv -p python3 /<project path>/eo-s1-workflows-venv
+virtualenv -p python3 /<project path>/eo-s1-workflow-venv
 ```
 Activate the virtual env
 ```
-source ./eo-s1-workflows-venv/bin/activate
+source ./eo-s1-workflow-venv/bin/activate
 ```
 Install Requirements
 ```

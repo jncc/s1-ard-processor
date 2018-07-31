@@ -4,12 +4,12 @@ import re
 import errno
 import json
 import logging
-import container.process_s1_scene.common as wc
+import process_s1_scene.common as wc
 import subprocess
 import distutils.dir_util as distutils
 from luigi.util import requires
 from functional import seq
-from container.process_s1_scene.CheckOutputFilesExist import CheckOutputFilesExist 
+from process_s1_scene.CheckOutputFilesExist import CheckOutputFilesExist 
 
 log = logging.getLogger('luigi-interface')
 
