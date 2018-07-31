@@ -1,19 +1,10 @@
-# Luigi Workflows
-The luigi workflow tasks from `EO-Alpha` for running on JASMIN. These tasks deal with the management and processing of Sentinel 1 ARD data.
+# EO S1 workflow
+The luigi workflow tasks from `EO-Alpha` for processing Sentinel 1 ARD data.
 
 ## Run Workflows
 
-### Sentinel 1
-
-#### Process S1 Basket
-This workflow takes all raw products in a given directory and processes them to ARD in a Singularity container on LOTUS.
-```
-PYTHONPATH='.' luigi --module process_s1_basket RunSingularityInLotus
-```
+### Process S1 Scene
 The processing of each ARD is a time intensive procedure, you can skip this part of the process by providing the `--testProcessing` parameter. The workflow will still execute all tasks but the `ProcessRawToArd` task will create dummy outputs instead of processing the ARD.
-
-#### Process S1 Scene
-To process one scene you can also directly run the workflow without the RunSingularityInLotus orchestration task.
 ```
 PYTHONPATH='.' luigi --module container Cleanup --productId <productId> --sourceFile '<rawInputFilePath>'
 ```
