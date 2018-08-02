@@ -54,7 +54,7 @@ The luigi workflows project is required at build time
 
 ### Add the remote
 Create a link to the proper remote repo
-git remote add -f eo-s1-workflow https://github.com/jncc/eo-s1-worklflow.git
+git remote add -f eo-s1-workflow https://github.com/jncc/eo-s1-workflow.git
 
 ### Linking to the correct branch
 At development time you will need to link to a development branch for testing.

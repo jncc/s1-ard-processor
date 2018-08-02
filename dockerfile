@@ -53,7 +53,8 @@ RUN mkdir -p /data/dem/ \
     && mkdir -p /data/sentinel/1/ \
     && mkdir /data/raw/ \
     && mkdir /data/states/ \
-    && mkdir /data/processed/
+    && mkdir /data/processed/ \
+    && mkdir /data/basket/
 
 # Copy workflows
 COPY /app/workflows ./workflows
