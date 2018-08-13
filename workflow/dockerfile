@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM jncc/snap-base:latest
 
 # Setup app folder
 WORKDIR /app
@@ -8,11 +8,7 @@ RUN apt-get update && apt-get -y install \
     apt-utils \
     build-essential \
     software-properties-common \
-    python3-software-properties \
-    python3-setuptools \
     git \
-    wget \
-    expect \
     bc 
 
 RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable \
@@ -28,19 +24,6 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
         virtualenv
 
 # --------- Place machine build layers before this line ---------
-
-# Install snap toolbox
-COPY config/app/install-snap.sh /app
-
-RUN wget http://step.esa.int/downloads/6.0/installers/esa-snap_all_unix_6_0.sh \
-    && chmod +x install-snap.sh \
-    && ./install-snap.sh \
-    && rm install-snap.sh \
-    && rm esa-snap_all_unix_6_0.sh \
-    && snap --nosplash --nogui --modules --update-all
-
-# Configure snap toolbox
-COPY config/app/snap/bin/gpt.vmoptions ./snap/bin
 
 # Install snap toolbox scripts.
 COPY /app/toolchain/scripts ./toolchain/scripts
