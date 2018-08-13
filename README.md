@@ -17,36 +17,36 @@ Before building a production contain this branch should be merged into master an
 
 To change s1-processing-scripts to a different branch:
 
-    git rm -rf app/toolchain/scripts
+    git rm -rf workflow/app/toolchain/scripts
     git commit
-    git subtree add --prefix=app/toolchain/scripts s1-processing-scripts <branch> --squash
+    git subtree add --prefix=workflow/app/toolchain/scripts s1-processing-scripts <branch> --squash
 
 Current:
 
-    git subtree add --prefix=app/toolchain/scripts s1-processing-scripts master --squash
+    git subtree add --prefix=workflow/app/toolchain/scripts s1-processing-scripts master --squash
 
 ### Fetching changes from the subtree
 
 All changes to the current working tree need to be commited
 
     git fetch s1-processing-scripts
-    git subtree add --prefix=app/toolchain/scripts s1-processing-scripts <branch> --squash
+    git subtree add --prefix=workflow/app/toolchain/scripts s1-processing-scripts <branch> --squash
 
 ### Pulling changes from the subtree
 
-    git subtree pull --prefix=app/toolchain/scripts s1-processing-scripts <branch> --squash
+    git subtree pull --prefix=workflow/app/toolchain/scripts s1-processing-scripts <branch> --squash
 
 Current:
 
-    git subtree pull --prefix=app/toolchain/scripts s1-processing-scripts master --squash
+    git subtree pull --prefix=workflow/app/toolchain/scripts s1-processing-scripts master --squash
 
 ### Pushing changes from the subtree back to the repo
 
-    git subtree push --prefix=app/toolchain/scripts s1-processing-scripts <branch> --squash
+    git subtree push --prefix=workflow/app/toolchain/scripts s1-processing-scripts <branch> --squash
 
 Current:
 
-    git subtree push --prefix=app/toolchain/scripts s1-processing-scripts master --squash
+    git subtree push --prefix=workflow/app/toolchain/scripts s1-processing-scripts master --squash
 
 Luigi workflows subtree
 -----------------------
@@ -64,32 +64,32 @@ To change eo-s1-workflow to a different branch:
 
     git rm -rf app/workflows
     git commit
-    git subtree add --prefix=app/workflows eo-s1-workflow <branch> --squash
+    git subtree add --prefix=workflow/app/workflows eo-s1-workflow <branch> --squash
 
 
 Current:
 
-    git subtree add --prefix=app/workflows eo-s1-workflow <branch> --squash
+    git subtree add --prefix=workflow/app/workflows eo-s1-workflow <branch> --squash
 
 ### Fetching changes from the subtree
 
 All changes to the current working tree need to be commited
 
     git fetch eo-s1-workflow
-    git subtree add --prefix app/workflows eo-s1-workflow <branch> --squash
+    git subtree add --prefix workflow/app/workflows eo-s1-workflow <branch> --squash
 
 ### Pulling changes from the subtree
 
-    git subtree pull --prefix app/workflows eo-s1-workflow <branch> --squash
+    git subtree pull --prefix workflow/app/workflows eo-s1-workflow <branch> --squash
 
 Current:
 
-    git subtree pull --prefix app/workflows eo-s1-workflow <branch> --squash
+    git subtree pull --prefix workflow/app/workflows eo-s1-workflow <branch> --squash
 
 ### Pushing changes from the subtree back to the workflows repo
 
 
-    git subtree push --prefix app/workflows eo-s1-workflow <branch> 
+    git subtree push --prefix workflow/app/workflows eo-s1-workflow <branch> 
 
 Current:
 
