@@ -52,6 +52,9 @@ RUN chmod +x ./workflows/install-venv.sh \
     && ./workflows/install-venv.sh \
     && rm -f ./workflows/install-venv.sh
 
+#Copy the singularity test script
+COPY app/test-luigi.sh ./
+
 #Initialise startup script
 COPY app/exec.sh ./
 RUN chmod +rx /app/exec.sh
