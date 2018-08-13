@@ -1,0 +1,23 @@
+FROM ubuntu:16.04
+
+# Setup app folder
+WORKDIR /app
+
+RUN apt-get update && apt-get -y install \ 
+    python3-software-properties \
+    python3-setuptools \
+    wget \
+    expect
+
+# Install snap toolbox
+COPY config/app/install-snap.sh /app
+
+RUN wget http://step.esa.int/downloads/6.0/installers/esa-snap_all_unix_6_0.sh \
+    && chmod +x install-snap.sh \
+    && ./install-snap.sh \
+    && rm install-snap.sh \
+    && rm esa-snap_all_unix_6_0.sh \
+    && snap --nosplash --nogui --modules --update-all
+
+# Configure snap toolbox
+COPY config/app/snap/bin/gpt.vmoptions ./snap/bin
