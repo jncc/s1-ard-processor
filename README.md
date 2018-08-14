@@ -62,7 +62,7 @@ Before building a production contain this branch should be merged into master an
 
 To change eo-s1-workflow to a different branch:
 
-    git rm -rf app/workflows
+    git rm -rf workflow/app/workflows
     git commit
     git subtree add --prefix=workflow/app/workflows eo-s1-workflow <branch> --squash
 
