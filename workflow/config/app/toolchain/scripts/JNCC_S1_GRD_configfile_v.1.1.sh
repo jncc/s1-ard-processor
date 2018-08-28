@@ -13,10 +13,10 @@ export MAIN_OUTDIR="${MAIN_DIR}/output"  ##== MAIN OUTPUT DIRECTORY where produc
 ##### After Processing
 export PROZIP_DIR="${MAIN_DIR}/zip_processed"  ##== directory where S1.zip data are moved after processing
 ##### SW and processing xml chains directories
-export GRAPHSDIR="{{ s1_ard_script_dir }}/xml" ##== DIRECTORY with snap xml graphs for the processing 
-export SNAP_HOME="{{ snap_bin_path }}" ##== SNAP (version 6) directory
+export SCRIPT_DIR="/app/toolchain/scripts"
+export GRAPHSDIR="${SCRIPT_DIR}/xml" ##== DIRECTORY with snap xml graphs for the processing 
+export SNAP_HOME="/app/snap/bin" ##== SNAP (version 6) directory
 export SNAP_OPTS="-J-Xmx16204m -J-Xms4096m -J-XX:-UseGCOverheadLimit" ##== SNAP command line arguments
-export SCRIPT_DIR="{{ s1_ard_script_dir }}"
 #####============================================================
 ##### STATIC Variable for Log files   
 #####============================================================

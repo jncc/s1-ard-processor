@@ -18,16 +18,10 @@ class SetupScripts(luigi.Task):
     testProcessing = luigi.BoolParameter()
     processToS3 = luigi.BoolParameter(default=False)
 
-    def copyScripts(self, filepath):
-        log.info('Copying scripts: %s', filepath)
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        distutils.copy_tree(self.pathRoots["scriptRoot"], filepath)
-
-
-    def populateConfig(self, scriptDir):
+    def populateConfig(self):
         log.info('Populating configfile params')
         
-        configFilePath = os.path.join(scriptDir, "JNCC_S1_GRD_configfile_v.1.1.sh")
+        configFilePath = "/app/toolchain/scripts/JNCC_S1_GRD_configfile_v.1.1.sh")
 
         with open(configFilePath, 'r') as configFile:
             contents = configFile.read()
@@ -35,15 +29,12 @@ class SetupScripts(luigi.Task):
         contents = contents.replace("{{ s1_ard_main_dir }}", self.pathRoots["fileRoot"])
         contents = contents.replace("{{ s1_ard_basket_dir }}", os.path.join(self.pathRoots["fileRoot"], 'raw'))
         contents = contents.replace("{{ s1_ard_ext_dem }}", os.path.join(self.pathRoots["fileRoot"], 'dem/cut_dem.tif'))
-        contents = contents.replace("{{ s1_ard_script_dir }}", scriptDir)
-        contents = contents.replace("{{ snap_bin_path }}", self.pathRoots["snapPath"])
 
         with open(configFilePath, 'w') as configFile:
             configFile.write(contents)
 
 
     def run(self):
-        scriptDir = os.path.join(self.pathRoots["fileRoot"], "scripts")
         self.copyScripts(scriptDir)
         self.populateConfig(scriptDir)
 
