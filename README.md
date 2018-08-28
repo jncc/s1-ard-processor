@@ -10,7 +10,7 @@ The S1 processing scripts branch is required at build time
 ### Add the remote
 Create a link to the proper remote repo
 
-   git remote add -f s1-processing-scripts https://github.com/jncc/s1-processing-scripts.git
+    git remote add -f s1-processing-scripts https://github.com/jncc/s1-processing-scripts.git
 
 
 ### Linking to the correct branch
@@ -57,7 +57,7 @@ The luigi workflows project is required at build time
 ### Add the remote
 Create a link to the proper remote repo
 
-   git remote add -f eo-s1-workflow https://github.com/jncc/eo-s1-workflow.git
+    git remote add -f eo-s1-workflow https://github.com/jncc/eo-s1-workflow.git
 
 ### Linking to the correct branch
 At development time you will need to link to a development branch for testing.
