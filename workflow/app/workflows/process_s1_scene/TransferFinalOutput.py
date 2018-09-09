@@ -4,44 +4,58 @@ import re
 import json
 import logging
 import process_s1_scene.common as wc
-from luigi.util import requires
+from luigi.util import inherits
+from process_s1_scene.ProcessRawToArd import ProcessRawToArd
+from process_s1_scene.ReprojectToOSGB import ReprojectToOSGB
+from process_s1_scene.MergeBands import MergeBands
 from process_s1_scene.AddMergedOverviews import AddMergedOverviews
+ 
 from shutil import copyfile
 
 log = logging.getLogger('luigi-interface')
 
-@requires(GenerateMetadata)
+@inherits(ProcessRawToArd)
+@inherits(ReprojectToOSGB)
+@inherits(MergeBands)
+@inherits(AddMergedOverviews)
 class TransferFinalOutput(luigi.Task):
-    sourceFile = luigi.Parameter()
-    pathRoots = luigi.DictParameter()
+    paths = luigi.DictParameter()
     productId = luigi.Parameter(default=False)
-    outputFile = luigi.Parameter()
+
+    def requires(self):
+        t = []
+        t.append(self.clone(ProcessRawToArd))
+        t.append(self.clone(ReprojectToOSGB))
+        t.append(self.clone(MergeBands))
+        t.append(self.clone(AddMergedOverviews))
+        return t
 
     def run(self):
-        with self.input().open('r') as processed:
+        processRawToArdInfo = {}
+        with self.input()[0].open('r') as processRawToArd:
+            processRawToArdInfo = json.load(processRawToArd)
 
-            current_progress = json.loads(processed.read())
-            current_progress['outputs'] = {
-                'VV': [],
-                'VH': [],
-                'merged' : ''
-            }
+        current_progress['outputs'] = {
+            'VV': [],
+            'VH': [],
+            'merged' : ''
+        }
 
-            generatedProductPath = self.getPathFromProductId(self.pathRoots["outputRoot"], self.productId)
+        generatedProductPath = self.getPathFromProductId(self.paths["output"], self.productId)
 
-            self.copyPolarisationFiles("VH", generatedProductPath, current_progress)
-            self.copyPolarisationFiles("VV", generatedProductPath, current_progress)
+        self.copyPolarisationFiles("VH", generatedProductPath, current_progress)
+        self.copyPolarisationFiles("VV", generatedProductPath, current_progress)
 
-            product = current_progress['files']['merged']
-            targetPath = os.path.join(generatedProductPath, os.path.basename(product)) 
-            copyfile(product, targetPath)
-            current_progress['outputs']['merged'] = targetPath
+        product = current_progress['files']['merged']
+        targetPath = os.path.join(generatedProductPath, os.path.basename(product)) 
+        copyfile(product, targetPath)
+        current_progress['outputs']['merged'] = targetPath
 
-            with self.output().open('w') as out:
-                out.write(json.dumps(current_progress))
+        with self.output().open('w') as out:
+            out.write(json.dumps(current_progress))
 
     def output(self):
-        outputFolder = os.path.join(self.pathRoots["state-localRoot"], self.productId)
+        outputFolder = os.path.join(self.paths["state-localRoot"], self.productId)
         return wc.getLocalStateTarget(outputFolder, 'transferFinalOutput.json')
 
     def getPathFromProductId(self, root, productId):
