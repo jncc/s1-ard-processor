@@ -12,16 +12,17 @@ log = logging.getLogger('luigi-interface')
 
 @requires(MergeBands)
 class AddMergedOverviews(luigi.Task):
-    paths = luigi.DictParameter()
+    pathRoots = luigi.DictParameter()
     productId = luigi.Parameter()
     testProcessing = luigi.BoolParameter()
+    processToS3 = luigi.BoolParameter(default=False)
 
     def run(self):
-        mergeBandsInfo = {}
-        with self.input().open('r') as mergeBands:
-            mergeBandsInfo = json.load(mergeBands)
+        spec = {}
+        with self.input().open('r') as i:
+            spec = json.loads(i.read())
         
-        mergedProduct = mergeBandsInfo["mergedOutputFile"]
+        mergedProduct = spec["files"]["merged"]
 
         t = CheckFileExists(filePath=mergedProduct)
         yield t
@@ -42,5 +43,10 @@ class AddMergedOverviews(luigi.Task):
             out.write(json.dumps(spec))
 
     def output(self):
-        outputFile = os.path.join(self.paths["state"], "addMergedOverviews.json")
-        return LocalTarget(outputFile)
+        if self.processToS3:
+            outputFolder = os.path.join(self.pathRoots["state-s3Root"], self.productId)
+            return wc.getS3StateTarget(outputFolder, 'addMergedOverviews.json')
+        else:
+            outputFolder = os.path.join(self.pathRoots["state-localRoot"], self.productId)
+            return wc.getLocalStateTarget(outputFolder, 'addMergedOverviews.json')
+        

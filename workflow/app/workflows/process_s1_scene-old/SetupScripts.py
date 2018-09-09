@@ -13,7 +13,7 @@ log = logging.getLogger('luigi-interface')
 @requires(CutDEM)
 class SetupScripts(luigi.Task):
     sourceFile = luigi.Parameter()
-    pathRoots = luigi.DictParameter()
+    paths = luigi.DictParameter()
     productId = luigi.Parameter()
     testProcessing = luigi.BoolParameter()
     processToS3 = luigi.BoolParameter(default=False)
@@ -26,9 +26,9 @@ class SetupScripts(luigi.Task):
         with open(configFilePath, 'r') as configFile:
             contents = configFile.read()
         
-        contents = contents.replace("{{ s1_ard_main_dir }}", self.pathRoots["fileRoot"])
-        contents = contents.replace("{{ s1_ard_basket_dir }}", os.path.join(self.pathRoots["fileRoot"], 'raw'))
-        contents = contents.replace("{{ s1_ard_ext_dem }}", os.path.join(self.pathRoots["fileRoot"], 'dem/cut_dem.tif'))
+            contents = contents.replace("{{ s1_ard_main_dir }}", self.paths['workingDir'])
+            contents = contents.replace("{{ s1_ard_basket_dir }}", os.path.join(self.paths["input"]))
+            contents = contents.replace("{{ s1_ard_ext_dem }}", self.paths["cutDemPath"])
 
         with open(configFilePath, 'w') as configFile:
             configFile.write(contents)
@@ -39,14 +39,11 @@ class SetupScripts(luigi.Task):
         self.populateConfig(scriptDir)
 
         with self.input().open('r') as inFile:
-            downloadedOutput = json.load(inFile)
+            cutDemOutput = json.load(inFile)
             with self.output().open("w") as outFile:
                 outFile.write(json.dumps({
-                    'sourceFile': downloadedOutput["sourceFile"],
-                    'productId': downloadedOutput["productId"],
-                    'productPattern': downloadedOutput["productPattern"],
-                    'cutDEM': os.path.join(self.pathRoots["fileRoot"], "dem/cut_dem.tif"),
-                    'tempFile': downloadedOutput["tempFile"]
+                    'inputFilePath': cutDemOutput['inputFilePath'], 
+                    'cutDemPath' : self.paths["cutDemPath"],
                 }))
                 
     def output(self):

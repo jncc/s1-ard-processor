@@ -7,37 +7,29 @@ import subprocess
 import xml.etree.ElementTree
 import zipfile
 
+from process_s1_scene.PerpareWorkingFolder import PrepareWorkingFolder
 from process_s1_scene.CreateLocalFile import CreateLocalFile
-from process_s1_scene.GetInputFileInfo import GetIntputFileInfo
 from luigi.util import requires
 from luigi import LocalTarget
 
 log = logging.getLogger('luigi-interface')
-
-@requires(GetInputFileInfo)
+@requires(PrepareWorkingFolder)
 class CutDEM(luigi.Task):
     paths = luigi.DictParameter()
     inputFileName = luigi.Parameter()
+    productId = luigi.Parameter()
     testProcessing = luigi.BoolParameter()
     demFile = luigi.Parameter()
 
     def run(self):
 
-        inputFileInfo = {}
-
-        with self.input().open('r') as getInputFileInfo:
-            inputFileInfo = json.load(getInputFileInfo)
-
-        #todo should come from required file
+        inputFilePath = os.path.join(self.paths["input"], self.inputFileName)
         cutLine = {}
 
-        demPath = wc.createWorkingnewPath(self.paths["working"], 'dem')
-
         if not self.testProcessing:
+            cutLinePath = os.path.join(self.paths["workingPath"], "/dem/cutline.geojson") 
 
-            cutLinePath = os.path.join(demPath, "cutline.geojson") 
-
-            with zipfile.ZipFile(inputFileInfo["inputFilePath"]) as productZipFile:
+            with zipfile.ZipFile(inputFilePath) as productZipFile:
                 with productZipFile.open("%s.SAFE/preview/map-overlay.kml" % os.path.basename(inputFilePath).replace(".zip", "")) as overlay:
                     # Grab first latlong element as there should only be one
                     coordinatesXMLElement = xml.etree.ElementTree.fromstring(overlay.read().decode("utf-8")).findall(".//Document/Folder/GroundOverlay/gx:LatLonQuad/coordinates", {"gx": "http://www.google.com/kml/ext/2.2"})[0]
@@ -73,9 +65,10 @@ class CutDEM(luigi.Task):
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
+                'inputFilePath': inputPath, 
                 'cutDemPath' : self.paths["cutDemPath"],
                 'cutLine' : cutLine
-            }))
+            })
 
     def output(self):
         outFile = os.path.join(self.pathRoots['state'], 'CutDEM.json')

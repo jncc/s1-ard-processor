@@ -2,6 +2,7 @@ import luigi
 import process_s1_scene.common as wc
 import os
 import json
+from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.ProcessRawToArd import ProcessRawToArd
 from process_s1_scene.CheckFileExists import CheckFileExists
@@ -27,13 +28,11 @@ class CheckOutputFilesExist(luigi.Task):
         yield tasks
 
         with self.output().open("w") as outFile:
-            outFile.write(json.dumps(processedOutput))
+            outFile.write({
+                "checkedFileCount" : len(files)
+            })
 
     def output(self):
-        if self.processToS3:
-            outputFolder = os.path.join(self.pathRoots["state-s3Root"], self.productId)
-            return wc.getS3StateTarget(outputFolder, 'checkOutputFilesExist.json')
-        else:
-            outputFolder = os.path.join(self.pathRoots["state-localRoot"], self.productId)
-            return wc.getLocalStateTarget(outputFolder, 'checkOutputFilesExist.json')
+        outputFile = os.path.join(paths["state"], 'checkOutputFilesExist.json')
+        return LocalTarget(outputFile)
 

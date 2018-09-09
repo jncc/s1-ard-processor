@@ -6,38 +6,53 @@ import os
 import process_s1_scene.common as wc
 import luigi
 import subprocess
-from luigi.util import requires
-from functional import seq
-from os.path import join
 from luigi import LocalTarget
+from luigi.util import inherits
+from functional import seq
 from process_s1_scene.ReprojectToOSGB import ReprojectToOSGB
+from process_s1_scene.ConfigureProcessing import ConfigureProcessing
+from process_s1_scene.CheckArdFilesExist import CheckFileExists
 
 log = logging.getLogger('luigi-interface')
 
-@requires(ReprojectToOSGB)
+@inherits(ReprojectToOSGB)
+@inherits(ConfigureProcessing)
 class MergeBands(luigi.Task):
-    pathRoots = luigi.DictParameter()
-    productId = luigi.Parameter()
-    outputFile = luigi.Parameter()
+    paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
-    processToS3 = luigi.BoolParameter(default=False)
+    productId = luigi.Parameter()
+
+    def requires(self):
+        t = []
+        t.append(self.clone(ReprojectToOSGB))
+        t.append(self.clone(ConfigureProcessing))
+        return t
 
     def run(self):
-        spec = {}
-        with self.input().open('r') as i:
-            spec = json.loads(i.read())
-    
-        p = re.compile(self.outputFile)
-
-        srcFiles = (seq(spec['files']['VV'])
-            .union(seq(spec['files']['VH']))
-            .filter(lambda f: p.match(f))
-            .reduce(lambda x, f: x + ' ' + f))
+        reprojectToOSGBInfo = {}
+        with self.input()[0].open('r') as reprojectToOSGB:
+            reprojectToOSGBInfo = json.load(reprojectToOSGB)
         
-        log.debug('merging files %s', srcFiles)
-        productPattern = spec['productPattern']
+        checkTasks[]
+        for sourceFile in reprojectToOSGBInfo["reprojectedFiles"]:
+            checkTasks.append(CheckFileExists(filePath=sourceFile))
 
-        outputFile = join(join(self.pathRoots["fileRoot"], 'output/{}'.format(productPattern)), '{}_APGB_OSGB1936_RTC_SpkRL_dB.tif'.format(self.productId))
+        yield checkTasks
+        
+        checkTasks[]
+        for source in reprojectToOSGBInfo["reprojectedFiles"]:
+            yield CheckFileExists(filePath)
+
+        srcFiles = seq(reprojectToOSGBInfo["reprojectedFiles"])
+                    .reduce(lambda x, f: x + ' ' + f))
+
+        configureProcessingInfo = {}
+        with self.input()[2].open('r') as configureProcessing:
+            configureProcessingInfo = json.load(configureProcessing) 
+
+        log.debug('merging files %s', srcFiles)
+
+        outputFile = os.path.join(configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"], "{}_APGB_OSGB1936_RTC_SpkRL_dB.tif".format(productId))
 
         cmdString = 'gdalbuildvrt -separate /vsistdout/ {}|gdal_translate -a_nodata nan -co BIGTIFF=YES -co TILED=YES -co COMPRESS=LZW --config CHECK_DISK_FREE_SPACE no /vsistdin/ {}' \
                     .format(srcFiles, outputFile) 
@@ -52,18 +67,12 @@ class MergeBands(luigi.Task):
                 raise RuntimeError(errStr)
         else:
             wc.createTestFile(outputFile)
-
-        spec["files"]["merged"] = outputFile
-
+        
         with self.output().open('w') as out:
-            out.write(json.dumps(spec))
+            out.write(json.dumps({
+                "mergedOutputFile" : output
+            }))
 
     def output(self):
-        if self.processToS3:
-            outputFolder = join(self.pathRoots["state-s3Root"], self.productId)
-            return wc.getS3StateTarget(outputFolder, 'mergeBands.json')
-        else:
-            outputFolder = join(self.pathRoots["state-localRoot"], self.productId)
-            return wc.getLocalStateTarget(outputFolder, 'mergeBands.json')
-
-
+        outputFile = os.path.join(self.paths["state"], "MergeBands.json")
+        return LocalTarget(outputFile)

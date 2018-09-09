@@ -7,79 +7,75 @@ import logging
 import process_s1_scene.common as wc
 import subprocess
 import distutils.dir_util as distutils
-from luigi.util import requires
+from luigi import LocalTarget
+from luigi.util import inherits
 from functional import seq
 from process_s1_scene.CheckOutputFilesExist import CheckOutputFilesExist 
 
 log = logging.getLogger('luigi-interface')
 
-@requires(CheckOutputFilesExist)
+@inherits(ProcessRawToArd)
+@inherits(CheckArdFilesExist)
 class ReprojectToOSGB(luigi.Task):
-    sourceFile = luigi.Parameter()
-    pathRoots = luigi.DictParameter()
-    productId = luigi.Parameter()
-    outputFile = luigi.Parameter()
+    paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
-    processToS3 = luigi.BoolParameter(default=False)
+    reprojectionFilePattern = luigi.Parameter()
+
+    def requires(self):
+        t = []
+        t.append(self.clone(ProcessRawToArd))
+        t.append(self.clone(CheckArdFilesExist))
+        return t
 
     def runReprojection(self):
+        processRawToArdInfo = {}
+        with self.input()[0].open('r') as processRawToArd:
+            processRawToArdInfo = json.load(processRawToArd)
 
-        spec = {}
-        with self.input().open('r') as i:
-            spec = json.loads(i.read())
+        p = re.compile(self.reprojectionFilePattern)
 
-        wgsOutputFile = self.outputFile.replace("OSGB1936", "UTMWGS84")
-
-        p = re.compile(wgsOutputFile)
-
-        outputFiles = (seq(spec['files']['VV'])
-            .union(seq(spec['files']['VH']))
+        sourceFiles = (seq(processRawToArdInfo['files']['VV'])
+            .union(seq(processRawToArdInfo['files']['VH']))
             .filter(lambda f: p.match(f)))
 
-        if outputFiles.len() < 1:
+        if sourceFiles.len() < 1:
             errorMsg = "Found no files to reproject"
             log.error(errorMsg)
             raise RuntimeError(errorMsg)
         
-        for outputFile in outputFiles:
+        outputFiles = []
+        for sourceFile in sourceFiles:
+            outputFile = self.changeFileName(sourceFile)
             if not self.testProcessing:
                 try:
                     subprocess.check_output(
-                        "gdalwarp -overwrite -s_srs EPSG:32630 -t_srs EPSG:27700 -r bilinear -dstnodata 0 -of GTiff -tr 10 10 --config CHECK_DISK_FREE_SPACE NO %s %s" % (outputFile, self.changeWgsToOsgb(outputFile)), 
+                        "gdalwarp -overwrite -s_srs EPSG:32630 -t_srs EPSG:27700 -r bilinear -dstnodata 0 -of GTiff -tr 10 10 --config CHECK_DISK_FREE_SPACE NO %s %s" % (sourceFile, outputFile), 
                         stderr=subprocess.STDOUT,
                         shell=True)
+                    outputFiles.append(outputFile)
+                    
                 except subprocess.CalledProcessError as e:
                     errStr = "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output)
                     log.error(errStr)
                     raise RuntimeError(errStr)
             else:
-                wc.createTestFile(self.changeWgsToOsgb(outputFile))
+                wc.createTestFile(outputFile)
+                outputFiles.append(outputFile)
+        
+        return outputFiles
 
-
-    def changeWgsToOsgb(self, oldFilename):
-        return oldFilename.replace("UTMWGS84", "OSGB1936")
-
+    
+    def changeFileName(self, fileName):
+        fileName.replace("UTMWGS84", "OSGB1936")
 
     def run(self):
-        inputJson = {}
-        with self.input().open('r') as inFile:
-            state = json.load(inFile)
-
-        self.runReprojection()
-
-        for index, tifFile in enumerate(state["files"]["VV"]):
-            state["files"]["VV"][index] = self.changeWgsToOsgb(tifFile)
-        
-        for index, tifFile in enumerate(state["files"]["VH"]):
-            state["files"]["VH"][index] = self.changeWgsToOsgb(tifFile)
+        outputFiles = self.runReprojection()
 
         with self.output().open("w") as outFile:
-            outFile.write(json.dumps(state))
+            outFile.write(json.dumps({
+                "reprojectedFiles": outputFiles
+            }))
                 
     def output(self):
-        if self.processToS3:
-            outputFolder = os.path.join(self.pathRoots["state-s3Root"], self.productId)
-            return wc.getS3StateTarget(outputFolder, 'reprojectToOSGB.json')
-        else:
-            outputFolder = os.path.join(self.pathRoots["state-localRoot"], self.productId)
-            return wc.getLocalStateTarget(outputFolder, 'reprojectToOSGB.json')
+        outputFile = os.path.join(self.paths["state"], 'reprojectToOSGB.json')
+        return LocalTarget(outputFile)

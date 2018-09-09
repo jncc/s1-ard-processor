@@ -35,24 +35,15 @@ def createTestFile(outputfile):
     with open(outputfile, 'w') as f:
         f.write('TEST_FILE')
 
+def creatWorkingPath(paths, newWorkingPath):
+    path = ""
+    createWorkingFolder=CreateWorkingFolder(paths=self.paths,newWorkingPath=newWorkingPath)
 
-def createWorkingnewPath(workingPathRoot, workingPath): 
-    newPath = os.path.join(workingnewPathRoot, workingPath)
+    yield CreateWorkingFolder
 
-    if (os.path.exists(newPath)):
-        #empty out the structure
-        for f in os.listdir(newPath):
-            path = os.path.join(newPath, f)
-
-            if os.path.isfile(path):
-                os.unlink(path)
-            elif os.path.isdir(path):
-                shutil.rmtree(path)
-    else:
-        if not os.path.exists(newPath):
-            os.makedirs(newPath)
-
-    return newPath
-
-
+    with createWorkingFolder.output().open('r') as cwf:
+        spec = json.loads(cwf)
+        workingFolder = spec["path"]
+    
+    return folder
             

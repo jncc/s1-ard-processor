@@ -9,7 +9,7 @@ export BASKET_INDIR="{{ s1_ard_basket_dir }}" ##== directory containing  S1_GRDH
 export EXTDEMFILE="{{ s1_ard_ext_dem }}" ##== External APGB DEM
 export EXTDEMNOVAL="-32768.0" ## External DEM No data value
 ##### OUTPUT directories
-export MAIN_OUTDIR="${MAIN_DIR}/output"  ##== MAIN OUTPUT DIRECTORY where products output folders will be created 
+export MAIN_OUTDIR="{{ s1_ard_temp_output_dir }}"  ##== MAIN OUTPUT DIRECTORY where products output folders will be created 
 ##### After Processing
 export PROZIP_DIR="${MAIN_DIR}/zip_processed"  ##== directory where S1.zip data are moved after processing
 ##### SW and processing xml chains directories

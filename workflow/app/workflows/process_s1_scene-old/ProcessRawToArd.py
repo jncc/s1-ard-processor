@@ -6,42 +6,33 @@ import logging
 import process_s1_scene.common as wc
 import subprocess
 
-from luigi import LocalTarget
 from luigi.util import inherits
-from process_s1_scene.ConfigureProcessing import ConfigureProcessing
-from process_s1_scene.CutDEM import CutDEM
-from process_s1_scene.GetInputFileInfo import GetIntputFileInfo
+from process_s1_scene.SetupScripts import SetupScripts
+from process_s1_scene.InitialiseDataFolder import InitialiseDataFolder
 from process_s1_scene.CheckFileExists import CheckFileExists
 from process_s1_scene.CreateLocalFile import CreateLocalFile
 
 log = logging.getLogger('luigi-interface')
 
-@inherits(CutDEM)
-@inherits(GetIntputFileInfo)
-@inherits(ConfigureProcessing)
+@inherits(SetupScripts)
 class ProcessRawToArd(luigi.Task):
-    paths = luigi.DictParameter()
+    sourceFile = luigi.Parameter()
+    pathRoots = luigi.DictParameter()
+    productId = luigi.Parameter()
     testProcessing = luigi.BoolParameter()
-
-    def requires(self):
-        t = []
-        t.append(self.clone(CutDEM))
-        t.append(self.clone(GetIntputFileInfo))
-        t.append(self.clone(ConfigureProcessing))
-        return t
+    processToS3 = luigi.BoolParameter(default=False)
 
     def getTaskOutput(self, productPattern):
-        configureProcessingInfo = {}
-        with self.input()[2].open('r') as configureProcessing:
-            configureProcessingInfo = json.load(configureProcessing)
+        vv_path = os.path.join(os.path.join(os.path.join(os.path.join(self.pathRoots["fileRoot"], 'output'), productPattern), 'VV'), 'GEO')
+        vh_path = os.path.join(os.path.join(os.path.join(os.path.join(self.pathRoots["fileRoot"], 'output'), productPattern), 'VH'), 'GEO')
 
-        outputRoot = configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"]
-        
-        vv_path = os.path.join(os.path.join(outputRoot, productPattern), "VV/GEO")
-        vh_path = os.path.join(os.path.join(outputRoot, productPattern), "VH/GEO")
+
 
         # Write locations to S3 target
         processedOutput = {
+            'sourceFile': spec['sourceFile'],
+            'productId': self.productId,
+            'productPattern': spec['productPattern'],
             'files': {
                 'VV': [
                     os.path.join(vv_path, '%s_VV_Gamma0_APGB_UTMWGS84_FTC_SpkRL_dB.tif' % productPattern),
@@ -87,35 +78,37 @@ class ProcessRawToArd(luigi.Task):
 
         yield tasks
             
+
     def run(self):
         # copy input file to temp.
-        dem = ""
-        with self.input()[0].open('r') as cutDEM:
-            cutDEMInfo = json.load(cutDEM)
-            dem = cutDEMInfo["cutDemPath"]
-        
+        spec = {}
+        with self.input().open('r') as downloaded:
+            spec = json.loads(downloaded.read())
+            
+        dem = spec['cutDEM']
         t = CheckFileExists(filePath=dem)
-        yield 
-        
-        inputFileInfo = {}
-        with self.input()[1].open('r') as getInputFileInfo:
-            inputFileInfo = json.load(getInputFileInfo)
-       
+        yield t
+
+        productPattern = wc.getProductPatternFromSourceFile(self.sourceFile)
         
         # Runs shell process to create the ard products
         retcode = 0
         if not self.testProcessing:
             retcode = self.runShellScript('JNCC_S1_GRD_MAIN_v2.1.1.sh', '1 1 1 1 1 1 2 1 3 1')
         else:
-            self.createTestFiles(inputFileInfo["productPattern"])
+            self.createTestFiles(productPattern)
         
         # If process has OK return code then check outputs exist
         if retcode != 0:
             log.warning("Return code from snap process not 0, code was: %d", retcode)
 
         with self.output().open('w') as out:
-            out.write(json.dumps(self.getTaskOutput(inputFileInfo["productPattern"])))
+            out.write(json.dumps(self.getTaskOutput(productPattern)))
                 
     def output(self):
-        outputFile = os.path.join(self.paths["state"], 'processRawToArd.json')
-        return LocalTarget(outputFile)
+        if self.processToS3:
+            outputFolder = os.path.join(self.pathRoots["state-s3Root"], self.productId)
+            return wc.getS3StateTarget(outputFolder, 'processRawToArd.json')
+        else:
+            outputFolder = os.path.join(self.pathRoots["state-localRoot"], self.productId)
+            return wc.getLocalStateTarget(outputFolder, 'processRawToArd.json')
