@@ -30,18 +30,12 @@ class ProcessRawToArd(luigi.Task):
         t.append(self.clone(ConfigureProcessing))
         return t
 
-    def getTaskOutput(self, productPattern):
-        configureProcessingInfo = {}
-        with self.input()[2].open('r') as configureProcessing:
-            configureProcessingInfo = json.load(configureProcessing)
-
-        outputRoot = configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"]
-        
+    def getExpectedOutput(self, productPattern, outputRoot): 
         vv_path = os.path.join(os.path.join(outputRoot, productPattern), "VV/GEO")
         vh_path = os.path.join(os.path.join(outputRoot, productPattern), "VH/GEO")
 
         # Write locations to S3 target
-        processedOutput = {
+        expectedOutput = {
             'files': {
                 'VV': [
                     os.path.join(vv_path, '%s_VV_Gamma0_APGB_UTMWGS84_FTC_SpkRL_dB.tif' % productPattern),
@@ -72,49 +66,56 @@ class ProcessRawToArd(luigi.Task):
             }
         }
 
+        return expectedOutput
+
     def runShellScript(self, script, arguments, runAsShell=True):
         os.chdir(os.path.join(self.pathRoots["fileRoot"], 'scripts'))
         return subprocess.call("sh %s %s" % (script, arguments), shell=runAsShell)        
 
-    def createTestFiles(self, productPattern):
-        fileList = getTaskOutput(productPattern)
-
-        expectedFiles = processedOutput["files"]["VV"] + processedOutput["files"]["VH"] 
-
+    def createTestFiles(expectedFiles):
         tasks = []
-        for file in expectedFiles:
-            tasks.append(CreateLocalFile(filePath = file, content='Test File'))
+        for filePath in expectedFiles:
+            tasks.append(CreateLocalFile(filePath = filePath, content='Test File'))
 
         yield tasks
             
     def run(self):
         # copy input file to temp.
-        dem = ""
+        cutDEMInfo = {}      
         with self.input()[0].open('r') as cutDEM:
             cutDEMInfo = json.load(cutDEM)
-            dem = cutDEMInfo["cutDemPath"]
         
+        dem = cutDEMInfo["cutDemPath"]
         t = CheckFileExists(filePath=dem)
         yield 
         
         inputFileInfo = {}
         with self.input()[1].open('r') as getInputFileInfo:
             inputFileInfo = json.load(getInputFileInfo)
+
+        configureProcessingInfo = {}
+        with self.input()[2].open('r') as configureProcessing:
+            configureProcessingInfo = json.load(configureProcessing)
        
+        outputRoot = configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"]
+        productPattern = inputFileInfo["productPattern"]
+
+        expectedOutput = self.getExpectedOutput(productPattern, outputRoot)
         
         # Runs shell process to create the ard products
         retcode = 0
         if not self.testProcessing:
             retcode = self.runShellScript('JNCC_S1_GRD_MAIN_v2.1.1.sh', '1 1 1 1 1 1 2 1 3 1')
         else:
-            self.createTestFiles(inputFileInfo["productPattern"])
+            expectedFiles = expectedOutput["files"]["VV"] + expectedOutput["files"]["VH"]
+            self.createTestFiles(expectedFiles)
         
         # If process has OK return code then check outputs exist
         if retcode != 0:
             log.warning("Return code from snap process not 0, code was: %d", retcode)
 
         with self.output().open('w') as out:
-            out.write(json.dumps(self.getTaskOutput(inputFileInfo["productPattern"])))
+            out.write(json.dumps(expectedOutput))
                 
     def output(self):
         outputFile = os.path.join(self.paths["state"], 'processRawToArd.json')

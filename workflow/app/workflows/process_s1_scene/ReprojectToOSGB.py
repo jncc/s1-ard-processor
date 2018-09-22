@@ -10,7 +10,8 @@ import distutils.dir_util as distutils
 from luigi import LocalTarget
 from luigi.util import inherits
 from functional import seq
-from process_s1_scene.CheckOutputFilesExist import CheckOutputFilesExist 
+from process_s1_scene.ProcessRawToArd import ProcessRawToArd 
+from process_s1_scene.CheckArdFilesExist import CheckArdFilesExist 
 
 log = logging.getLogger('luigi-interface')
 

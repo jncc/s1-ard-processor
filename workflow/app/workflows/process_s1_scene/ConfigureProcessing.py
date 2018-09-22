@@ -7,12 +7,11 @@ import process_s1_scene.common as wc
 import distutils.dir_util as distutils
 from luigi import LocalTarget
 from luigi.util import requires
-from process_s1_scene.PrepareWorkingFolder import CreateWorkingFolder
-from process_s1_scene.CutDEM
+from process_s1_scene.CutDEM import CutDEM
 
 log = logging.getLogger('luigi-interface')
 
-@requires(cutDEM)
+@requires(CutDEM)
 class ConfigureProcessing(luigi.Task):
     paths = luigi.DictParameter()
 
@@ -28,7 +27,7 @@ class ConfigureProcessing(luigi.Task):
         cofigFilePath = "/app/toolchain/scripts/JNCC_S1_GRD_configfile_v.1.1.sh"
 
         configuration = {
-                "scriptConfigFilePath" : configFilePath
+                "scriptConfigFilePath" : configFilePath,
                 "parameters" : {
                     "s1_ard_main_dir" : self.paths['workingDir'],
                     "s1_ard_basket_dir" : self.paths["input"],

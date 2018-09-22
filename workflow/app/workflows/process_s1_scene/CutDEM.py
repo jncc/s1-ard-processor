@@ -14,7 +14,7 @@ from luigi import LocalTarget
 
 log = logging.getLogger('luigi-interface')
 
-@requires(GetInputFileInfo)
+@requires(GetIntputFileInfo)
 class CutDEM(luigi.Task):
     paths = luigi.DictParameter()
     inputFileName = luigi.Parameter()
