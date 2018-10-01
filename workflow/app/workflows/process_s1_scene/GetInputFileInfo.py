@@ -10,7 +10,7 @@ class GetIntputFileInfo(luigi.Task):
     inputFileName = luigi.Parameter()
 
     def run(self):
-        inputFilePath = os.path.join(paths["input"], self.inputFileName)
+        inputFilePath = os.path.join(self.paths["input"], self.inputFileName)
 
         check = CheckFileExists(inputFilePath)
         yield check
@@ -22,5 +22,5 @@ class GetIntputFileInfo(luigi.Task):
             }))
 
     def output(self):
-        outFile = os.path.join(self.pathRoots['state'], 'GetIntputFileInfo.json')
+        outFile = os.path.join(self.paths['state'], 'GetIntputFileInfo.json')
         return LocalTarget(outFile)

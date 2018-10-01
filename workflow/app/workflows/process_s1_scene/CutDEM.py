@@ -78,5 +78,5 @@ class CutDEM(luigi.Task):
             }))
 
     def output(self):
-        outFile = os.path.join(self.pathRoots['state'], 'CutDEM.json')
+        outFile = os.path.join(self.paths['state'], 'CutDEM.json')
         return LocalTarget(outFile)

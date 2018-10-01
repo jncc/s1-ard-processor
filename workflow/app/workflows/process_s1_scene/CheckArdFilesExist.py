@@ -9,7 +9,6 @@ from process_s1_scene.CheckFileExists import CheckFileExists
 
 @requires(ProcessRawToArd)
 class CheckArdFilesExist(luigi.Task):
-    pathRoots = luigi.DictParameter()
 
     def run(self):
         processedOutput = {}

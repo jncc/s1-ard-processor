@@ -69,7 +69,7 @@ class ProcessRawToArd(luigi.Task):
         return expectedOutput
 
     def runShellScript(self, script, arguments, runAsShell=True):
-        os.chdir(os.path.join(self.pathRoots["fileRoot"], 'scripts'))
+        os.chdir(os.path.join(self.paths["fileRoot"], 'scripts'))
         return subprocess.call("sh %s %s" % (script, arguments), shell=runAsShell)        
 
     def createTestFiles(expectedFiles):
