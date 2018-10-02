@@ -50,5 +50,5 @@ class ConfigureProcessing(luigi.Task):
             outFile.write(json.dumps(configuration))
                 
     def output(self):
-        outputFolder = os.path.join(self.paths["state"], 'SetupScripts.json')
+        outFile = os.path.join(self.paths["state"], 'SetupScripts.json')
         return LocalTarget(outFile)

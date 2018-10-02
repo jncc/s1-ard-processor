@@ -37,7 +37,7 @@ def createTestFile(outputfile):
 
 
 def createWorkingnewPath(workingPathRoot, workingPath): 
-    newPath = os.path.join(workingnewPathRoot, workingPath)
+    newPath = os.path.join(workingPathRoot, workingPath)
 
     if (os.path.exists(newPath)):
         #empty out the structure

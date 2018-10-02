@@ -19,25 +19,26 @@ class CutDEM(luigi.Task):
     paths = luigi.DictParameter()
     inputFileName = luigi.Parameter()
     testProcessing = luigi.BoolParameter()
-    demFile = luigi.Parameter()
+    demFileName = luigi.Parameter()
 
     def run(self):
 
         inputFileInfo = {}
-
         with self.input().open('r') as getInputFileInfo:
             inputFileInfo = json.load(getInputFileInfo)
 
-        #todo should come from required file
         cutLine = {}
 
-        demPath = wc.createWorkingnewPath(self.paths["working"], 'dem')
+        cutDemPathRoot = wc.createWorkingnewPath(self.paths["working"], 'dem')
+        cutDemPath = os.path.join(cutDemPathRoot, 'cutDem.tif')
+        cutLinePath = os.path.join(cutDemPathRoot, "cutline.geojson") 
+        demPath = os.path.join(self.paths["static"], self.demFileName)
+        
+        inputFilePath = inputFileInfo["inputFilePath"]
 
         if not self.testProcessing:
 
-            cutLinePath = os.path.join(demPath, "cutline.geojson") 
-
-            with zipfile.ZipFile(inputFileInfo["inputFilePath"]) as productZipFile:
+            with zipfile.ZipFile(inputFilePath) as productZipFile:
                 with productZipFile.open("%s.SAFE/preview/map-overlay.kml" % os.path.basename(inputFilePath).replace(".zip", "")) as overlay:
                     # Grab first latlong element as there should only be one
                     coordinatesXMLElement = xml.etree.ElementTree.fromstring(overlay.read().decode("utf-8")).findall(".//Document/Folder/GroundOverlay/gx:LatLonQuad/coordinates", {"gx": "http://www.google.com/kml/ext/2.2"})[0]
@@ -57,10 +58,8 @@ class CutDEM(luigi.Task):
                         cutlineFile.write(json.dumps(cutLine))
 
             try:
-                demPath = os.path.join(self.paths["static"], self.demFile)
-
                 subprocess.check_output(
-                    "gdalwarp -of GTiff -crop_to_cutline -overwrite --config CHECK_DISK_FREE_SPACE NO -cutline %s %s %s" % (cutLinePath ,demPath, self.paths["cutDemPath"]), 
+                    "gdalwarp -of GTiff -crop_to_cutline -overwrite --config CHECK_DISK_FREE_SPACE NO -cutline %s %s %s" % (cutLinePath ,demPath, cutDemPath), 
                     stderr=subprocess.STDOUT,
                     shell=True)
             except subprocess.CalledProcessError as e:
@@ -69,11 +68,11 @@ class CutDEM(luigi.Task):
                 raise RuntimeError(errStr)
 
         else:
-            yield CreateLocalFile(filePath=self.paths["cutDemPath"], content="TEST_FILE")
+            yield CreateLocalFile(filePath=cutDemPath, content="TEST_FILE")
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
-                'cutDemPath' : self.paths["cutDemPath"],
+                'cutDemPath' : cutDemPath,
                 'cutLine' : cutLine
             }))
 

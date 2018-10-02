@@ -4,6 +4,7 @@ import logging
 import subprocess
 import os
 import process_s1_scene.common as wc
+from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.MergeBands import MergeBands
 from process_s1_scene.CheckFileExists import CheckFileExists

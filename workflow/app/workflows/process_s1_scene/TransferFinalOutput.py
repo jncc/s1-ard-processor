@@ -4,6 +4,7 @@ import re
 import json
 import logging
 import process_s1_scene.common as wc
+from luigi import LocalTarget
 from luigi.util import inherits
 from process_s1_scene.ProcessRawToArd import ProcessRawToArd
 from process_s1_scene.ReprojectToOSGB import ReprojectToOSGB

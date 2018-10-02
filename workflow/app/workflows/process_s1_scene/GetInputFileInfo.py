@@ -1,7 +1,9 @@
 import luigi
+import json
 import os
 import process_s1_scene.common as wc
 
+from luigi import LocalTarget
 from process_s1_scene.CheckFileExists import CheckFileExists
 
 class GetIntputFileInfo(luigi.Task):
