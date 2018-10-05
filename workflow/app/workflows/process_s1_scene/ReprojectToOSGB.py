@@ -19,7 +19,8 @@ log = logging.getLogger('luigi-interface')
 class ReprojectToOSGB(luigi.Task):
     paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
-    reprojectionFilePattern = luigi.Parameter()
+
+    reprojectionFilePattern = "^[\w\/-]+_Gamma0_APGB_UTMWGS84_RTC_SpkRL_dB.tif"
 
     def runReprojection(self):
         processRawToArdInfo = {}
