@@ -7,7 +7,7 @@ import process_s1_scene.common as wc
 import subprocess
 
 from luigi import LocalTarget
-from luigi.util import inherits
+from luigi.util import requires
 from process_s1_scene.ConfigureProcessing import ConfigureProcessing
 from process_s1_scene.CutDEM import CutDEM
 from process_s1_scene.GetInputFileInfo import GetIntputFileInfo
@@ -16,19 +16,10 @@ from process_s1_scene.CreateLocalFile import CreateLocalFile
 
 log = logging.getLogger('luigi-interface')
 
-@inherits(CutDEM)
-@inherits(GetIntputFileInfo)
-@inherits(ConfigureProcessing)
+@requires(CutDEM, GetIntputFileInfo, ConfigureProcessing)
 class ProcessRawToArd(luigi.Task):
     paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
-
-    def requires(self):
-        t = []
-        t.append(self.clone(CutDEM))
-        t.append(self.clone(GetIntputFileInfo))
-        t.append(self.clone(ConfigureProcessing))
-        return t
 
     def getExpectedOutput(self, productPattern, outputRoot): 
         vv_path = os.path.join(os.path.join(outputRoot, productPattern), "VV/GEO")
@@ -69,8 +60,8 @@ class ProcessRawToArd(luigi.Task):
         return expectedOutput
 
     def runShellScript(self, script, arguments, runAsShell=True):
-        os.chdir(os.path.join(self.paths["fileRoot"], 'scripts'))
-        return subprocess.call("sh %s %s" % (script, arguments), shell=runAsShell)        
+        os.chdir(self.paths["scripts"])
+        return subprocess.call("sh {0} {1}".format(script, arguments), shell=runAsShell)        
 
     def createTestFiles(expectedFiles):
         tasks = []
@@ -84,10 +75,9 @@ class ProcessRawToArd(luigi.Task):
         cutDEMInfo = {}      
         with self.input()[0].open('r') as cutDEM:
             cutDEMInfo = json.load(cutDEM)
-        
+
         dem = cutDEMInfo["cutDemPath"]
-        t = CheckFileExists(filePath=dem)
-        yield 
+        yield CheckFileExists(filePath=dem)
         
         inputFileInfo = {}
         with self.input()[1].open('r') as getInputFileInfo:
@@ -109,10 +99,9 @@ class ProcessRawToArd(luigi.Task):
         else:
             expectedFiles = expectedOutput["files"]["VV"] + expectedOutput["files"]["VH"]
             self.createTestFiles(expectedFiles)
-        
-        # If process has OK return code then check outputs exist
+
         if retcode != 0:
-            log.warning("Return code from snap process not 0, code was: %d", retcode)
+            raise "Return code from snap process not 0, code was: {0}".format(retcode)
 
         with self.output().open('w') as out:
             out.write(json.dumps(expectedOutput))

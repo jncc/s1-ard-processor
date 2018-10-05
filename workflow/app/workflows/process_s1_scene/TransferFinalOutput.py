@@ -5,7 +5,7 @@ import json
 import logging
 import process_s1_scene.common as wc
 from luigi import LocalTarget
-from luigi.util import inherits
+from luigi.util import requires
 from process_s1_scene.ProcessRawToArd import ProcessRawToArd
 from process_s1_scene.ReprojectToOSGB import ReprojectToOSGB
 from process_s1_scene.MergeBands import MergeBands
@@ -15,21 +15,10 @@ from shutil import copyfile
 
 log = logging.getLogger('luigi-interface')
 
-@inherits(ProcessRawToArd)
-@inherits(ReprojectToOSGB)
-@inherits(MergeBands)
-@inherits(AddMergedOverviews)
+@requires(ProcessRawToArd, ReprojectToOSGB, MergeBands, AddMergedOverviews)
 class TransferFinalOutput(luigi.Task):
     paths = luigi.DictParameter()
     productId = luigi.Parameter(default=False)
-
-    def requires(self):
-        t = []
-        t.append(self.clone(ProcessRawToArd))
-        t.append(self.clone(ReprojectToOSGB))
-        t.append(self.clone(MergeBands))
-        t.append(self.clone(AddMergedOverviews))
-        return t
 
     def run(self):
         with self.output().open("w") as outFile:

@@ -18,37 +18,41 @@ class ConfigureProcessing(luigi.Task):
     def run(self):
         cutDemInfo = {}
         with self.input().open('r') as cutDEM:
-            cutDEMinfo = json.load(cutDEM)
+            cutDemInfo = json.load(cutDEM)
 
         tempOutputPath = wc.createWorkingnewPath(self.paths["working"], "output")
 
         log.info('Populating configfile params')
 
-        cofigFilePath = "/app/toolchain/scripts/JNCC_S1_GRD_configfile_v.1.1.sh"
+        configFilePath = "/app/toolchain/scripts/JNCC_S1_GRD_configfile_v.1.1.sh"
 
         configuration = {
                 "scriptConfigFilePath" : configFilePath,
                 "parameters" : {
-                    "s1_ard_main_dir" : self.paths['workingDir'],
+                    "s1_ard_main_dir" : self.paths['working'],
                     "s1_ard_basket_dir" : self.paths["input"],
-                    "s1_ard_ext_dem" : cutDEMInfo["cutDemPath"],
+                    "s1_ard_ext_dem" : cutDemInfo["cutDemPath"],
                     "s1_ard_temp_output_dir" : tempOutputPath
                 }
             }
-
-        with open(cofigFilePath, 'rw') as configFile:
-            contents = configFile.read()
         
-            contents = contents.replace("{{ s1_ard_main_dir }}", cofiguration["parameters"]["s1_ard_main_dir"]),
-            contents = contents.replace("{{ s1_ard_basket_dir }}", cofiguration["parameters"]["s1_ard_basket_dir"]),
-            contents = contents.replace("{{ s1_ard_ext_dem }}", cofiguration["parameters"]["s1_ard_ext_dem"]),
-            contents = contents.replace("{{ s1_ard_temp_output_dir }}", cofiguration["parameters"]["s1_ard_temp_output_dir"])
+        configFileContents = ""
 
-            configFile.write(contents)
+        with open(configFilePath, 'r') as configFile:
+            configFileContents = configFile.read()
+        
+            configFileContents = configFileContents.replace("{{ s1_ard_main_dir }}", configuration["parameters"]["s1_ard_main_dir"])
+            configFileContents = configFileContents.replace("{{ s1_ard_basket_dir }}", configuration["parameters"]["s1_ard_basket_dir"])
+            configFileContents = configFileContents.replace("{{ s1_ard_ext_dem }}", configuration["parameters"]["s1_ard_ext_dem"])
+            configFileContents = configFileContents.replace("{{ s1_ard_temp_output_dir }}", configuration["parameters"]["s1_ard_temp_output_dir"])
+
+
+        with open(configFilePath, 'w') as configFile:
+            configFile.write(configFileContents)
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps(configuration))
                 
     def output(self):
-        outFile = os.path.join(self.paths["state"], 'SetupScripts.json')
+        outFile = os.path.join(self.paths["state"], 'ConfigureProcessing.json')
         return LocalTarget(outFile)

@@ -8,25 +8,18 @@ import process_s1_scene.common as wc
 import subprocess
 import distutils.dir_util as distutils
 from luigi import LocalTarget
-from luigi.util import inherits
+from luigi.util import requires
 from functional import seq
 from process_s1_scene.ProcessRawToArd import ProcessRawToArd 
 from process_s1_scene.CheckArdFilesExist import CheckArdFilesExist 
 
 log = logging.getLogger('luigi-interface')
 
-@inherits(ProcessRawToArd)
-@inherits(CheckArdFilesExist)
+@requires(ProcessRawToArd, CheckArdFilesExist)
 class ReprojectToOSGB(luigi.Task):
     paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
     reprojectionFilePattern = luigi.Parameter()
-
-    def requires(self):
-        t = []
-        t.append(self.clone(ProcessRawToArd))
-        t.append(self.clone(CheckArdFilesExist))
-        return t
 
     def runReprojection(self):
         processRawToArdInfo = {}

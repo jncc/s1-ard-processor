@@ -7,7 +7,7 @@ import process_s1_scene.common as wc
 import luigi
 import subprocess
 from luigi import LocalTarget
-from luigi.util import inherits
+from luigi.util import requires
 from functional import seq
 from process_s1_scene.ReprojectToOSGB import ReprojectToOSGB
 from process_s1_scene.ConfigureProcessing import ConfigureProcessing
@@ -15,18 +15,11 @@ from process_s1_scene.CheckArdFilesExist import CheckFileExists
 
 log = logging.getLogger('luigi-interface')
 
-@inherits(ReprojectToOSGB)
-@inherits(ConfigureProcessing)
+@requires(ReprojectToOSGB, ConfigureProcessing)
 class MergeBands(luigi.Task):
     paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
     productId = luigi.Parameter()
-
-    def requires(self):
-        t = []
-        t.append(self.clone(ReprojectToOSGB))
-        t.append(self.clone(ConfigureProcessing))
-        return t
 
     def run(self):
         reprojectToOSGBInfo = {}
