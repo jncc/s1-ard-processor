@@ -24,8 +24,7 @@ class AddMergedOverviews(luigi.Task):
         
         mergedProduct = mergeBandsInfo["mergedOutputFile"]
 
-        t = CheckFileExists(filePath=mergedProduct)
-        yield t
+        yield CheckFileExists(filePath=mergedProduct)
 
         cmdString = 'gdaladdo {} 2 4 8 16 32 64 128'.format(mergedProduct)
 
@@ -33,6 +32,7 @@ class AddMergedOverviews(luigi.Task):
         if not self.testProcessing:
             log.info('Adding overlays to merged file')
             try:
+                cmdString = 'gdaladdo {} 2 4 8 16 32 64 128'.format(mergedProduct)
                 subprocess.check_output(cmdString, shell=True) 
             except subprocess.CalledProcessError as e:
                 errStr = "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output)
@@ -40,7 +40,9 @@ class AddMergedOverviews(luigi.Task):
                 raise RuntimeError(errStr)
 
         with self.output().open('w') as out:
-            out.write(json.dumps(spec))
+            out.write(json.dumps({
+                "overviewsAddedTo" : mergedProduct
+            }))
 
     def output(self):
         outputFile = os.path.join(self.paths["state"], "addMergedOverviews.json")

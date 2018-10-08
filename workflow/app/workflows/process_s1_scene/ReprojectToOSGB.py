@@ -61,7 +61,7 @@ class ReprojectToOSGB(luigi.Task):
 
     
     def changeFileName(self, fileName):
-        fileName.replace("UTMWGS84", "OSGB1936")
+        return fileName.replace("UTMWGS84", "OSGB1936")
 
     def run(self):
         outputFiles = self.runReprojection()
