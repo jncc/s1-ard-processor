@@ -6,9 +6,8 @@ import process_s1_scene.common as wc
 from luigi import LocalTarget
 from process_s1_scene.CheckFileExists import CheckFileExists
 
-class GetIntputFileInfo(luigi.Task):
+class GetInputFileInfo(luigi.Task):
     paths = luigi.DictParameter()
-    productId = luigi.Parameter()
     inputFileName = luigi.Parameter()
 
     def run(self):
@@ -20,7 +19,8 @@ class GetIntputFileInfo(luigi.Task):
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
                 "inputFilePath" : inputFilePath,
-                "productPattern" : wc.getProductPatternFromSourceFile(self.inputFileName)
+                "productPattern" : wc.getProductPatternFromSourceFile(self.inputFileName),
+                "productId" : wc.getProductIdFromSourceFile(self.inputFileName)
             }))
 
     def output(self):

@@ -10,3 +10,4 @@ import process_s1_scene.MergeBands
 import process_s1_scene.ProcessRawToArd
 import process_s1_scene.ReprojectToOSGB
 import process_s1_scene.TransferFinalOutput
+import process_s1_scene.CopyInputFile

@@ -28,6 +28,6 @@ class CheckArdFilesExist(luigi.Task):
             outFile.write(json.dumps(processedOutput))
 
     def output(self):
-        outputFile = os.path.join(self.paths["state"], "checkArdFilesExist.json")
+        outputFile = os.path.join(self.paths["state"], "CheckArdFilesExist.json")
         return LocalTarget(outputFile)
 

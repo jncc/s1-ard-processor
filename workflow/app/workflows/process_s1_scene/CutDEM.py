@@ -8,13 +8,13 @@ import xml.etree.ElementTree
 import zipfile
 
 from process_s1_scene.CreateLocalFile import CreateLocalFile
-from process_s1_scene.GetInputFileInfo import GetIntputFileInfo
+from process_s1_scene.GetInputFileInfo import GetInputFileInfo
 from luigi.util import requires
 from luigi import LocalTarget
 
 log = logging.getLogger('luigi-interface')
 
-@requires(GetIntputFileInfo)
+@requires(GetInputFileInfo)
 class CutDEM(luigi.Task):
     paths = luigi.DictParameter()
     inputFileName = luigi.Parameter()

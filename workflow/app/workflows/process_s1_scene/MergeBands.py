@@ -12,14 +12,14 @@ from functional import seq
 from process_s1_scene.ReprojectToOSGB import ReprojectToOSGB
 from process_s1_scene.ConfigureProcessing import ConfigureProcessing
 from process_s1_scene.CheckArdFilesExist import CheckFileExists
+from process_s1_scene.GetInputFileInfo import GetInputFileInfo
 
 log = logging.getLogger('luigi-interface')
 
-@requires(ReprojectToOSGB, ConfigureProcessing)
+@requires(ReprojectToOSGB, ConfigureProcessing, GetInputFileInfo)
 class MergeBands(luigi.Task):
     paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
-    productId = luigi.Parameter()
 
     def run(self):
         reprojectToOSGBInfo = {}
@@ -34,13 +34,17 @@ class MergeBands(luigi.Task):
         for sourceFile in reprojectToOSGBInfo["reprojectedFiles"]:
             checkTasks.append(CheckFileExists(filePath=sourceFile))
 
+        inputFileInfo = {}
+        with self.input()[2].open('r') as getInputFileInfo:
+            inputFileInfo = json.load(getInputFileInfo)
+
         yield checkTasks
         
         srcFiles = seq(reprojectToOSGBInfo["reprojectedFiles"]).reduce(lambda x, f: x + ' ' + f)
 
         log.debug('merging files %s', srcFiles)
 
-        outputFile = os.path.join(configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"], "{}_APGB_OSGB1936_RTC_SpkRL_dB.tif".format(self.productId))
+        outputFile = os.path.join(configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"], "{}_APGB_OSGB1936_RTC_SpkRL_dB.tif".format(inputFileInfo["productId"]))
 
         cmdString = 'gdalbuildvrt -separate /vsistdout/ {}|gdal_translate -a_nodata nan -co BIGTIFF=YES -co TILED=YES -co COMPRESS=LZW --config CHECK_DISK_FREE_SPACE no /vsistdin/ {}' \
             .format(srcFiles, outputFile) 

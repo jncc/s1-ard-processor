@@ -4,74 +4,92 @@ import re
 import json
 import logging
 import process_s1_scene.common as wc
+from shutil import copyfile
 from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.ProcessRawToArd import ProcessRawToArd
 from process_s1_scene.ReprojectToOSGB import ReprojectToOSGB
 from process_s1_scene.MergeBands import MergeBands
 from process_s1_scene.AddMergedOverviews import AddMergedOverviews
+from process_s1_scene.GenerateMetadata import GenerateMetadata
  
-from shutil import copyfile
+from shutil import copy
 
 log = logging.getLogger('luigi-interface')
 
-@requires(ProcessRawToArd, ReprojectToOSGB, MergeBands, AddMergedOverviews)
+@requires(GetInputFileInfo, 
+    ProcessRawToArd, 
+    AddMergedOverviews,
+    GenerateMetadata)
 class TransferFinalOutput(luigi.Task):
     paths = luigi.DictParameter()
-    productId = luigi.Parameter(default=False)
+
+    def getPathFromProductId(self, root, productId):
+        year = productId[4:8]
+        month = productId[8:10]
+        day = productId[10:12]
+
+        return os.path.join(os.path.join(os.path.join(os.path.join(root, year), month), day), productId)
+    
+    def copyPolarisationFiles(self, polarisation, generatedProductPath, processRawToArdInfo, current_progress):
+        p = re.compile(self.outputFile)
+
+        polarisationPath = os.path.join(generatedProductPath, polarisation)
+        if not os.path.exists(polarisationPath):
+            os.makedirs(polarisationPath)
+
+        for product in processRawToArdInfo["files"][polarisation]:
+            if p.match(product):
+                targetPath = os.path.join(polarisationPath, '%s%s' % (self.productId, os.path.basename(product)[27:]))
+                copy(product, targetPath)
+                current_progress[polarisation].append(targetPath)
+
+    def copyMergedFile(self, mergedProduct, generatedProductPath, current_progress):
+        targetPath = os.path.join(generatedProductPath, os.path.basename(mergedProduct)) 
+        copy(mergedProduct, targetPath)
+        current_progress["mergedProduct"] = targetPath
+
+    def copyMetadata(self, metadata, generatedProductPath, current_progress):
+        targetPath = os.path.join(generatedProductPath, os.path.basename(metadata))
+        copy(metadata, targetPath)
+        current_progress["metadata"] = targetPath
 
     def run(self):
+        inputFileInfo = {}
+        with self.input()[0].open('r') as getInputFileInfo:
+            inputFileInfo = json.load(getInputFileInfo)
+
+        processRawToArdInfo = {}
+        with self.input()[1].open('r') as processRawToArd:
+            processRawToArdInfo = json.load(processRawToArd)
+
+        addMergedOverviewsInfo = {}
+        with self.input()[2].open('r') as addMergedOverviews:
+            addMergedOverviewsInfo = json.load(addMergedOverviews)
+
+        generateMetadataInfo = {}
+        with self.input()[3].open('r') as generateMetadata:
+            generateMetadataInfo = json.load(generateMetadata)
+
+        generatedProductPath = self.getPathFromProductId(paths["output"], inputFileInfo["productId"])
+
+        current_progress = {
+            "outputPath" : generatedProductPath
+            'VV': [],
+            'VH': [],
+            'merged' : ''
+        }
+
+        self.copyPolarisationFiles("VH", generatedProductPath, processRawToArdInfo, current_progress)
+        self.copyPolarisationFiles("VV", generatedProductPath, processRawToArdInfo, current_progress)
+
+        self.copyMergedProduct(addMergedOverviewsInfo["overviewsAddedTo"], generatedProductPath, current_progress)
+
+        self.copyMetadata(generateMetadataInfo["ardMetadataFile"], generatedProductPath, current_progress)
+        
         with self.output().open("w") as outFile:
-            outFile.write(json.dumps({
-                "test" : "test" 
-            }))
+            outFile.write(json.dumps(current_progress))
 
     def output(self):
         outFile = os.path.join(self.paths['state'], 'TransferFinalOutput.json')
         return LocalTarget(outFile)
-    #     processRawToArdInfo = {}
-    #     with self.input()[0].open('r') as processRawToArd:
-    #         processRawToArdInfo = json.load(processRawToArd)
-
-    #     current_progress['outputs'] = {
-    #         'VV': [],
-    #         'VH': [],
-    #         'merged' : ''
-    #     }
-
-    #     generatedProductPath = self.getPathFromProductId(self.paths["output"], self.productId)
-
-    #     self.copyPolarisationFiles("VH", generatedProductPath, current_progress)
-    #     self.copyPolarisationFiles("VV", generatedProductPath, current_progress)
-
-    #     product = current_progress['files']['merged']
-    #     targetPath = os.path.join(generatedProductPath, os.path.basename(product)) 
-    #     copyfile(product, targetPath)
-    #     current_progress['outputs']['merged'] = targetPath
-
-    #     with self.output().open('w') as out:
-    #         out.write(json.dumps(current_progress))
-
-    # def output(self):
-    #     outputFolder = os.path.join(self.paths["state-localRoot"], self.productId)
-    #     return wc.getLocalStateTarget(outputFolder, 'transferFinalOutput.json')
-
-    # def getPathFromProductId(self, root, productId):
-    #     year = productId[4:8]
-    #     month = productId[8:10]
-    #     day = productId[10:12]
-
-    #     return os.path.join(os.path.join(os.path.join(os.path.join(root, year), month), day), productId)
-
-    # def copyPolarisationFiles(self, polarisation, generatedProductPath, current_progress):
-    #     p = re.compile(self.outputFile)
-
-    #     polarisationPath = os.path.join(generatedProductPath, polarisation)
-    #     if not os.path.exists(polarisationPath):
-    #         os.makedirs(polarisationPath)
-
-    #     for product in current_progress['files'][polarisation]:
-    #         if p.match(product):
-    #             targetPath = os.path.join(polarisationPath, '%s%s' % (self.productId, os.path.basename(product)[27:]))
-    #             copyfile(product, targetPath)
-    #             current_progress['outputs'][polarisation].append(targetPath)

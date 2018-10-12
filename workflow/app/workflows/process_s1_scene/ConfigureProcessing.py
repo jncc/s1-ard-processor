@@ -8,17 +8,22 @@ import distutils.dir_util as distutils
 from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.CutDEM import CutDEM
+from process_s1_scene.CopyInputFile import CopyInputFile
 
 log = logging.getLogger('luigi-interface')
 
-@requires(CutDEM)
+@requires(CutDEM, CopyInputFile)
 class ConfigureProcessing(luigi.Task):
     paths = luigi.DictParameter()
 
     def run(self):
         cutDemInfo = {}
-        with self.input().open('r') as cutDEM:
+        with self.input()[0].open('r') as cutDEM:
             cutDemInfo = json.load(cutDEM)
+
+        copyInputFileInfo = {}
+        with self.input()[1].open('r') as copyInputFile:
+            copyInputFileInfo = json.load(copyInputFile)
 
         tempOutputPath = wc.createWorkingnewPath(self.paths["working"], "output")
 
@@ -30,7 +35,7 @@ class ConfigureProcessing(luigi.Task):
                 "scriptConfigFilePath" : configFilePath,
                 "parameters" : {
                     "s1_ard_main_dir" : self.paths['working'],
-                    "s1_ard_basket_dir" : self.paths["input"],
+                    "s1_ard_basket_dir" : copyInputFileInfo["tempInputPath"],
                     "s1_ard_ext_dem" : cutDemInfo["cutDemPath"],
                     "s1_ard_temp_output_dir" : tempOutputPath
                 }

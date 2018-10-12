@@ -72,5 +72,5 @@ class ReprojectToOSGB(luigi.Task):
             }))
                 
     def output(self):
-        outputFile = os.path.join(self.paths["state"], 'reprojectToOSGB.json')
+        outputFile = os.path.join(self.paths["state"], 'ReprojectToOSGB.json')
         return LocalTarget(outputFile)

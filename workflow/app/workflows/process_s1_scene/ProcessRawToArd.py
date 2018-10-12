@@ -10,13 +10,13 @@ from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.ConfigureProcessing import ConfigureProcessing
 from process_s1_scene.CutDEM import CutDEM
-from process_s1_scene.GetInputFileInfo import GetIntputFileInfo
+from process_s1_scene.GetInputFileInfo import GetInputFileInfo
 from process_s1_scene.CheckFileExists import CheckFileExists
 from process_s1_scene.CreateLocalFile import CreateLocalFile
 
 log = logging.getLogger('luigi-interface')
 
-@requires(CutDEM, GetIntputFileInfo, ConfigureProcessing)
+@requires(CutDEM, GetInputFileInfo, ConfigureProcessing)
 class ProcessRawToArd(luigi.Task):
     paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
@@ -107,5 +107,5 @@ class ProcessRawToArd(luigi.Task):
             out.write(json.dumps(expectedOutput))
                 
     def output(self):
-        outputFile = os.path.join(self.paths["state"], 'processRawToArd.json')
+        outputFile = os.path.join(self.paths["state"], 'ProcessRawToArd.json')
         return LocalTarget(outputFile)

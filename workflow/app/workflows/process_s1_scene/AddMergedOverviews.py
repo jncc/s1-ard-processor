@@ -14,7 +14,6 @@ log = logging.getLogger('luigi-interface')
 @requires(MergeBands)
 class AddMergedOverviews(luigi.Task):
     paths = luigi.DictParameter()
-    productId = luigi.Parameter()
     testProcessing = luigi.BoolParameter()
 
     def run(self):
@@ -45,5 +44,5 @@ class AddMergedOverviews(luigi.Task):
             }))
 
     def output(self):
-        outputFile = os.path.join(self.paths["state"], "addMergedOverviews.json")
+        outputFile = os.path.join(self.paths["state"], "AddMergedOverviews.json")
         return LocalTarget(outputFile)
