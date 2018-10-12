@@ -1,6 +1,7 @@
 import logging
 import luigi
 import os
+import shutil
 from datetime import datetime
 from os.path import basename, join
 from luigi.contrib.s3 import S3Target, S3Client
@@ -23,7 +24,7 @@ def getS3StateTarget(targetPath, fileName):
     return getS3Target(targetKey)
 
 def getProductIdFromSourceFile(sourceFile):
-    productFilename = basename(getPathFromS3Path(sourceFile))
+    productFilename = basename(sourceFile)
     return '%s_%s_%s_%s' % (productFilename[0:3], productFilename[17:25], productFilename[26:32], productFilename[42:48])
 
 def getProductPatternFromSourceFile(sourceFile):

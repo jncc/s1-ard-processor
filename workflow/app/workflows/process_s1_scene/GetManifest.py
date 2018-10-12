@@ -21,7 +21,7 @@ class GetManifest(luigi.Task):
         manifest = rawZip.read(manifestPath).decode("utf-8")
        
         with self.output().open('w') as out:
-            output.write(manifest)
+            out.write(manifest)
 
     def output(self):
         outFile = os.path.join(self.paths['working'], 'source_manifest.txt')

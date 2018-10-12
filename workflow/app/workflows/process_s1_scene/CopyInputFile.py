@@ -2,6 +2,7 @@ import luigi
 import os
 import shutil
 import logging
+import json
 import process_s1_scene.common as wc
 
 from luigi import LocalTarget
@@ -22,7 +23,7 @@ class CopyInputFile(luigi.Task):
         tempInputPath = wc.createWorkingnewPath(self.paths["working"], "input")
 
         inputSource = inputFileInfo["inputFilePath"]
-        tempTatget = os.path.join(tempInputPath, os.path.basename(inputFile))
+        tempTatget = os.path.join(tempInputPath, os.path.basename(inputSource))
 
         try:
             shutil.copy(inputSource, tempTatget)

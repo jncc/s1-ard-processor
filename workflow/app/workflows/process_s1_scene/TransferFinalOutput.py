@@ -7,11 +7,11 @@ import process_s1_scene.common as wc
 from shutil import copyfile
 from luigi import LocalTarget
 from luigi.util import requires
+from process_s1_scene.GetInputFileInfo import GetInputFileInfo
 from process_s1_scene.ProcessRawToArd import ProcessRawToArd
-from process_s1_scene.ReprojectToOSGB import ReprojectToOSGB
-from process_s1_scene.MergeBands import MergeBands
 from process_s1_scene.AddMergedOverviews import AddMergedOverviews
 from process_s1_scene.GenerateMetadata import GenerateMetadata
+
  
 from shutil import copy
 
