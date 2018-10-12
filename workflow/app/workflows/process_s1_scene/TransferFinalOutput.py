@@ -74,10 +74,11 @@ class TransferFinalOutput(luigi.Task):
         generatedProductPath = self.getPathFromProductId(paths["output"], inputFileInfo["productId"])
 
         current_progress = {
-            "outputPath" : generatedProductPath
+            "outputPath" : generatedProductPath,
             'VV': [],
             'VH': [],
-            'merged' : ''
+            'merged' : '',
+            'metadata' : ''
         }
 
         self.copyPolarisationFiles("VH", generatedProductPath, processRawToArdInfo, current_progress)
