@@ -19,6 +19,7 @@ log = logging.getLogger('luigi-interface')
 @requires(GetManifest, ConfigureProcessing, MergeBands)
 class GenerateMetadata(luigi.Task):
     paths = luigi.DictParameter()
+    metadataTemplate = luigi.Parameter()
 
     def run(self):
         manifest = ''
@@ -58,7 +59,7 @@ class GenerateMetadata(luigi.Task):
         template = ''
         ardMetadata = ''
 
-        with open("process_s1_scene/metadata_template/s1_metadata_template.xml", "r") as templateFile:
+        with open(self.metadataTemplate, "r") as templateFile:
             template = Template(templateFile.read())
             ardMetadata = template.substitute(metadataParams)
 
