@@ -24,6 +24,8 @@ log = logging.getLogger('luigi-interface')
 class TransferFinalOutput(luigi.Task):
     paths = luigi.DictParameter()
 
+    polarisationProductPattern = "^[\w\/-]+_Gamma0_APGB_OSGB1936_RTC_SpkRL_dB.tif"
+
     def getPathFromProductId(self, root, productId):
         year = productId[4:8]
         month = productId[8:10]
@@ -32,7 +34,7 @@ class TransferFinalOutput(luigi.Task):
         return os.path.join(os.path.join(os.path.join(os.path.join(root, year), month), day), productId)
     
     def copyPolarisationFiles(self, polarisation, generatedProductPath, processRawToArdInfo, current_progress):
-        p = re.compile(self.outputFile)
+        p = re.compile(self.polarisationProductPattern)
 
         polarisationPath = os.path.join(generatedProductPath, polarisation)
         if not os.path.exists(polarisationPath):
@@ -44,7 +46,7 @@ class TransferFinalOutput(luigi.Task):
                 copy(product, targetPath)
                 current_progress[polarisation].append(targetPath)
 
-    def copyMergedFile(self, mergedProduct, generatedProductPath, current_progress):
+    def copyMergedProduct(self, mergedProduct, generatedProductPath, current_progress):
         targetPath = os.path.join(generatedProductPath, os.path.basename(mergedProduct)) 
         copy(mergedProduct, targetPath)
         current_progress["mergedProduct"] = targetPath
@@ -71,7 +73,7 @@ class TransferFinalOutput(luigi.Task):
         with self.input()[3].open('r') as generateMetadata:
             generateMetadataInfo = json.load(generateMetadata)
 
-        generatedProductPath = self.getPathFromProductId(paths["output"], inputFileInfo["productId"])
+        generatedProductPath = self.getPathFromProductId(self.paths["output"], inputFileInfo["productId"])
 
         current_progress = {
             "outputPath" : generatedProductPath,
