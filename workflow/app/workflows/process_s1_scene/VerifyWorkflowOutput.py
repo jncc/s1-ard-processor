@@ -14,7 +14,7 @@ class VerifyWorkflowOutput(luigi.Task):
 
     def run(self):
         transferFinalOutputInfo = {}
-        with self.input()[0].open('r') as transferFinalOutput:
+        with self.input().open('r') as transferFinalOutput:
             transferFinalOutputInfo = json.load(transferFinalOutput)
 
         outputFiles = transferFinalOutputInfo["VV"] + transferFinalOutputInfo["VH"]

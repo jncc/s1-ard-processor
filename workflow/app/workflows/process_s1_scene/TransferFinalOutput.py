@@ -44,7 +44,7 @@ class TransferFinalOutput(luigi.Task):
     def copyMergedProduct(self, mergedProduct, generatedProductPath, current_progress):
         targetPath = os.path.join(generatedProductPath, os.path.basename(mergedProduct)) 
         copy(mergedProduct, targetPath)
-        current_progress["mergedProduct"] = targetPath
+        current_progress["merged"] = targetPath
 
     def copyMetadata(self, metadata, generatedProductPath, current_progress):
         targetPath = os.path.join(generatedProductPath, os.path.basename(metadata))
