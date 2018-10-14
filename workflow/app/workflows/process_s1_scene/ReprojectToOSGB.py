@@ -51,31 +51,25 @@ class ReprojectToOSGB(luigi.Task):
 
         p = re.compile(self.reprojectionFilePattern)
 
-        vvSource = (seq(processRawToArdInfo['files']['VV'])
-            .filter(lambda f: p.match(f)))
-
-        vhSource = (seq(processRawToArdInfo['files']['VV'])
-            .filter(lambda f: p.match(f)))
-
-        if vvSource.len() < 1:
-            errorMsg = "Found no VV polarisation files to reproject"
-            log.error(errorMsg)
-            raise RuntimeError(errorMsg)
-
-        if vhSource.len() < 1:
-            errorMsg = "Found no VH polarisation files to reproject"
-            log.error(errorMsg)
-            raise RuntimeError(errorMsg)
-
         state = {
             "reprojectedFiles": {
                 "VV" : [],
                 "VH" : []
             }
         }
+
+        polarisations = ["VV","VH"]
+
+        for polarisation in polarisations:
+            src = (seq(processRawToArdInfo['files'][polarisation])
+                .filter(lambda f: p.match(f)))
+
+            if src.len() < 1:
+                errorMsg = "Found no {0} polarisation files to reproject".format(polarisation)
+                log.error(errorMsg)
+                raise RuntimeError(errorMsg)
         
-        self.reprojectPolorisation("VV", vvSource, state)
-        self.reprojectPolorisation("VH", vvSource, state)
+            self.reprojectPolorisation(polarisation, src, state)
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps(state))

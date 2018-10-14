@@ -30,8 +30,7 @@ class MergeBands(luigi.Task):
         with self.input()[1].open('r') as configureProcessing:
             configureProcessingInfo = json.load(configureProcessing) 
 
-        sourceFiles = (seq(reprojectToOSGBInfo['reprojectedFiles']['VV'])
-            .union(seq(reprojectToOSGBInfo['reprojectedFiles']['VH'])))
+        sourceFiles = reprojectToOSGBInfo['reprojectedFiles']['VV'] + reprojectToOSGBInfo['reprojectedFiles']['VH']
         
         checkTasks = []
         for sourceFile in sourceFiles:
@@ -45,7 +44,7 @@ class MergeBands(luigi.Task):
         
         srcFilesArg = seq(sourceFiles).reduce(lambda x, f: x + ' ' + f)
 
-        log.debug('merging files %s', srcFiles)
+        log.debug('merging files %s', srcFilesArg)
 
         outputFile = os.path.join(configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"], "{}_APGB_OSGB1936_RTC_SpkRL_dB.tif".format(inputFileInfo["productId"]))
 
