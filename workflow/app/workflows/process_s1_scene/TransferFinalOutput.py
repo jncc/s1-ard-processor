@@ -9,6 +9,7 @@ from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.GetInputFileInfo import GetInputFileInfo
 from process_s1_scene.ProcessRawToArd import ProcessRawToArd
+from process_s1_scene.ReprojectToOSGB import ReprojectToOSGB
 from process_s1_scene.AddMergedOverviews import AddMergedOverviews
 from process_s1_scene.GenerateMetadata import GenerateMetadata
 
@@ -18,13 +19,11 @@ from shutil import copy
 log = logging.getLogger('luigi-interface')
 
 @requires(GetInputFileInfo, 
-    ProcessRawToArd, 
+    ReprojectToOSGB, 
     AddMergedOverviews,
     GenerateMetadata)
 class TransferFinalOutput(luigi.Task):
     paths = luigi.DictParameter()
-
-    polarisationProductPattern = "^[\w\/-]+_Gamma0_APGB_OSGB1936_RTC_SpkRL_dB.tif"
 
     def getPathFromProductId(self, root, productId):
         year = productId[4:8]
@@ -33,14 +32,12 @@ class TransferFinalOutput(luigi.Task):
 
         return os.path.join(os.path.join(os.path.join(os.path.join(root, year), month), day), productId)
     
-    def copyPolarisationFiles(self, polarisation, generatedProductPath, processRawToArdInfo, current_progress):
-        p = re.compile(self.polarisationProductPattern)
-
+    def copyPolarisationFiles(self, polarisation, generatedProductPath, reprojectToOSGBInfo, current_progress):
         polarisationPath = os.path.join(generatedProductPath, polarisation)
         if not os.path.exists(polarisationPath):
             os.makedirs(polarisationPath)
 
-        for product in processRawToArdInfo["files"][polarisation]:
+        for product in reprojectToOSGBInfo["reprojectedFiles"][polarisation]:
             if p.match(product):
                 targetPath = os.path.join(polarisationPath, '%s%s' % (self.productId, os.path.basename(product)[27:]))
                 copy(product, targetPath)
@@ -61,9 +58,9 @@ class TransferFinalOutput(luigi.Task):
         with self.input()[0].open('r') as getInputFileInfo:
             inputFileInfo = json.load(getInputFileInfo)
 
-        processRawToArdInfo = {}
-        with self.input()[1].open('r') as processRawToArd:
-            processRawToArdInfo = json.load(processRawToArd)
+        reprojectToOSGBInfo = {}
+        with self.input()[1].open('r') as reprojectToOSGB:
+            reprojectToOSGBInfo = json.load(reprojectToOSGB)
 
         addMergedOverviewsInfo = {}
         with self.input()[2].open('r') as addMergedOverviews:
@@ -83,8 +80,8 @@ class TransferFinalOutput(luigi.Task):
             'metadata' : ''
         }
 
-        self.copyPolarisationFiles("VH", generatedProductPath, processRawToArdInfo, current_progress)
-        self.copyPolarisationFiles("VV", generatedProductPath, processRawToArdInfo, current_progress)
+        self.copyPolarisationFiles("VV", generatedProductPath, reprojectToOSGBInfo, current_progress)
+        self.copyPolarisationFiles("VH", generatedProductPath, reprojectToOSGBInfo, current_progress)
 
         self.copyMergedProduct(addMergedOverviewsInfo["overviewsAddedTo"], generatedProductPath, current_progress)
 

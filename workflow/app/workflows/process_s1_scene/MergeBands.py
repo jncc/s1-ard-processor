@@ -29,9 +29,12 @@ class MergeBands(luigi.Task):
         configureProcessingInfo = {}
         with self.input()[1].open('r') as configureProcessing:
             configureProcessingInfo = json.load(configureProcessing) 
+
+        sourceFiles = (seq(reprojectToOSGBInfo['reprojectedFiles']['VV'])
+            .union(seq(reprojectToOSGBInfo['reprojectedFiles']['VH'])))
         
         checkTasks = []
-        for sourceFile in reprojectToOSGBInfo["reprojectedFiles"]:
+        for sourceFile in sourceFiles:
             checkTasks.append(CheckFileExists(filePath=sourceFile))
 
         inputFileInfo = {}
@@ -40,14 +43,14 @@ class MergeBands(luigi.Task):
 
         yield checkTasks
         
-        srcFiles = seq(reprojectToOSGBInfo["reprojectedFiles"]).reduce(lambda x, f: x + ' ' + f)
+        srcFilesArg = seq(sourceFiles).reduce(lambda x, f: x + ' ' + f)
 
         log.debug('merging files %s', srcFiles)
 
         outputFile = os.path.join(configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"], "{}_APGB_OSGB1936_RTC_SpkRL_dB.tif".format(inputFileInfo["productId"]))
 
         cmdString = 'gdalbuildvrt -separate /vsistdout/ {}|gdal_translate -a_nodata nan -co BIGTIFF=YES -co TILED=YES -co COMPRESS=LZW --config CHECK_DISK_FREE_SPACE no /vsistdin/ {}' \
-            .format(srcFiles, outputFile) 
+            .format(srcFilesArg, outputFile) 
 
         if not self.testProcessing:
             log.info('Creating merged product from Gamma VH & VV bands')
