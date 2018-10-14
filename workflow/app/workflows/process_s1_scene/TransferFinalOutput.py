@@ -13,7 +13,6 @@ from process_s1_scene.ReprojectToOSGB import ReprojectToOSGB
 from process_s1_scene.AddMergedOverviews import AddMergedOverviews
 from process_s1_scene.GenerateMetadata import GenerateMetadata
 
- 
 from shutil import copy
 
 log = logging.getLogger('luigi-interface')
@@ -32,16 +31,15 @@ class TransferFinalOutput(luigi.Task):
 
         return os.path.join(os.path.join(os.path.join(os.path.join(root, year), month), day), productId)
     
-    def copyPolarisationFiles(self, polarisation, generatedProductPath, reprojectToOSGBInfo, current_progress):
+    def copyPolarisationFiles(self, polarisation, generatedProductPath, reprojectToOSGBInfo, current_progress, productId):
         polarisationPath = os.path.join(generatedProductPath, polarisation)
         if not os.path.exists(polarisationPath):
             os.makedirs(polarisationPath)
 
         for product in reprojectToOSGBInfo["reprojectedFiles"][polarisation]:
-            if p.match(product):
-                targetPath = os.path.join(polarisationPath, '%s%s' % (self.productId, os.path.basename(product)[27:]))
-                copy(product, targetPath)
-                current_progress[polarisation].append(targetPath)
+            targetPath = os.path.join(polarisationPath, '%s%s' % (productId, os.path.basename(product)[27:]))
+            copy(product, targetPath)
+            current_progress[polarisation].append(targetPath)
 
     def copyMergedProduct(self, mergedProduct, generatedProductPath, current_progress):
         targetPath = os.path.join(generatedProductPath, os.path.basename(mergedProduct)) 
@@ -80,8 +78,8 @@ class TransferFinalOutput(luigi.Task):
             'metadata' : ''
         }
 
-        self.copyPolarisationFiles("VV", generatedProductPath, reprojectToOSGBInfo, current_progress)
-        self.copyPolarisationFiles("VH", generatedProductPath, reprojectToOSGBInfo, current_progress)
+        self.copyPolarisationFiles("VV", generatedProductPath, reprojectToOSGBInfo, current_progress, inputFileInfo["productId"])
+        self.copyPolarisationFiles("VH", generatedProductPath, reprojectToOSGBInfo, current_progress, inputFileInfo["productId"])
 
         self.copyMergedProduct(addMergedOverviewsInfo["overviewsAddedTo"], generatedProductPath, current_progress)
 
