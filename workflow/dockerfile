@@ -30,6 +30,7 @@ COPY /app/toolchain/scripts /app/toolchain/scripts
 
 # Copy toolchain config
 COPY config/app/toolchain/scripts/JNCC_S1_GRD_configfile_v.1.1.sh /app/toolchain/scripts
+COPY config/app/snap/bin/gpt.vmoptions /app/snap/bin
 
 # Copy workflow requirements
 COPY app/workflows/requirements.txt /app/workflows/

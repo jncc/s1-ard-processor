@@ -15,6 +15,7 @@ log = logging.getLogger('luigi-interface')
 @requires(CutDEM, CopyInputFile)
 class ConfigureProcessing(luigi.Task):
     paths = luigi.DictParameter()
+    memoryLimit = luigi.IntParameter()
 
     def run(self):
         cutDemInfo = {}
@@ -30,14 +31,17 @@ class ConfigureProcessing(luigi.Task):
         log.info('Populating configfile params')
 
         configFilePath = "/app/toolchain/scripts/JNCC_S1_GRD_configfile_v.1.1.sh"
+        vmOptionsFilePath = "/app/snap/bin/gpt.vmoptions"
 
         configuration = {
                 "scriptConfigFilePath" : configFilePath,
+                "vmOptionsFilePath" : vmOptionsFilePath,
                 "parameters" : {
                     "s1_ard_main_dir" : self.paths['working'],
                     "s1_ard_basket_dir" : copyInputFileInfo["tempInputPath"],
                     "s1_ard_ext_dem" : cutDemInfo["cutDemPath"],
-                    "s1_ard_temp_output_dir" : tempOutputPath
+                    "s1_ard_temp_output_dir" : tempOutputPath,
+                    "s1_ard_snap_memory" : self.memoryLimit
                 }
             }
         
@@ -50,10 +54,19 @@ class ConfigureProcessing(luigi.Task):
             configFileContents = configFileContents.replace("{{ s1_ard_basket_dir }}", configuration["parameters"]["s1_ard_basket_dir"])
             configFileContents = configFileContents.replace("{{ s1_ard_ext_dem }}", configuration["parameters"]["s1_ard_ext_dem"])
             configFileContents = configFileContents.replace("{{ s1_ard_temp_output_dir }}", configuration["parameters"]["s1_ard_temp_output_dir"])
-
+            configFileContents = configFileContents.replace("{{ s1_ard_snap_memory }}", configuration["parameters"]["s1_ard_snap_memory"])
 
         with open(configFilePath, 'w') as configFile:
             configFile.write(configFileContents)
+
+        vmOptionsFileContents = ""
+        with open(vmOptionsFilePath, "r") as vmOptionsFile:
+            vmOptionsFileContents = vmOptionsFile.read()
+
+            vmOptionsFileContents = vmOptionsFileContents.replace("{{ s1_ard_snap_memory }}", configuration["parameters"]["s1_ard_snap_memory"])
+
+        with open(vmOptionsFilePath, "w") as vmOptionsFile:
+            vmOptionsFile.write(vmOptionsFileContents)
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps(configuration))

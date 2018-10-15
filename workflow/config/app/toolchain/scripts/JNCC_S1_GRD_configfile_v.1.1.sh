@@ -16,7 +16,7 @@ export PROZIP_DIR="${MAIN_DIR}/zip_processed"  ##== directory where S1.zip data 
 export SCRIPT_DIR="/app/toolchain/scripts"
 export GRAPHSDIR="${SCRIPT_DIR}/xml" ##== DIRECTORY with snap xml graphs for the processing 
 export SNAP_HOME="/app/snap/bin" ##== SNAP (version 6) directory
-export SNAP_OPTS="-J-Xmx16204m -J-Xms4096m -J-XX:-UseGCOverheadLimit" ##== SNAP command line arguments
+export SNAP_OPTS="-J-Xmx{{ s1_ard_snap_memory }}G -J-Xms4G -J-XX:-UseGCOverheadLimit" ##== SNAP command line arguments
 #####============================================================
 ##### STATIC Variable for Log files   
 #####============================================================
