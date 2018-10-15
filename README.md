@@ -109,7 +109,15 @@ Use --no-cache to build from scratch
 
 Run Interactivly:
 
-    docker run  -it --entrypoint /bin/bash -v /home/vagrant/workspace/S1_processing/data/sentinel/1/processing:/data/sentinel/1 -v /home/vagrant/workspace/S1_processing/data/sentinel/1/states:/data/states -v /home/vagrant/workspace/S1_processing/data/sentinel/1/raw:/data/raw -v /home/vagrant/workspace/S1_processing/data/sentinel/1/dem:/data/dem -v /home/vagrant/workspace/S1_processing/data/sentinel/1/processed:/data/processed s1-ard-processor 
+docker run -i --entrypoint /bin/bash 
+    -v /<hostPath>/input:/input 
+    -v /<hostPath>/output:/output 
+    -v /<hostPath>/state:/state 
+    -v /<hostPath>/static:/static 
+    -v /<hostPath>/working:/working 
+    -t jncc/test-s1-ard-processor 
+
+Where <hostpath> is the path on the host to the mounted fole
 
 Convert Docker image to Singularity image
 -----------------------------------------
@@ -137,12 +145,11 @@ Build a Singularity image using your Docker image
 Run:
 
     singularity exec
-        --bind /home/vagrant/workspace/s1_processing/sentinel/1/processing:/data/sentinel/1
-        --bind /home/vagrant/workspace/s1_processing/sentinel/1/states:/data/states
-        --bind /home/vagrant/workspace/s1_processing/sentinel/1/raw:/data/raw
-        --bind /home/vagrant/workspace/s1_processing/sentinel/1/dem:/data/dem
-        --bind /home/vagrant/workspace/s1_processing/sentinel/1/processed:/data/processed
+        -bind /<hostPath>/input:/input 
+        --bind /<hostPath>/output:/output 
+        --bind /<hostPath>/state:/state 
+        --bind /<hostPath>/static:/static 
+        --bind /<hostPath>/working:/working 
         s1-ard-processor.simg /app/exec.sh
-        --productId S1A_20180104_062204_062229
-        --sourceFile '/data/raw/S1A_IW_GRDH_1SDV_20180104T062204_20180104T062229_020001_02211F_43DB.zip'
+        --sourceFile '/S1A_IW_GRDH_1SDV_20180104T062204_20180104T062229_020001_02211F_43DB.zip'
         --outputFile '^[\w\/-]+_Gamma0_APGB_OSGB1936_RTC_SpkRL_dB.tif'

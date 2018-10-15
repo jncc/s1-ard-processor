@@ -2,15 +2,13 @@ import luigi
 import process_s1_scene.common as wc
 import os
 import json
+from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.ProcessRawToArd import ProcessRawToArd
 from process_s1_scene.CheckFileExists import CheckFileExists
 
 @requires(ProcessRawToArd)
-class CheckOutputFilesExist(luigi.Task):
-    pathRoots = luigi.DictParameter()
-    productId = luigi.Parameter()
-    processToS3 = luigi.BoolParameter(default=False)
+class CheckArdFilesExist(luigi.Task):
 
     def run(self):
         processedOutput = {}
@@ -30,10 +28,6 @@ class CheckOutputFilesExist(luigi.Task):
             outFile.write(json.dumps(processedOutput))
 
     def output(self):
-        if self.processToS3:
-            outputFolder = os.path.join(self.pathRoots["state-s3Root"], self.productId)
-            return wc.getS3StateTarget(outputFolder, 'checkOutputFilesExist.json')
-        else:
-            outputFolder = os.path.join(self.pathRoots["state-localRoot"], self.productId)
-            return wc.getLocalStateTarget(outputFolder, 'checkOutputFilesExist.json')
+        outputFile = os.path.join(self.paths["state"], "CheckArdFilesExist.json")
+        return LocalTarget(outputFile)
 

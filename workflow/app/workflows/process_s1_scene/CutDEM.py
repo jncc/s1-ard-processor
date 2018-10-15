@@ -7,76 +7,75 @@ import subprocess
 import xml.etree.ElementTree
 import zipfile
 
-from process_s1_scene.CheckFileExists import CheckFileExists
-from process_s1_scene.GetRawProduct import GetRawProduct
-from process_s1_scene.FetchSourceDEM import FetchSourceDEM
-from luigi.util import inherits
+from process_s1_scene.CreateLocalFile import CreateLocalFile
+from process_s1_scene.GetInputFileInfo import GetInputFileInfo
+from luigi.util import requires
+from luigi import LocalTarget
 
 log = logging.getLogger('luigi-interface')
 
-@inherits(FetchSourceDEM)
-@inherits(GetRawProduct)
+@requires(GetInputFileInfo)
 class CutDEM(luigi.Task):
-    pathRoots = luigi.DictParameter()
-    productId = luigi.Parameter()
+    paths = luigi.DictParameter()
+    inputFileName = luigi.Parameter()
     testProcessing = luigi.BoolParameter()
-    processToS3 = luigi.BoolParameter(default=False)
-
-    def requires(self):
-        t = []
-        t.append(self.clone(FetchSourceDEM))
-        t.append(self.clone(GetRawProduct))
-        return t
+    demFileName = luigi.Parameter()
 
     def run(self):
-        with self.input()[1].open('r') as inFile:
-            downloadedOutput = json.load(inFile)
 
-            if not self.testProcessing:
-                with zipfile.ZipFile(downloadedOutput["tempFile"]) as productZipFile:
-                    with productZipFile.open("%s.SAFE/preview/map-overlay.kml" % os.path.basename(downloadedOutput["tempFile"]).replace(".zip", "")) as overlay:
-                        # Grab first latlong element as there should only be one
-                        coordinatesXMLElement = xml.etree.ElementTree.fromstring(overlay.read().decode("utf-8")).findall(".//Document/Folder/GroundOverlay/gx:LatLonQuad/coordinates", {"gx": "http://www.google.com/kml/ext/2.2"})[0]
-                        coordinates = []
-                        # Push coordinates from XML into array, converting to floats
-                        for coord in coordinatesXMLElement.text.split(' '):
-                            coordinates.append(list(map(lambda x: float(x), coord.split(','))))
-                        # Copy first coordinate to end of list to complete polygon
-                        coordinates.append(coordinates[0])
+        inputFileInfo = {}
+        with self.input().open('r') as getInputFileInfo:
+            inputFileInfo = json.load(getInputFileInfo)
 
-                        with open(os.path.join(self.pathRoots["fileRoot"], "dem/cutline.geojson"), "w") as cutline:
-                            cutline.write(json.dumps({
-                                "type": "polygon",
-                                "coordinates": [coordinates]
-                            }))
+        cutLine = {}
 
-                try:
-                    subprocess.check_output(
-                        "gdalwarp -of GTiff -crop_to_cutline -overwrite --config CHECK_DISK_FREE_SPACE NO -cutline %s %s %s" % (os.path.join(self.pathRoots["fileRoot"], "dem/cutline.geojson"), self.pathRoots['local-dem-path'], os.path.join(self.pathRoots["fileRoot"], "dem/cut_dem.tif")), 
-                        stderr=subprocess.STDOUT,
-                        shell=True)
-                except subprocess.CalledProcessError as e:
-                    errStr = "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output)
-                    log.error(errStr)
-                    raise RuntimeError(errStr)
-            else:
-                wc.createTestFile(os.path.join(self.pathRoots["fileRoot"], "dem/cut_dem.tif"))
+        cutDemPathRoot = wc.createWorkingnewPath(self.paths["working"], 'dem')
+        cutDemPath = os.path.join(cutDemPathRoot, 'cutDem.tif')
+        cutLinePath = os.path.join(cutDemPathRoot, "cutline.geojson") 
+        demPath = os.path.join(self.paths["static"], self.demFileName)
+        
+        inputFilePath = inputFileInfo["inputFilePath"]
 
+        if not self.testProcessing:
 
-            with self.output().open("w") as outFile:
-                outFile.write(json.dumps({
-                    'sourceFile': downloadedOutput["sourceFile"],
-                    'productId': downloadedOutput["productId"],
-                    'productPattern': downloadedOutput["productPattern"],
-                    'cutDEM': os.path.join(self.pathRoots["fileRoot"], "dem/cut_dem.tif"),
-                    'tempFile': downloadedOutput["tempFile"]
-                }))
+            with zipfile.ZipFile(inputFilePath) as productZipFile:
+                with productZipFile.open("%s.SAFE/preview/map-overlay.kml" % os.path.basename(inputFilePath).replace(".zip", "")) as overlay:
+                    # Grab first latlong element as there should only be one
+                    coordinatesXMLElement = xml.etree.ElementTree.fromstring(overlay.read().decode("utf-8")).findall(".//Document/Folder/GroundOverlay/gx:LatLonQuad/coordinates", {"gx": "http://www.google.com/kml/ext/2.2"})[0]
+                    coordinates = []
+                    # Push coordinates from XML into array, converting to floats
+                    for coord in coordinatesXMLElement.text.split(' '):
+                        coordinates.append(list(map(lambda x: float(x), coord.split(','))))
+                    # Copy first coordinate to end of list to complete polygon
+                    coordinates.append(coordinates[0])
 
+                    cutLine = {
+                            "type": "polygon",
+                            "coordinates": [coordinates]
+                        }
+
+                    with open(cutLinePath, "w") as cutlineFile:
+                        cutlineFile.write(json.dumps(cutLine))
+
+            try:
+                subprocess.check_output(
+                    "gdalwarp -of GTiff -crop_to_cutline -overwrite --config CHECK_DISK_FREE_SPACE NO -cutline %s %s %s" % (cutLinePath ,demPath, cutDemPath), 
+                    stderr=subprocess.STDOUT,
+                    shell=True)
+            except subprocess.CalledProcessError as e:
+                errStr = "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output)
+                log.error(errStr)
+                raise RuntimeError(errStr)
+
+        else:
+            yield CreateLocalFile(filePath=cutDemPath, content="TEST_FILE")
+
+        with self.output().open("w") as outFile:
+            outFile.write(json.dumps({
+                'cutDemPath' : cutDemPath,
+                'cutLine' : cutLine
+            }))
 
     def output(self):
-        if self.processToS3:
-            outputFolder = os.path.join(self.pathRoots["state-s3Root"], self.productId)
-            return wc.getS3StateTarget(outputFolder, 'cutDEM.json')
-        else:
-            outputFolder = os.path.join(self.pathRoots["state-localRoot"], self.productId)
-            return wc.getLocalStateTarget(outputFolder, 'cutDEM.json')
+        outFile = os.path.join(self.paths['state'], 'CutDEM.json')
+        return LocalTarget(outFile)

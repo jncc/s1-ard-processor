@@ -26,31 +26,27 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
 # --------- Place machine build layers before this line ---------
 
 # Install snap toolbox scripts.
-COPY /app/toolchain/scripts ./toolchain/scripts
+COPY /app/toolchain/scripts /app/toolchain/scripts
 
 # Copy toolchain config
-COPY config/app/toolchain/scripts/JNCC_S1_GRD_configfile_v.1.1.sh ./toolchain/scripts
+COPY config/app/toolchain/scripts/JNCC_S1_GRD_configfile_v.1.1.sh /app/toolchain/scripts
+COPY config/app/snap/bin/gpt.vmoptions /app/snap/bin
 
-# Create processing paths
-RUN mkdir -p /data/dem/ \
-    && mkdir -p /data/sentinel/1/ \
-    && mkdir /data/raw/ \
-    && mkdir /data/states/ \
-    && mkdir /data/processed/ \
-    && mkdir /data/basket/
-
-# Copy workflows
-COPY /app/workflows ./workflows
-
-# Copy workflow config
-COPY config/app/workflows/luigi.cfg ./workflows
-RUN chmod +r ./workflows/luigi.cfg
+# Copy workflow requirements
+COPY app/workflows/requirements.txt /app/workflows/
 
 # Build virtual env
-COPY config/app/workflows/install-venv.sh ./workflows
+COPY config/app/workflows/install-venv.sh /app/workflows
 RUN chmod +x ./workflows/install-venv.sh \
     && ./workflows/install-venv.sh \
     && rm -f ./workflows/install-venv.sh
+
+# Create processing paths
+RUN mkdir /input/ \
+    && mkdir /static/ \
+    && mkdir /state/ \
+    && mkdir /working/ \
+    && mkdir /output/ 
 
 #Copy the singularity test script
 COPY app/test-luigi.sh ./
@@ -58,5 +54,12 @@ COPY app/test-luigi.sh ./
 #Initialise startup script
 COPY app/exec.sh ./
 RUN chmod +rx /app/exec.sh
+
+# Copy the workflow
+COPY app/workflows ./workflows
+
+# Copy workflow config
+COPY config/app/workflows/luigi.cfg /app/workflows
+RUN chmod +r ./workflows/luigi.cfg
 
 ENTRYPOINT ["/app/exec.sh"]

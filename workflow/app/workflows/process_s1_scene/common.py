@@ -1,6 +1,7 @@
 import logging
 import luigi
 import os
+import shutil
 from datetime import datetime
 from os.path import basename, join
 from luigi.contrib.s3 import S3Target, S3Client
@@ -23,7 +24,7 @@ def getS3StateTarget(targetPath, fileName):
     return getS3Target(targetKey)
 
 def getProductIdFromSourceFile(sourceFile):
-    productFilename = basename(getPathFromS3Path(sourceFile))
+    productFilename = basename(sourceFile)
     return '%s_%s_%s_%s' % (productFilename[0:3], productFilename[17:25], productFilename[26:32], productFilename[42:48])
 
 def getProductPatternFromSourceFile(sourceFile):
@@ -34,3 +35,25 @@ def createTestFile(outputfile):
     os.makedirs(os.path.dirname(outputfile), exist_ok=True)
     with open(outputfile, 'w') as f:
         f.write('TEST_FILE')
+
+
+def createWorkingnewPath(workingPathRoot, workingPath): 
+    newPath = os.path.join(workingPathRoot, workingPath)
+
+    if (os.path.exists(newPath)):
+        #empty out the structure
+        for f in os.listdir(newPath):
+            path = os.path.join(newPath, f)
+
+            if os.path.isfile(path):
+                os.unlink(path)
+            elif os.path.isdir(path):
+                shutil.rmtree(path)
+    else:
+        if not os.path.exists(newPath):
+            os.makedirs(newPath)
+
+    return newPath
+
+
+            

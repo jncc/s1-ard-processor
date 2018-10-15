@@ -9,14 +9,14 @@ export BASKET_INDIR="{{ s1_ard_basket_dir }}" ##== directory containing  S1_GRDH
 export EXTDEMFILE="{{ s1_ard_ext_dem }}" ##== External APGB DEM
 export EXTDEMNOVAL="-32768.0" ## External DEM No data value
 ##### OUTPUT directories
-export MAIN_OUTDIR="${MAIN_DIR}/output"  ##== MAIN OUTPUT DIRECTORY where products output folders will be created 
+export MAIN_OUTDIR="{{ s1_ard_temp_output_dir }}"  ##== MAIN OUTPUT DIRECTORY where products output folders will be created 
 ##### After Processing
 export PROZIP_DIR="${MAIN_DIR}/zip_processed"  ##== directory where S1.zip data are moved after processing
 ##### SW and processing xml chains directories
-export GRAPHSDIR="{{ s1_ard_script_dir }}/xml" ##== DIRECTORY with snap xml graphs for the processing 
-export SNAP_HOME="{{ snap_bin_path }}" ##== SNAP (version 6) directory
-export SNAP_OPTS="-J-Xmx16204m -J-Xms4096m -J-XX:-UseGCOverheadLimit" ##== SNAP command line arguments
-export SCRIPT_DIR="{{ s1_ard_script_dir }}"
+export SCRIPT_DIR="/app/toolchain/scripts"
+export GRAPHSDIR="${SCRIPT_DIR}/xml" ##== DIRECTORY with snap xml graphs for the processing 
+export SNAP_HOME="/app/snap/bin" ##== SNAP (version 6) directory
+export SNAP_OPTS="-J-Xmx{{ s1_ard_snap_memory }}G -J-Xms4G -J-XX:-UseGCOverheadLimit" ##== SNAP command line arguments
 #####============================================================
 ##### STATIC Variable for Log files   
 #####============================================================

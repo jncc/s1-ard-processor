@@ -4,6 +4,7 @@ import logging
 import subprocess
 import os
 import process_s1_scene.common as wc
+from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.MergeBands import MergeBands
 from process_s1_scene.CheckFileExists import CheckFileExists
@@ -12,20 +13,17 @@ log = logging.getLogger('luigi-interface')
 
 @requires(MergeBands)
 class AddMergedOverviews(luigi.Task):
-    pathRoots = luigi.DictParameter()
-    productId = luigi.Parameter()
+    paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
-    processToS3 = luigi.BoolParameter(default=False)
 
     def run(self):
-        spec = {}
-        with self.input().open('r') as i:
-            spec = json.loads(i.read())
+        mergeBandsInfo = {}
+        with self.input().open('r') as mergeBands:
+            mergeBandsInfo = json.load(mergeBands)
         
-        mergedProduct = spec["files"]["merged"]
+        mergedProduct = mergeBandsInfo["mergedOutputFile"]
 
-        t = CheckFileExists(filePath=mergedProduct)
-        yield t
+        yield CheckFileExists(filePath=mergedProduct)
 
         cmdString = 'gdaladdo {} 2 4 8 16 32 64 128'.format(mergedProduct)
 
@@ -33,6 +31,7 @@ class AddMergedOverviews(luigi.Task):
         if not self.testProcessing:
             log.info('Adding overlays to merged file')
             try:
+                cmdString = 'gdaladdo {} 2 4 8 16 32 64 128'.format(mergedProduct)
                 subprocess.check_output(cmdString, shell=True) 
             except subprocess.CalledProcessError as e:
                 errStr = "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output)
@@ -40,13 +39,10 @@ class AddMergedOverviews(luigi.Task):
                 raise RuntimeError(errStr)
 
         with self.output().open('w') as out:
-            out.write(json.dumps(spec))
+            out.write(json.dumps({
+                "overviewsAddedTo" : mergedProduct
+            }))
 
     def output(self):
-        if self.processToS3:
-            outputFolder = os.path.join(self.pathRoots["state-s3Root"], self.productId)
-            return wc.getS3StateTarget(outputFolder, 'addMergedOverviews.json')
-        else:
-            outputFolder = os.path.join(self.pathRoots["state-localRoot"], self.productId)
-            return wc.getLocalStateTarget(outputFolder, 'addMergedOverviews.json')
-        
+        outputFile = os.path.join(self.paths["state"], "AddMergedOverviews.json")
+        return LocalTarget(outputFile)

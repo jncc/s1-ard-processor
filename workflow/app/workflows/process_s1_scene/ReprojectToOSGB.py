@@ -7,79 +7,73 @@ import logging
 import process_s1_scene.common as wc
 import subprocess
 import distutils.dir_util as distutils
+from luigi import LocalTarget
 from luigi.util import requires
 from functional import seq
-from process_s1_scene.CheckOutputFilesExist import CheckOutputFilesExist 
+from process_s1_scene.ProcessRawToArd import ProcessRawToArd 
+from process_s1_scene.CheckArdFilesExist import CheckArdFilesExist 
 
 log = logging.getLogger('luigi-interface')
 
-@requires(CheckOutputFilesExist)
+@requires(ProcessRawToArd, CheckArdFilesExist)
 class ReprojectToOSGB(luigi.Task):
-    sourceFile = luigi.Parameter()
-    pathRoots = luigi.DictParameter()
-    productId = luigi.Parameter()
-    outputFile = luigi.Parameter()
+    paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
-    processToS3 = luigi.BoolParameter(default=False)
 
-    def runReprojection(self):
+    reprojectionFilePattern = "^[\w\/-]+_Gamma0_APGB_UTMWGS84_RTC_SpkRL_dB.tif"
 
-        spec = {}
-        with self.input().open('r') as i:
-            spec = json.loads(i.read())
-
-        wgsOutputFile = self.outputFile.replace("OSGB1936", "UTMWGS84")
-
-        p = re.compile(wgsOutputFile)
-
-        outputFiles = (seq(spec['files']['VV'])
-            .union(seq(spec['files']['VH']))
-            .filter(lambda f: p.match(f)))
-
-        if outputFiles.len() < 1:
-            errorMsg = "Found no files to reproject"
-            log.error(errorMsg)
-            raise RuntimeError(errorMsg)
-        
-        for outputFile in outputFiles:
+    def reprojectPolorisation(self, polarisation, sourceFiles, state):
+        for sourceFile in sourceFiles:
+            outputFile = self.changeFileName(sourceFile)
             if not self.testProcessing:
                 try:
                     subprocess.check_output(
-                        "gdalwarp -overwrite -s_srs EPSG:32630 -t_srs EPSG:27700 -r bilinear -dstnodata 0 -of GTiff -tr 10 10 --config CHECK_DISK_FREE_SPACE NO %s %s" % (outputFile, self.changeWgsToOsgb(outputFile)), 
+                        "gdalwarp -overwrite -s_srs EPSG:32630 -t_srs EPSG:27700 -r bilinear -dstnodata 0 -of GTiff -tr 10 10 --config CHECK_DISK_FREE_SPACE NO %s %s" % (sourceFile, outputFile), 
                         stderr=subprocess.STDOUT,
                         shell=True)
+                    
                 except subprocess.CalledProcessError as e:
                     errStr = "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output)
                     log.error(errStr)
                     raise RuntimeError(errStr)
             else:
-                wc.createTestFile(self.changeWgsToOsgb(outputFile))
+                wc.createTestFile(outputFile)
+            
+            state["reprojectedFiles"][polarisation].append(outputFile)
 
-
-    def changeWgsToOsgb(self, oldFilename):
-        return oldFilename.replace("UTMWGS84", "OSGB1936")
-
+    
+    def changeFileName(self, fileName):
+        return fileName.replace("UTMWGS84", "OSGB1936")
 
     def run(self):
-        inputJson = {}
-        with self.input().open('r') as inFile:
-            state = json.load(inFile)
+        with self.input()[0].open('r') as processRawToArd:
+            processRawToArdInfo = json.load(processRawToArd)
 
-        self.runReprojection()
+        p = re.compile(self.reprojectionFilePattern)
 
-        for index, tifFile in enumerate(state["files"]["VV"]):
-            state["files"]["VV"][index] = self.changeWgsToOsgb(tifFile)
+        state = {
+            "reprojectedFiles": {
+                "VV" : [],
+                "VH" : []
+            }
+        }
+
+        polarisations = ["VV","VH"]
+
+        for polarisation in polarisations:
+            src = (seq(processRawToArdInfo['files'][polarisation])
+                .filter(lambda f: p.match(f)))
+
+            if src.len() < 1:
+                errorMsg = "Found no {0} polarisation files to reproject".format(polarisation)
+                log.error(errorMsg)
+                raise RuntimeError(errorMsg)
         
-        for index, tifFile in enumerate(state["files"]["VH"]):
-            state["files"]["VH"][index] = self.changeWgsToOsgb(tifFile)
+            self.reprojectPolorisation(polarisation, src, state)
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps(state))
                 
     def output(self):
-        if self.processToS3:
-            outputFolder = os.path.join(self.pathRoots["state-s3Root"], self.productId)
-            return wc.getS3StateTarget(outputFolder, 'reprojectToOSGB.json')
-        else:
-            outputFolder = os.path.join(self.pathRoots["state-localRoot"], self.productId)
-            return wc.getLocalStateTarget(outputFolder, 'reprojectToOSGB.json')
+        outputFile = os.path.join(self.paths["state"], 'ReprojectToOSGB.json')
+        return LocalTarget(outputFile)

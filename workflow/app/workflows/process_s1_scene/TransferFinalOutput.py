@@ -4,45 +4,25 @@ import re
 import json
 import logging
 import process_s1_scene.common as wc
-from luigi.util import requires
-from process_s1_scene.AddMergedOverviews import AddMergedOverviews
 from shutil import copyfile
+from luigi import LocalTarget
+from luigi.util import requires
+from process_s1_scene.GetInputFileInfo import GetInputFileInfo
+from process_s1_scene.ProcessRawToArd import ProcessRawToArd
+from process_s1_scene.ReprojectToOSGB import ReprojectToOSGB
+from process_s1_scene.AddMergedOverviews import AddMergedOverviews
+from process_s1_scene.GenerateMetadata import GenerateMetadata
+
+from shutil import copy
 
 log = logging.getLogger('luigi-interface')
 
-@requires(AddMergedOverviews)
+@requires(GetInputFileInfo, 
+    ReprojectToOSGB, 
+    AddMergedOverviews,
+    GenerateMetadata)
 class TransferFinalOutput(luigi.Task):
-    sourceFile = luigi.Parameter()
-    pathRoots = luigi.DictParameter()
-    productId = luigi.Parameter(default=False)
-    outputFile = luigi.Parameter()
-
-    def run(self):
-        with self.input().open('r') as processed:
-
-            current_progress = json.loads(processed.read())
-            current_progress['outputs'] = {
-                'VV': [],
-                'VH': [],
-                'merged' : ''
-            }
-
-            generatedProductPath = self.getPathFromProductId(self.pathRoots["outputRoot"], self.productId)
-
-            self.copyPolarisationFiles("VH", generatedProductPath, current_progress)
-            self.copyPolarisationFiles("VV", generatedProductPath, current_progress)
-
-            product = current_progress['files']['merged']
-            targetPath = os.path.join(generatedProductPath, os.path.basename(product)) 
-            copyfile(product, targetPath)
-            current_progress['outputs']['merged'] = targetPath
-
-            with self.output().open('w') as out:
-                out.write(json.dumps(current_progress))
-
-    def output(self):
-        outputFolder = os.path.join(self.pathRoots["state-localRoot"], self.productId)
-        return wc.getLocalStateTarget(outputFolder, 'transferFinalOutput.json')
+    paths = luigi.DictParameter()
 
     def getPathFromProductId(self, root, productId):
         year = productId[4:8]
@@ -50,16 +30,64 @@ class TransferFinalOutput(luigi.Task):
         day = productId[10:12]
 
         return os.path.join(os.path.join(os.path.join(os.path.join(root, year), month), day), productId)
-
-    def copyPolarisationFiles(self, polarisation, generatedProductPath, current_progress):
-        p = re.compile(self.outputFile)
-
+    
+    def copyPolarisationFiles(self, polarisation, generatedProductPath, reprojectToOSGBInfo, current_progress, productId):
         polarisationPath = os.path.join(generatedProductPath, polarisation)
         if not os.path.exists(polarisationPath):
             os.makedirs(polarisationPath)
 
-        for product in current_progress['files'][polarisation]:
-            if p.match(product):
-                targetPath = os.path.join(polarisationPath, '%s%s' % (self.productId, os.path.basename(product)[27:]))
-                copyfile(product, targetPath)
-                current_progress['outputs'][polarisation].append(targetPath)
+        for product in reprojectToOSGBInfo["reprojectedFiles"][polarisation]:
+            targetPath = os.path.join(polarisationPath, '%s%s' % (productId, os.path.basename(product)[27:]))
+            copy(product, targetPath)
+            current_progress[polarisation].append(targetPath)
+
+    def copyMergedProduct(self, mergedProduct, generatedProductPath, current_progress):
+        targetPath = os.path.join(generatedProductPath, os.path.basename(mergedProduct)) 
+        copy(mergedProduct, targetPath)
+        current_progress["merged"] = targetPath
+
+    def copyMetadata(self, metadata, generatedProductPath, current_progress):
+        targetPath = os.path.join(generatedProductPath, os.path.basename(metadata))
+        copy(metadata, targetPath)
+        current_progress["metadata"] = targetPath
+
+    def run(self):
+        inputFileInfo = {}
+        with self.input()[0].open('r') as getInputFileInfo:
+            inputFileInfo = json.load(getInputFileInfo)
+
+        reprojectToOSGBInfo = {}
+        with self.input()[1].open('r') as reprojectToOSGB:
+            reprojectToOSGBInfo = json.load(reprojectToOSGB)
+
+        addMergedOverviewsInfo = {}
+        with self.input()[2].open('r') as addMergedOverviews:
+            addMergedOverviewsInfo = json.load(addMergedOverviews)
+
+        generateMetadataInfo = {}
+        with self.input()[3].open('r') as generateMetadata:
+            generateMetadataInfo = json.load(generateMetadata)
+
+        generatedProductPath = self.getPathFromProductId(self.paths["output"], inputFileInfo["productId"])
+
+        current_progress = {
+            "outputPath" : generatedProductPath,
+            'VV': [],
+            'VH': [],
+            'merged' : '',
+            'metadata' : ''
+        }
+
+        self.copyPolarisationFiles("VV", generatedProductPath, reprojectToOSGBInfo, current_progress, inputFileInfo["productId"])
+        self.copyPolarisationFiles("VH", generatedProductPath, reprojectToOSGBInfo, current_progress, inputFileInfo["productId"])
+
+        self.copyMergedProduct(addMergedOverviewsInfo["overviewsAddedTo"], generatedProductPath, current_progress)
+
+        self.copyMetadata(generateMetadataInfo["ardMetadataFile"], generatedProductPath, current_progress)
+        
+        with self.output().open("w") as outFile:
+            outFile.write(json.dumps(current_progress))
+
+    def output(self):
+        outFile = os.path.join(self.paths['state'], 'TransferFinalOutput.json')
+        return LocalTarget(outFile)
