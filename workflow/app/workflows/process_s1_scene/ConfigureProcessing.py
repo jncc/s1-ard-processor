@@ -41,7 +41,7 @@ class ConfigureProcessing(luigi.Task):
                     "s1_ard_basket_dir" : copyInputFileInfo["tempInputPath"],
                     "s1_ard_ext_dem" : cutDemInfo["cutDemPath"],
                     "s1_ard_temp_output_dir" : tempOutputPath,
-                    "s1_ard_snap_memory" : self.memoryLimit
+                    "s1_ard_snap_memory" : str(self.memoryLimit)
                 }
             }
         
