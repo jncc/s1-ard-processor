@@ -55,8 +55,6 @@ COPY app/test-luigi.sh ./
 COPY app/exec.sh ./
 RUN chmod +rx /app/exec.sh
 
-ENTRYPOINT ["/app/exec.sh"]
-
 # Copy the workflow
 COPY app/workflows ./workflows
 
@@ -64,3 +62,4 @@ COPY app/workflows ./workflows
 COPY config/app/workflows/luigi.cfg /app/workflows
 RUN chmod +r ./workflows/luigi.cfg
 
+ENTRYPOINT ["/app/exec.sh"]
