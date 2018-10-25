@@ -3,6 +3,7 @@ import os
 import re
 import json
 import logging
+import shutil
 import process_s1_scene.common as wc
 from shutil import copyfile
 from luigi import LocalTarget
@@ -33,8 +34,8 @@ class TransferFinalOutput(luigi.Task):
     
     def copyPolarisationFiles(self, polarisation, generatedProductPath, reprojectToOSGBInfo, current_progress, productId):
         polarisationPath = os.path.join(generatedProductPath, polarisation)
-        if not os.path.exists(polarisationPath):
-            os.makedirs(polarisationPath)
+
+        os.makedirs(polarisationPath)
 
         for product in reprojectToOSGBInfo["reprojectedFiles"][polarisation]:
             targetPath = os.path.join(polarisationPath, '%s%s' % (productId, os.path.basename(product)[27:]))
@@ -69,6 +70,10 @@ class TransferFinalOutput(luigi.Task):
             generateMetadataInfo = json.load(generateMetadata)
 
         generatedProductPath = self.getPathFromProductId(self.paths["output"], inputFileInfo["productId"])
+
+        shutil.rmtree(generatedProductPath, ignore_errors=True)
+
+        os.makedirs(generatedProductPath)
 
         current_progress = {
             "outputPath" : generatedProductPath,
