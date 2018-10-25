@@ -11,6 +11,7 @@ RUN apt-get update && apt-get -y install \
     git \
     bc 
 
+# Install packages from apt
 RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable \
     && add-apt-repository -y ppa:deadsnakes/ppa \
     && apt-get update && apt-get -y install \ 
@@ -34,10 +35,12 @@ COPY /app/toolchain/scripts /app/toolchain/scripts
 
 # Copy toolchain config
 COPY config/app/toolchain/scripts/JNCC_S1_GRD_configfile_v.1.1.sh /app/toolchain/scripts
-COPY config/app/snap/bin/gpt.vmoptions /app/snap/bin
 
 # Copy workflow requirements
 COPY app/workflows/requirements.txt /app/workflows/
+
+# Remove static gpt memory configuration
+RUN rm /app/snap/bin/gpt.vmoptions
 
 # Build virtual env
 COPY config/app/workflows/install-venv.sh /app/workflows
@@ -52,10 +55,10 @@ RUN mkdir /input/ \
     && mkdir /working/ \
     && mkdir /output/ 
 
-#Copy the singularity test script
+# Copy the singularity test script
 COPY app/test-luigi.sh ./
 
-#Initialise startup script
+# Initialise startup script
 COPY app/exec.sh ./
 RUN chmod +rx /app/exec.sh
 
