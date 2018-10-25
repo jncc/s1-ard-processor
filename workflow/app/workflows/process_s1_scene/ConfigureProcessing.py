@@ -30,6 +30,7 @@ class ConfigureProcessing(luigi.Task):
 
         log.info('Populating configfile params')
 
+# todo these two options are probabably no longer needed and can be removed after code checks
         configFilePath = "/app/toolchain/scripts/JNCC_S1_GRD_configfile_v.1.1.sh"
         vmOptionsFilePath = "/app/snap/bin/gpt.vmoptions"
 
