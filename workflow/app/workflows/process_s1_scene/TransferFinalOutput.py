@@ -71,7 +71,9 @@ class TransferFinalOutput(luigi.Task):
 
         generatedProductPath = self.getPathFromProductId(self.paths["output"], inputFileInfo["productId"])
 
-        shutil.rmtree(generatedProductPath, ignore_errors=True)
+        if os.path.exists(generatedProductPath):
+            log.info("Removing product path {} from output folder".format(generatedProductPath))
+            shutil.rmtree(generatedProductPath)
 
         os.makedirs(generatedProductPath)
 
