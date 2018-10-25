@@ -17,7 +17,7 @@ class GetManifest(luigi.Task):
         with self.input().open('r') as getInputFileInfo:
             inputFileInfo = json.load(getInputFileInfo)
 
-        tempManifestFile = os.path.join(wc.createWorkingnewPath(self.paths["working"], "manifest"),"source_manifest.txt")
+        tempManifestFile = os.path.join(wc.createWorkingPath(self.paths["working"], "manifest"),"source_manifest.txt")
 
         rawZip = zipfile.ZipFile(inputFileInfo["inputFilePath"], 'r')
         manifestPath = os.path.join(os.path.splitext(os.path.basename(inputFileInfo["inputFilePath"]))[0]+".SAFE", "manifest.safe")

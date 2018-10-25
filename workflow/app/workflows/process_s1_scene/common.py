@@ -37,7 +37,7 @@ def createTestFile(outputfile):
         f.write('TEST_FILE')
 
 
-def createWorkingnewPath(workingPathRoot, workingPath): 
+def createWorkingPath(workingPathRoot, workingPath): 
     newPath = os.path.join(workingPathRoot, workingPath)
 
     if (os.path.exists(newPath)):

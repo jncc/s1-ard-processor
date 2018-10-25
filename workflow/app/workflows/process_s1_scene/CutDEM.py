@@ -29,7 +29,7 @@ class CutDEM(luigi.Task):
 
         cutLine = {}
 
-        cutDemPathRoot = wc.createWorkingnewPath(self.paths["working"], 'dem')
+        cutDemPathRoot = wc.createWorkingPath(self.paths["working"], 'dem')
         cutDemPath = os.path.join(cutDemPathRoot, 'cutDem.tif')
         cutLinePath = os.path.join(cutDemPathRoot, "cutline.geojson") 
         demPath = os.path.join(self.paths["static"], self.demFileName)

@@ -26,7 +26,7 @@ class ConfigureProcessing(luigi.Task):
         with self.input()[1].open('r') as copyInputFile:
             copyInputFileInfo = json.load(copyInputFile)
 
-        tempOutputPath = wc.createWorkingnewPath(self.paths["working"], "output")
+        tempOutputPath = wc.createWorkingPath(self.paths["working"], "output")
 
         log.info('Populating configfile params')
 
