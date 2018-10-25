@@ -3,6 +3,7 @@ import logging
 import zipfile
 import os
 import json
+import process_s1_scene.common as wc
 from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.GetInputFileInfo import GetInputFileInfo
@@ -16,13 +17,20 @@ class GetManifest(luigi.Task):
         with self.input().open('r') as getInputFileInfo:
             inputFileInfo = json.load(getInputFileInfo)
 
+        tempManifestFile = os.path.join(wc.createWorkingnewPath(self.paths["working"], "manifest"),"source_manifest.txt")
+
         rawZip = zipfile.ZipFile(inputFileInfo["inputFilePath"], 'r')
         manifestPath = os.path.join(os.path.splitext(os.path.basename(inputFileInfo["inputFilePath"]))[0]+".SAFE", "manifest.safe")
         manifest = rawZip.read(manifestPath).decode("utf-8")
-       
+        
+        with open(tempManifestFile,'w') as manifestFile:
+            manifestFile.write(manifest)
+  
         with self.output().open('w') as out:
-            out.write(manifest)
+            out.write(json.dumps({
+                "manifestFile" : tempManifestFile
+            }))
 
     def output(self):
-        outFile = os.path.join(self.paths['working'], 'source_manifest.txt')
+        outFile = os.path.join(self.paths["state"], 'GetManifest.json')
         return LocalTarget(outFile)

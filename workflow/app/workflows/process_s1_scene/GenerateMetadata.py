@@ -7,12 +7,14 @@ import uuid
 import datetime
 import re
 import zipfile
+from string import Template
 from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.GetManifest import GetManifest
 from process_s1_scene.ConfigureProcessing import ConfigureProcessing
 from process_s1_scene.MergeBands import MergeBands
-from string import Template
+from process_s1_scene.CheckFileExists import CheckFileExists
+
 
 log = logging.getLogger('luigi-interface')
 
@@ -22,9 +24,9 @@ class GenerateMetadata(luigi.Task):
     metadataTemplate = luigi.Parameter()
 
     def run(self):
-        manifest = ''
+        getManifestInfo = ''
         with self.input()[0].open('r') as getManifest:
-            manifest = getManifest.read()
+            getManifestInfo = json.load(getManifest)
 
         configureProcessingInfo = {}
         with self.input()[1].open('r') as configureProcessing:
@@ -33,6 +35,13 @@ class GenerateMetadata(luigi.Task):
         mergeBandsInfo = {}
         with self.input()[2].open('r') as mergeBands:
             mergeBandsInfo = json.load(mergeBands)
+
+        manifestLoader = CheckFileExists(filePath=getManifestInfo["manifestFile"])
+        yield manifestLoader
+
+        manifest = ''
+        with manifestLoader.output().open('r') as manifestFile:
+            manifest = manifestFile.read()
 
         dateToday = str(datetime.date.today())
         boundingBox = self.getBoundingBox(manifest)
