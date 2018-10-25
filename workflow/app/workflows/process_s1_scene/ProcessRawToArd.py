@@ -59,9 +59,17 @@ class ProcessRawToArd(luigi.Task):
 
         return expectedOutput
 
-    def runShellScript(self, script, arguments, runAsShell=True):
+    def runShellScript(self, script, arguments, parameters, runAsShell=True):
         os.chdir(self.paths["scripts"])
-        return subprocess.run("sh {0} {1}".format(script, arguments), shell=runAsShell).returncode        
+        env = {
+            "MAIN_DIR" : parameters["s1_ard_main_dir"],
+            "BASKET_INDIR" : parameters["s1_ard_basket_dir"],
+            "EXTDEMFILE" : parameters["s1_ard_ext_dem"],
+            "MAIN_OUTDIR" : parameters["s1_ard_temp_output_dir"],
+            "SNAP_OPTS" : "-J-Xmx{0}G -J-Xms4G -J-XX:-UseGCOverheadLimit".format(parameters["s1_ard_snap_memory"])
+        }
+
+        return subprocess.run("sh {0} {1}".format(script, arguments), env=env, shell=runAsShell).returncode        
 
     def createTestFiles(expectedFiles):
         tasks = []
@@ -95,7 +103,7 @@ class ProcessRawToArd(luigi.Task):
         # Runs shell process to create the ard products
         retcode = 0
         if not self.testProcessing:
-            retcode = self.runShellScript('JNCC_S1_GRD_MAIN_v2.1.1.sh', '1 1 1 1 1 1 2 1 3 1')
+            retcode = self.runShellScript('JNCC_S1_GRD_MAIN_v2.1.1.sh', '1 1 1 1 1 1 2 1 3 1', configureProcessingInfo["parameters"])
         else:
             expectedFiles = expectedOutput["files"]["VV"] + expectedOutput["files"]["VH"]
             self.createTestFiles(expectedFiles)

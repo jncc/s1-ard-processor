@@ -44,29 +44,9 @@ class ConfigureProcessing(luigi.Task):
                     "s1_ard_snap_memory" : str(self.memoryLimit)
                 }
             }
-        
-        configFileContents = ""
 
-        with open(configFilePath, 'r') as configFile:
-            configFileContents = configFile.read()
-        
-            configFileContents = configFileContents.replace("{{ s1_ard_main_dir }}", configuration["parameters"]["s1_ard_main_dir"])
-            configFileContents = configFileContents.replace("{{ s1_ard_basket_dir }}", configuration["parameters"]["s1_ard_basket_dir"])
-            configFileContents = configFileContents.replace("{{ s1_ard_ext_dem }}", configuration["parameters"]["s1_ard_ext_dem"])
-            configFileContents = configFileContents.replace("{{ s1_ard_temp_output_dir }}", configuration["parameters"]["s1_ard_temp_output_dir"])
-            configFileContents = configFileContents.replace("{{ s1_ard_snap_memory }}", configuration["parameters"]["s1_ard_snap_memory"])
-
-        with open(configFilePath, 'w') as configFile:
-            configFile.write(configFileContents)
-
-        vmOptionsFileContents = ""
-        with open(vmOptionsFilePath, "r") as vmOptionsFile:
-            vmOptionsFileContents = vmOptionsFile.read()
-
-            vmOptionsFileContents = vmOptionsFileContents.replace("{{ s1_ard_snap_memory }}", configuration["parameters"]["s1_ard_snap_memory"])
-
-        with open(vmOptionsFilePath, "w") as vmOptionsFile:
-            vmOptionsFile.write(vmOptionsFileContents)
+        if not os.path.isdir(configuration["parameters"]["s1_ard_main_dir"]):
+            raise Exception("Invalid working path: Check working path in paths parameter")
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps(configuration))
