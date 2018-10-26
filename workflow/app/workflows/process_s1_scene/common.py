@@ -50,8 +50,7 @@ def createWorkingPath(workingPathRoot, workingPath):
             elif os.path.isdir(path):
                 shutil.rmtree(path)
     else:
-        if not os.path.exists(newPath):
-            os.makedirs(newPath)
+        os.makedirs(newPath)
 
     return newPath
 

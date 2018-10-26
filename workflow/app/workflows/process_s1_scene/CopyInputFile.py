@@ -20,7 +20,7 @@ class CopyInputFile(luigi.Task):
         with self.input().open('r') as getInputFileInfo:
             inputFileInfo = json.load(getInputFileInfo)
         
-        tempInputPath = wc.createWorkingPath(self.paths["working"], "input")
+        tempInputPath = wc.createWorkingPath(inputFileInfo["workingRoot"], "input")
 
         inputSource = inputFileInfo["inputFilePath"]
         tempTatget = os.path.join(tempInputPath, os.path.basename(inputSource))

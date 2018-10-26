@@ -16,11 +16,13 @@ class GetInputFileInfo(luigi.Task):
         check = CheckFileExists(inputFilePath)
         yield check
 
+        productId = wc.getProductIdFromSourceFile(self.inputFileName),
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
                 "inputFilePath" : inputFilePath,
                 "productPattern" : wc.getProductPatternFromSourceFile(self.inputFileName),
-                "productId" : wc.getProductIdFromSourceFile(self.inputFileName)
+                "productId" : productId
+                "workingRoot" : os.path.join(self.paths["working"], productId)
             }))
 
     def output(self):

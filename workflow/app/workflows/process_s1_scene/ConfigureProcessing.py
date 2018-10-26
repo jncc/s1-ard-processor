@@ -9,10 +9,11 @@ from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.CutDEM import CutDEM
 from process_s1_scene.CopyInputFile import CopyInputFile
+from process_s1_scene.GetInputFileInfo import GetInputFileInfo
 
 log = logging.getLogger('luigi-interface')
 
-@requires(CutDEM, CopyInputFile)
+@requires(CutDEM, CopyInputFile, GetInputFileInfo)
 class ConfigureProcessing(luigi.Task):
     paths = luigi.DictParameter()
     memoryLimit = luigi.IntParameter()
@@ -26,7 +27,11 @@ class ConfigureProcessing(luigi.Task):
         with self.input()[1].open('r') as copyInputFile:
             copyInputFileInfo = json.load(copyInputFile)
 
-        tempOutputPath = wc.createWorkingPath(self.paths["working"], "output")
+        inputFileInfo = {}
+        with self.input()[2].open('r') as getInputFileInfo:
+            inputFileInfo = json.load(getInputFileInfo)
+
+        tempOutputPath = wc.createWorkingPath(inputFileInfo["workingRoot"], "output")
 
         log.info('Populating configfile params')
 
