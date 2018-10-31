@@ -39,7 +39,7 @@ class CutDEM(luigi.Task):
         if not self.testProcessing:
 
             with zipfile.ZipFile(inputFilePath) as productZipFile:
-                with productZipFile.open("%s.SAFE/preview/map-overlay.kml" % os.path.basename(inputFilePath).replace(".zip", "")) as overlay:
+                with productZipFile.open("{}.SAFE/preview/map-overlay.kml".format(os.path.basename(inputFilePath).replace(".zip", ""))) as overlay:
                     # Grab first latlong element as there should only be one
                     coordinatesXMLElement = xml.etree.ElementTree.fromstring(overlay.read().decode("utf-8")).findall(".//Document/Folder/GroundOverlay/gx:LatLonQuad/coordinates", {"gx": "http://www.google.com/kml/ext/2.2"})[0]
                     coordinates = []
@@ -59,7 +59,7 @@ class CutDEM(luigi.Task):
 
             try:
                 subprocess.check_output(
-                    "gdalwarp -of GTiff -crop_to_cutline -overwrite --config CHECK_DISK_FREE_SPACE NO -cutline %s %s %s" % (cutLinePath ,demPath, cutDemPath), 
+                    "gdalwarp -of GTiff -crop_to_cutline -overwrite --config CHECK_DISK_FREE_SPACE NO -cutline {} {} {}".format(cutLinePath ,demPath, cutDemPath), 
                     stderr=subprocess.STDOUT,
                     shell=True)
             except subprocess.CalledProcessError as e:

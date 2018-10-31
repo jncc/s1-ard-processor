@@ -25,11 +25,11 @@ def getS3StateTarget(targetPath, fileName):
 
 def getProductIdFromSourceFile(sourceFile):
     productFilename = basename(sourceFile)
-    return '%s_%s_%s_%s' % (productFilename[0:3], productFilename[17:25], productFilename[26:32], productFilename[42:48])
+    return '{0}_{1}_{2}_{3}'.format(productFilename[0:3], productFilename[17:25], productFilename[26:32], productFilename[42:48])
 
 def getProductPatternFromSourceFile(sourceFile):
     productFilename = basename(sourceFile)
-    return '%s_%s%s%s_%s_%s' % (productFilename[0:3], productFilename[23:25], datetime.strptime(productFilename[21:23], '%m').strftime('%b'), productFilename[17:21], productFilename[26:32], productFilename[42:48])
+    return '{0}_{1}{2}{3}_{4}_{5}'.format(productFilename[0:3], productFilename[23:25], datetime.strptime(productFilename[21:23], '%m').strftime('%b'), productFilename[17:21], productFilename[26:32], productFilename[42:48])
 
 def createTestFile(outputfile):
     os.makedirs(os.path.dirname(outputfile), exist_ok=True)

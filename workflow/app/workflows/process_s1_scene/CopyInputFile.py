@@ -29,7 +29,7 @@ class CopyInputFile(luigi.Task):
             shutil.copy(inputSource, tempTatget)
             log.info("Coppied input file to {}".format(tempTatget))
         except IOError as e:
-            raise("Unable to copy file. %s" % e)
+            raise("Unable to copy file. {}".format(e))
         except:
             raise("Unexpected error:", sys.exc_info())
 

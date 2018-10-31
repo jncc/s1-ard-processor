@@ -14,6 +14,7 @@ from process_s1_scene.CheckFileExists import CheckFileExists
 class VerifyWorkflowOutput(luigi.Task):
     paths = luigi.DictParameter()
     removeInputFile = luigi.BoolParameter()
+    noClean = luigi.BoolParameter()
 
     def run(self):
         transferFinalOutputInfo = {}
@@ -36,13 +37,13 @@ class VerifyWorkflowOutput(luigi.Task):
         yield tasks
 
         removedItems = []
+        if not self.noClean:
+            shutil.rmtree(inputFileInfo["workingRoot"])
+            removedItems.append[inputFileInfo["workingRoot"]]
 
-        shutil.rmtree(inputFileInfo["workingRoot"])
-        removedItems.append[inputFileInfo["workingRoot"]]
-
-        if self.removeInputFile:
-            os.remove(inputFileInfo["inputFilePath"])
-            removedItems.append[inputFileInfo["inputFilePath"]]
+            if self.removeInputFile:
+                os.remove(inputFileInfo["inputFilePath"])
+                removedItems.append[inputFileInfo["inputFilePath"]]
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
