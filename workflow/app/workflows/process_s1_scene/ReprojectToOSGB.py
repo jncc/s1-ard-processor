@@ -29,14 +29,14 @@ class ReprojectToOSGB(luigi.Task):
 
     reprojectionFilePattern = "^[\w\/-]+_Gamma0_APGB_UTMWGS84_RTC_SpkRL_dB.tif"
 
-    def getOutputFileName(inputFileName, polarisation, manifest):
+    def getOutputFileName(self, inputFileName, polarisation, manifest):
         # sourceFile S1A_04Jan2018_062254_062319_VH_Gamma0_APGB_UTMWGS84_RTC_SpkRL_dB.tif
         # inputFile S1A_IW_GRDH_1SDV_20180104T062254_20180104T062319_020001_02211F_A294.zip
 
-        inputFileSegemnts = inputFileName.split('_')
+        inputFileSegments = inputFileName.split('_')
 
-        a = inputFileSegemnts[0]
-        b = inputFileSegemnts[4].split('T')[0] #date part
+        a = inputFileSegments[0]
+        b = inputFileSegments[4].split('T')[0] #date part
 
         c = ''
         absOrbitNo = float(inputFileSegments[6])
@@ -60,14 +60,14 @@ class ReprojectToOSGB(luigi.Task):
             msg = "Invalid orbit direction in manifest, must be ASCENDING or DESCENDING but is {0}".format(orbitDirectionRaw)
             raise Exception(msg)
 
-        e = inputFileSegemnts[4].split('T')[1]
-        f = inputFileSegemnts[5].split('T')[1]
+        e = inputFileSegments[4].split('T')[1]
+        f = inputFileSegments[5].split('T')[1]
         g = polarisation
 
         return "{0}_{1}_{2}_{3}_{4}_{5}_{6}_Gamma-0_GB_OSGB_RCTK_SpkRL".format(a,b,c,d,e,f,g)
 
     def reprojectPolorisation(self, polarisation, sourceFile, state, manifest, inputFileName):
-        outputFile = self.changeFileName(inputFileName, polarisation, manifest)
+        outputFile = self.getOutputFileName(inputFileName, polarisation, manifest)
         
         if not self.testProcessing:
             try:
@@ -85,9 +85,6 @@ class ReprojectToOSGB(luigi.Task):
         
         state["reprojectedFiles"][polarisation].append(outputFile)
 
-    
-    def changeFileName(self, fileName):
-        return fileName.replace("UTMWGS84", "OSGB1936")
 
     def run(self):
         processRawToArdInfo = {}
@@ -127,7 +124,7 @@ class ReprojectToOSGB(luigi.Task):
                 .filter(lambda f: p.match(f))
                 .first())
 
-            if src.len() < 1:
+            if src == '':
                 errorMsg = "Found no {0} polarisation files to reproject".format(polarisation)
                 log.error(errorMsg)
                 raise RuntimeError(errorMsg)
