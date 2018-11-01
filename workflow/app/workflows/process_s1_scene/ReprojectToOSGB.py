@@ -16,12 +16,15 @@ from process_s1_scene.GetManifest import GetManifest
 from process_s1_scene.GetInputFileInfo import GetInputFileInfo
 from process_s1_scene.CheckArdFilesExist import CheckArdFilesExist 
 from process_s1_scene.CheckFileExists import CheckFileExists
+from process_s1_scene.ConfigureProcessing import ConfigureProcessing
+from os.path import join as joinPath
 
 log = logging.getLogger('luigi-interface')
 
 @requires(ProcessRawToArd, 
     GetManifest, 
-    GetInputFileInfo, 
+    GetInputFileInfo,
+    ConfigureProcessing, 
     CheckArdFilesExist)
 class ReprojectToOSGB(luigi.Task):
     paths = luigi.DictParameter()
@@ -30,16 +33,13 @@ class ReprojectToOSGB(luigi.Task):
     reprojectionFilePattern = "^[\w\/-]+_Gamma0_APGB_UTMWGS84_RTC_SpkRL_dB.tif"
 
     def getOutputFileName(self, inputFileName, polarisation, manifest):
-        # sourceFile S1A_04Jan2018_062254_062319_VH_Gamma0_APGB_UTMWGS84_RTC_SpkRL_dB.tif
-        # inputFile S1A_IW_GRDH_1SDV_20180104T062254_20180104T062319_020001_02211F_A294.zip
-
         inputFileSegments = inputFileName.split('_')
 
         a = inputFileSegments[0]
         b = inputFileSegments[4].split('T')[0] #date part
 
         c = ''
-        absOrbitNo = float(inputFileSegments[6])
+        absOrbitNo = int(inputFileSegments[6])
         if a == "S1A":
             c = str(((absOrbitNo - 73) % 175) + 1)
         elif a == "S1B":
@@ -64,11 +64,16 @@ class ReprojectToOSGB(luigi.Task):
         f = inputFileSegments[5].split('T')[1]
         g = polarisation
 
-        return "{0}_{1}_{2}_{3}_{4}_{5}_{6}_Gamma-0_GB_OSGB_RCTK_SpkRL.tif-".format(a,b,c,d,e,f,g)
+        return "{0}_{1}_{2}_{3}_{4}_{5}_{6}_Gamma-0_GB_OSGB_RCTK_SpkRL.tif".format(a,b,c,d,e,f,g)
 
-    def reprojectPolorisation(self, polarisation, sourceFile, state, manifest, inputFileName):
-        outputFile = self.getOutputFileName(inputFileName, polarisation, manifest)
-        
+    def reprojectPolorisation(self, polarisation, sourceFile, state, manifest, inputFileName, outputRoot):
+        outputPath = joinPath(outputRoot, polarisation)
+
+        if not os.path.exists(outputPath):
+            os.makedirs(outputPath)
+
+        outputFile = joinPath(outputPath, self.getOutputFileName(inputFileName, polarisation, manifest))
+
         if not self.testProcessing:
             try:
                 subprocess.check_output(
@@ -99,6 +104,10 @@ class ReprojectToOSGB(luigi.Task):
         with self.input()[2].open('r') as getInputFileInfo:
             inputFileInfo = json.load(getInputFileInfo)
 
+        configureProcessingInfo = {}
+        with self.input()[3].open('r') as configureProcessing:
+            configureProcessingInfo = json.load(configureProcessing) 
+
         manifestLoader = CheckFileExists(filePath=getManifestInfo["manifestFile"])
         yield manifestLoader
 
@@ -119,6 +128,8 @@ class ReprojectToOSGB(luigi.Task):
 
         inputFileName = os.path.basename(inputFileInfo["inputFilePath"])
 
+        outputRoot = configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"]
+
         for polarisation in polarisations:
             src = (seq(processRawToArdInfo['files'][polarisation])
                 .filter(lambda f: p.match(f))
@@ -129,7 +140,7 @@ class ReprojectToOSGB(luigi.Task):
                 log.error(errorMsg)
                 raise RuntimeError(errorMsg)
         
-            self.reprojectPolorisation(polarisation, src, state, manifest, inputFileName)
+            self.reprojectPolorisation(polarisation, src, state, manifest, inputFileName, outputRoot)
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps(state))

@@ -38,7 +38,7 @@ class TransferFinalOutput(luigi.Task):
         os.makedirs(polarisationPath)
 
         for product in reprojectToOSGBInfo["reprojectedFiles"][polarisation]:
-            targetPath = os.path.join(polarisationPath, '{}{}'.format(productId, os.path.basename(product)[27:]))
+            targetPath = os.path.join(polarisationPath, '{}'.format(os.path.basename(product)))
             copy(product, targetPath)
             current_progress[polarisation].append(targetPath)
 
