@@ -41,9 +41,9 @@ class ReprojectToOSGB(luigi.Task):
         c = ''
         absOrbitNo = float(inputFileSegments[6])
         if a == "S1A":
-            c = str((absOrbitNo - 73 % 175) + 1)
+            c = str(((absOrbitNo - 73) % 175) + 1)
         elif a == "S1B":
-            c = str((absOrbitNo - 27 % 175) + 1)
+            c = str(((absOrbitNo - 27) % 175) + 1)
         else:
             msg = "Invalid input file name, should begin S1A or S1B not {0}".format(a)
             raise Exception(msg)
@@ -64,7 +64,7 @@ class ReprojectToOSGB(luigi.Task):
         f = inputFileSegments[5].split('T')[1]
         g = polarisation
 
-        return "{0}_{1}_{2}_{3}_{4}_{5}_{6}_Gamma-0_GB_OSGB_RCTK_SpkRL".format(a,b,c,d,e,f,g)
+        return "{0}_{1}_{2}_{3}_{4}_{5}_{6}_Gamma-0_GB_OSGB_RCTK_SpkRL.tif-".format(a,b,c,d,e,f,g)
 
     def reprojectPolorisation(self, polarisation, sourceFile, state, manifest, inputFileName):
         outputFile = self.getOutputFileName(inputFileName, polarisation, manifest)
