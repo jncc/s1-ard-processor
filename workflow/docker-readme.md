@@ -8,7 +8,7 @@ It is designed to generate data in the OSGB projection.
 
 It can run standalone or with a central scheduler.
 
-This container derives from the jncc/snap-base:latest container that provides SNAP.
+This container derives from the [jncc/snap-base:latest](https://hub.docker.com/r/jncc/snap-base/) container that provides SNAP.
 
 # Mount points
 
