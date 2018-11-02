@@ -37,13 +37,13 @@ class VerifyWorkflowOutput(luigi.Task):
         yield tasks
 
         removedItems = []
-        if not self.noClean:
+        if (not self.noClean) and os.path.exists(configuration["workingRoot"):
             shutil.rmtree(configuration["workingRoot"])
             removedItems.append(configuration["workingRoot"])
 
-            if self.removeInputFile:
-                os.remove(configuration["inputFilePath"])
-                removedItems.append(configuration["inputFilePath"])
+        if self.removeInputFile and os.path.isfile(configuration["inputFilePath"]): 
+            os.remove(configuration["inputFilePath"])
+            removedItems.append(configuration["inputFilePath"])
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
