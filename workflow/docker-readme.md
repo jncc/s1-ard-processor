@@ -32,7 +32,10 @@ VerifyWorkflowOutput is the luigi task that requries all processing steps to be 
 
 ## Example:
 
-   docker run -i -v /data/input:/input -v /data/output:/output -v /data/state:/state -v /data/static:/static -v /data/working:/working jncc/test-s1-ard-processor VerifyWorkflowOutput --inputFileName=S1A_IW_GRDH_1SDV_20180104T062254_20180104T062319_020001_02211F_A294.zip --demFile=DTM_UK_10m_WGS84_CompImg_S1vers3.tif --noClean --local-scheduler
+```
+docker run -i -v /data/input:/input -v /data/output:/output -v /data/state:/state -v /data/static:/static -v 
+ data/working:/working jncc/test-s1-ard-processor VerifyWorkflowOutput --inputFileName=S1A_IW_GRDH_1SDV_20180104T062254_20180104T062319_020001_02211F_A294.zip --demFile=DTM_UK_10m_WGS84_CompImg_S1vers3.tif --noClean --local-scheduler
+```
 
 ## Luigi options
 
