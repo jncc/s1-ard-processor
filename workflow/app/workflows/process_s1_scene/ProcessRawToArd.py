@@ -10,13 +10,13 @@ from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.ConfigureProcessing import ConfigureProcessing
 from process_s1_scene.CutDEM import CutDEM
-from process_s1_scene.GetInputFileInfo import GetInputFileInfo
+from process_s1_scene.GetConfiguration import GetConfiguration
 from process_s1_scene.CheckFileExists import CheckFileExists
 from process_s1_scene.CreateLocalFile import CreateLocalFile
 
 log = logging.getLogger('luigi-interface')
 
-@requires(CutDEM, GetInputFileInfo, ConfigureProcessing)
+@requires(CutDEM, GetConfiguration, ConfigureProcessing)
 class ProcessRawToArd(luigi.Task):
     paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
@@ -87,16 +87,16 @@ class ProcessRawToArd(luigi.Task):
         dem = cutDEMInfo["cutDemPath"]
         yield CheckFileExists(filePath=dem)
         
-        inputFileInfo = {}
-        with self.input()[1].open('r') as getInputFileInfo:
-            inputFileInfo = json.load(getInputFileInfo)
+        configuration = {}
+        with self.input()[1].open('r') as getConfiguration:
+            configuration = json.load(getConfiguration)
 
         configureProcessingInfo = {}
         with self.input()[2].open('r') as configureProcessing:
             configureProcessingInfo = json.load(configureProcessing)
        
         outputRoot = configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"]
-        productPattern = inputFileInfo["productPattern"]
+        productPattern = configuration["productPattern"]
 
         expectedOutput = self.getExpectedOutput(productPattern, outputRoot)
         

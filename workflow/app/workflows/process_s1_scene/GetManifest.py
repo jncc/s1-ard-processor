@@ -6,21 +6,21 @@ import json
 import process_s1_scene.common as wc
 from luigi import LocalTarget
 from luigi.util import requires
-from process_s1_scene.GetInputFileInfo import GetInputFileInfo
+from process_s1_scene.GetConfiguration import GetConfiguration
 
-@requires(GetInputFileInfo)
+@requires(GetConfiguration)
 class GetManifest(luigi.Task):
     paths = luigi.DictParameter()
 
     def run(self):
-        inputFileInfo = {}
-        with self.input().open('r') as getInputFileInfo:
-            inputFileInfo = json.load(getInputFileInfo)
+        configuration = {}
+        with self.input().open('r') as getConfiguration:
+            configuration = json.load(getConfiguration)
 
-        tempManifestFile = os.path.join(wc.createWorkingPath(inputFileInfo["workingRoot"], "manifest"),"source_manifest.txt")
+        tempManifestFile = os.path.join(wc.createWorkingPath(configuration["workingRoot"], "manifest"),"source_manifest.txt")
 
-        rawZip = zipfile.ZipFile(inputFileInfo["inputFilePath"], 'r')
-        manifestPath = os.path.join(os.path.splitext(os.path.basename(inputFileInfo["inputFilePath"]))[0]+".SAFE", "manifest.safe")
+        rawZip = zipfile.ZipFile(configuration["inputFilePath"], 'r')
+        manifestPath = os.path.join(os.path.splitext(os.path.basename(configuration["inputFilePath"]))[0]+".SAFE", "manifest.safe")
         manifest = rawZip.read(manifestPath).decode("utf-8")
         
         with open(tempManifestFile,'w') as manifestFile:

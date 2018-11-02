@@ -8,13 +8,13 @@ import xml.etree.ElementTree
 import zipfile
 
 from process_s1_scene.CreateLocalFile import CreateLocalFile
-from process_s1_scene.GetInputFileInfo import GetInputFileInfo
+from process_s1_scene.GetConfiguration import GetConfiguration
 from luigi.util import requires
 from luigi import LocalTarget
 
 log = logging.getLogger('luigi-interface')
 
-@requires(GetInputFileInfo)
+@requires(GetConfiguration)
 class CutDEM(luigi.Task):
     paths = luigi.DictParameter()
     inputFileName = luigi.Parameter()
@@ -23,18 +23,18 @@ class CutDEM(luigi.Task):
 
     def run(self):
 
-        inputFileInfo = {}
-        with self.input().open('r') as getInputFileInfo:
-            inputFileInfo = json.load(getInputFileInfo)
+        configuration = {}
+        with self.input().open('r') as getConfiguration:
+            configuration = json.load(getConfiguration)
 
         cutLine = {}
 
-        cutDemPathRoot = wc.createWorkingPath(inputFileInfo["workingRoot"], 'dem')
+        cutDemPathRoot = wc.createWorkingPath(configuration["workingRoot"], 'dem')
         cutDemPath = os.path.join(cutDemPathRoot, 'cutDem.tif')
         cutLinePath = os.path.join(cutDemPathRoot, "cutline.geojson") 
         demPath = os.path.join(self.paths["static"], self.demFileName)
         
-        inputFilePath = inputFileInfo["inputFilePath"]
+        inputFilePath = configuration["inputFilePath"]
 
         if not self.testProcessing:
 

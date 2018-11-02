@@ -13,7 +13,7 @@ from luigi.util import requires
 from functional import seq
 from process_s1_scene.ProcessRawToArd import ProcessRawToArd 
 from process_s1_scene.GetManifest import GetManifest
-from process_s1_scene.GetInputFileInfo import GetInputFileInfo
+from process_s1_scene.GetConfiguration import GetConfiguration
 from process_s1_scene.CheckArdFilesExist import CheckArdFilesExist 
 from process_s1_scene.CheckFileExists import CheckFileExists
 from process_s1_scene.ConfigureProcessing import ConfigureProcessing
@@ -23,7 +23,7 @@ log = logging.getLogger('luigi-interface')
 
 @requires(ProcessRawToArd, 
     GetManifest, 
-    GetInputFileInfo,
+    GetConfiguration,
     ConfigureProcessing, 
     CheckArdFilesExist)
 class ReprojectToOSGB(luigi.Task):
@@ -100,9 +100,9 @@ class ReprojectToOSGB(luigi.Task):
         with self.input()[1].open('r') as getManifest:
             getManifestInfo = json.load(getManifest)
 
-        inputFileInfo = {}
-        with self.input()[2].open('r') as getInputFileInfo:
-            inputFileInfo = json.load(getInputFileInfo)
+        configuration = {}
+        with self.input()[2].open('r') as getConfiguration:
+            configuration = json.load(getConfiguration)
 
         configureProcessingInfo = {}
         with self.input()[3].open('r') as configureProcessing:
@@ -126,7 +126,7 @@ class ReprojectToOSGB(luigi.Task):
 
         polarisations = ["VV","VH"]
 
-        inputFileName = os.path.basename(inputFileInfo["inputFilePath"])
+        inputFileName = os.path.basename(configuration["inputFilePath"])
 
         outputRoot = configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"]
 

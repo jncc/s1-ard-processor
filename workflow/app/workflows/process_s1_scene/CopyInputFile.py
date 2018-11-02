@@ -7,22 +7,22 @@ import process_s1_scene.common as wc
 
 from luigi import LocalTarget
 from luigi.util import requires
-from process_s1_scene.GetInputFileInfo import GetInputFileInfo
+from process_s1_scene.GetConfiguration import GetConfiguration
 
 log = logging.getLogger('luigi-interface')
 
-@requires(GetInputFileInfo)
+@requires(GetConfiguration)
 class CopyInputFile(luigi.Task):
     paths = luigi.DictParameter()
 
     def run(self):
-        inputFileInfo = {}
-        with self.input().open('r') as getInputFileInfo:
-            inputFileInfo = json.load(getInputFileInfo)
+        configuration = {}
+        with self.input().open('r') as getConfiguration:
+            configuration = json.load(getConfiguration)
         
-        tempInputPath = wc.createWorkingPath(inputFileInfo["workingRoot"], "input")
+        tempInputPath = wc.createWorkingPath(configuration["workingRoot"], "input")
 
-        inputSource = inputFileInfo["inputFilePath"]
+        inputSource = configuration["inputFilePath"]
         tempTatget = os.path.join(tempInputPath, os.path.basename(inputSource))
 
         try:

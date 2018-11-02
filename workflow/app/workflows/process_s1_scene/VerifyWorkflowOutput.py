@@ -7,10 +7,10 @@ import shutil
 from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.TransferFinalOutput import TransferFinalOutput
-from process_s1_scene.GetInputFileInfo import GetInputFileInfo
+from process_s1_scene.GetConfiguration import GetConfiguration
 from process_s1_scene.CheckFileExists import CheckFileExists
 
-@requires(TransferFinalOutput, GetInputFileInfo)
+@requires(TransferFinalOutput, GetConfiguration)
 class VerifyWorkflowOutput(luigi.Task):
     paths = luigi.DictParameter()
     removeInputFile = luigi.BoolParameter()
@@ -21,9 +21,9 @@ class VerifyWorkflowOutput(luigi.Task):
         with self.input()[0].open('r') as transferFinalOutput:
             transferFinalOutputInfo = json.load(transferFinalOutput)
 
-        inputFileInfo = {}
-        with self.input()[1].open('r') as getInputFileInfo:
-            inputFileInfo = json.load(getInputFileInfo)
+        configuration = {}
+        with self.input()[1].open('r') as getConfiguration:
+            configuration = json.load(getConfiguration)
 
         outputFiles = transferFinalOutputInfo["VV"] + transferFinalOutputInfo["VH"]
         outputFiles.append(transferFinalOutputInfo["merged"])
@@ -38,12 +38,12 @@ class VerifyWorkflowOutput(luigi.Task):
 
         removedItems = []
         if not self.noClean:
-            shutil.rmtree(inputFileInfo["workingRoot"])
-            removedItems.append[inputFileInfo["workingRoot"]]
+            shutil.rmtree(configuration["workingRoot"])
+            removedItems.append[configuration["workingRoot"]]
 
             if self.removeInputFile:
-                os.remove(inputFileInfo["inputFilePath"])
-                removedItems.append[inputFileInfo["inputFilePath"]]
+                os.remove(configuration["inputFilePath"])
+                removedItems.append[configuration["inputFilePath"]]
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
