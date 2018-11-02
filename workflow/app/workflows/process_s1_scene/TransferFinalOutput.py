@@ -25,13 +25,6 @@ log = logging.getLogger('luigi-interface')
 class TransferFinalOutput(luigi.Task):
     paths = luigi.DictParameter()
 
-    def getPathFromProductId(self, root, productId):
-        year = productId[4:8]
-        month = productId[8:10]
-        day = productId[10:12]
-
-        return os.path.join(os.path.join(os.path.join(os.path.join(root, year), month), day), productId)
-    
     def copyPolarisationFiles(self, polarisation, generatedProductPath, reprojectToOSGBInfo, current_progress, productId):
         polarisationPath = os.path.join(generatedProductPath, polarisation)
 
@@ -69,28 +62,28 @@ class TransferFinalOutput(luigi.Task):
         with self.input()[3].open('r') as generateMetadata:
             generateMetadataInfo = json.load(generateMetadata)
 
-        generatedProductPath = self.getPathFromProductId(self.paths["output"], configuration["productId"])
+        outputPath = configuration["outputPath"]
 
-        if os.path.exists(generatedProductPath):
-            log.info("Removing product path {} from output folder".format(generatedProductPath))
-            shutil.rmtree(generatedProductPath)
+        if os.path.exists(outputPath):
+            log.info("Removing product path {} from output folder".format(outputPath))
+            shutil.rmtree(outputPath)
 
-        os.makedirs(generatedProductPath)
+        os.makedirs(outputPath)
 
         current_progress = {
-            "outputPath" : generatedProductPath,
+            "outputPath" : outputPath,
             'VV': [],
             'VH': [],
             'merged' : '',
             'metadata' : ''
         }
 
-        self.copyPolarisationFiles("VV", generatedProductPath, reprojectToOSGBInfo, current_progress, configuration["productId"])
-        self.copyPolarisationFiles("VH", generatedProductPath, reprojectToOSGBInfo, current_progress, configuration["productId"])
+        self.copyPolarisationFiles("VV", outputPath, reprojectToOSGBInfo, current_progress, configuration["productId"])
+        self.copyPolarisationFiles("VH", outputPath, reprojectToOSGBInfo, current_progress, configuration["productId"])
 
-        self.copyMergedProduct(addMergedOverviewsInfo["overviewsAddedTo"], generatedProductPath, current_progress)
+        self.copyMergedProduct(addMergedOverviewsInfo["overviewsAddedTo"], outputPath, current_progress)
 
-        self.copyMetadata(generateMetadataInfo["ardMetadataFile"], generatedProductPath, current_progress)
+        self.copyMetadata(generateMetadataInfo["ardMetadataFile"], outputPath, current_progress)
         
         with self.output().open("w") as outFile:
             outFile.write(json.dumps(current_progress))

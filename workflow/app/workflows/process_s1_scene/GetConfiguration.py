@@ -32,10 +32,10 @@ class GetConfiguration(luigi.Task):
                 "productPattern" : wc.getProductPatternFromSourceFile(self.inputFileName),
                 "productId" : productId,
                 "workingRoot" : os.path.join(self.paths['working'], productId),
-                "copyState" : str(not noStateCopy),
+                "noCopyState" : self.noStateCopy,
                 "outputPath" : self.getOutputPathFromProductId(self.paths['output'], productId)
             }))
 
     def output(self):
-        outFile = os.path.join(self.paths['state'], 'Configuration.json')
+        outFile = os.path.join(self.paths['state'], 'GetConfiguration.json')
         return LocalTarget(outFile)

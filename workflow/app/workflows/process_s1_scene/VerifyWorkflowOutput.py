@@ -39,11 +39,11 @@ class VerifyWorkflowOutput(luigi.Task):
         removedItems = []
         if not self.noClean:
             shutil.rmtree(configuration["workingRoot"])
-            removedItems.append[configuration["workingRoot"]]
+            removedItems.append(configuration["workingRoot"])
 
             if self.removeInputFile:
                 os.remove(configuration["inputFilePath"])
-                removedItems.append[configuration["inputFilePath"]]
+                removedItems.append(configuration["inputFilePath"])
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
