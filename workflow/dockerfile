@@ -61,6 +61,7 @@ COPY app/test-luigi.sh ./
 # Initialise startup script
 COPY app/exec.sh ./
 RUN chmod +rx /app/exec.sh
+COPY app/CopyState.py ./
 
 # Copy the workflow
 COPY app/workflows ./workflows

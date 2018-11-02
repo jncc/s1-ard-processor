@@ -8,13 +8,13 @@ import xml.etree.ElementTree
 import zipfile
 
 from process_s1_scene.CreateLocalFile import CreateLocalFile
-from process_s1_scene.GetInputFileInfo import GetInputFileInfo
+from process_s1_scene.GetConfiguration import GetConfiguration
 from luigi.util import requires
 from luigi import LocalTarget
 
 log = logging.getLogger('luigi-interface')
 
-@requires(GetInputFileInfo)
+@requires(GetConfiguration)
 class CutDEM(luigi.Task):
     paths = luigi.DictParameter()
     inputFileName = luigi.Parameter()
@@ -23,23 +23,23 @@ class CutDEM(luigi.Task):
 
     def run(self):
 
-        inputFileInfo = {}
-        with self.input().open('r') as getInputFileInfo:
-            inputFileInfo = json.load(getInputFileInfo)
+        configuration = {}
+        with self.input().open('r') as getConfiguration:
+            configuration = json.load(getConfiguration)
 
         cutLine = {}
 
-        cutDemPathRoot = wc.createWorkingPath(inputFileInfo["workingRoot"], 'dem')
+        cutDemPathRoot = wc.createWorkingPath(configuration["workingRoot"], 'dem')
         cutDemPath = os.path.join(cutDemPathRoot, 'cutDem.tif')
         cutLinePath = os.path.join(cutDemPathRoot, "cutline.geojson") 
         demPath = os.path.join(self.paths["static"], self.demFileName)
         
-        inputFilePath = inputFileInfo["inputFilePath"]
+        inputFilePath = configuration["inputFilePath"]
 
         if not self.testProcessing:
 
             with zipfile.ZipFile(inputFilePath) as productZipFile:
-                with productZipFile.open("%s.SAFE/preview/map-overlay.kml" % os.path.basename(inputFilePath).replace(".zip", "")) as overlay:
+                with productZipFile.open("{}.SAFE/preview/map-overlay.kml".format(os.path.basename(inputFilePath).replace(".zip", ""))) as overlay:
                     # Grab first latlong element as there should only be one
                     coordinatesXMLElement = xml.etree.ElementTree.fromstring(overlay.read().decode("utf-8")).findall(".//Document/Folder/GroundOverlay/gx:LatLonQuad/coordinates", {"gx": "http://www.google.com/kml/ext/2.2"})[0]
                     coordinates = []
@@ -59,7 +59,7 @@ class CutDEM(luigi.Task):
 
             try:
                 subprocess.check_output(
-                    "gdalwarp -of GTiff -crop_to_cutline -overwrite --config CHECK_DISK_FREE_SPACE NO -cutline %s %s %s" % (cutLinePath ,demPath, cutDemPath), 
+                    "gdalwarp -of GTiff -crop_to_cutline -overwrite --config CHECK_DISK_FREE_SPACE NO -cutline {} {} {}".format(cutLinePath ,demPath, cutDemPath), 
                     stderr=subprocess.STDOUT,
                     shell=True)
             except subprocess.CalledProcessError as e:

@@ -9,11 +9,11 @@ from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.CutDEM import CutDEM
 from process_s1_scene.CopyInputFile import CopyInputFile
-from process_s1_scene.GetInputFileInfo import GetInputFileInfo
+from process_s1_scene.GetConfiguration import GetConfiguration
 
 log = logging.getLogger('luigi-interface')
 
-@requires(CutDEM, CopyInputFile, GetInputFileInfo)
+@requires(CutDEM, CopyInputFile, GetConfiguration)
 class ConfigureProcessing(luigi.Task):
     paths = luigi.DictParameter()
     memoryLimit = luigi.IntParameter()
@@ -27,11 +27,11 @@ class ConfigureProcessing(luigi.Task):
         with self.input()[1].open('r') as copyInputFile:
             copyInputFileInfo = json.load(copyInputFile)
 
-        inputFileInfo = {}
-        with self.input()[2].open('r') as getInputFileInfo:
-            inputFileInfo = json.load(getInputFileInfo)
+        configuration = {}
+        with self.input()[2].open('r') as getConfiguration:
+            configuration = json.load(getConfiguration)
 
-        tempOutputPath = wc.createWorkingPath(inputFileInfo["workingRoot"], "output")
+        tempOutputPath = wc.createWorkingPath(configuration["workingRoot"], "output")
 
         log.info('Populating configfile params')
 
@@ -39,11 +39,11 @@ class ConfigureProcessing(luigi.Task):
         configFilePath = "/app/toolchain/scripts/JNCC_S1_GRD_configfile_v.1.1.sh"
         vmOptionsFilePath = "/app/snap/bin/gpt.vmoptions"
 
-        configuration = {
+        processingConfiguration = {
                 "scriptConfigFilePath" : configFilePath,
                 "vmOptionsFilePath" : vmOptionsFilePath,
                 "parameters" : {
-                    "s1_ard_main_dir" : self.paths['working'],
+                    "s1_ard_main_dir" : configuration["workingRoot"],
                     "s1_ard_basket_dir" : copyInputFileInfo["tempInputPath"],
                     "s1_ard_ext_dem" : cutDemInfo["cutDemPath"],
                     "s1_ard_temp_output_dir" : tempOutputPath,
@@ -51,11 +51,11 @@ class ConfigureProcessing(luigi.Task):
                 }
             }
 
-        if not os.path.isdir(configuration["parameters"]["s1_ard_main_dir"]):
+        if not os.path.isdir(processingConfiguration["parameters"]["s1_ard_main_dir"]):
             raise Exception("Invalid working path: Check working path in paths parameter")
 
         with self.output().open("w") as outFile:
-            outFile.write(json.dumps(configuration))
+            outFile.write(json.dumps(processingConfiguration))
                 
     def output(self):
         outFile = os.path.join(self.paths["state"], 'ConfigureProcessing.json')

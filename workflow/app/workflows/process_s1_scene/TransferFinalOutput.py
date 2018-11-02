@@ -8,7 +8,7 @@ import process_s1_scene.common as wc
 from shutil import copyfile
 from luigi import LocalTarget
 from luigi.util import requires
-from process_s1_scene.GetInputFileInfo import GetInputFileInfo
+from process_s1_scene.GetConfiguration import GetConfiguration
 from process_s1_scene.ProcessRawToArd import ProcessRawToArd
 from process_s1_scene.ReprojectToOSGB import ReprojectToOSGB
 from process_s1_scene.AddMergedOverviews import AddMergedOverviews
@@ -18,27 +18,20 @@ from shutil import copy
 
 log = logging.getLogger('luigi-interface')
 
-@requires(GetInputFileInfo, 
+@requires(GetConfiguration, 
     ReprojectToOSGB, 
     AddMergedOverviews,
     GenerateMetadata)
 class TransferFinalOutput(luigi.Task):
     paths = luigi.DictParameter()
 
-    def getPathFromProductId(self, root, productId):
-        year = productId[4:8]
-        month = productId[8:10]
-        day = productId[10:12]
-
-        return os.path.join(os.path.join(os.path.join(os.path.join(root, year), month), day), productId)
-    
     def copyPolarisationFiles(self, polarisation, generatedProductPath, reprojectToOSGBInfo, current_progress, productId):
         polarisationPath = os.path.join(generatedProductPath, polarisation)
 
         os.makedirs(polarisationPath)
 
         for product in reprojectToOSGBInfo["reprojectedFiles"][polarisation]:
-            targetPath = os.path.join(polarisationPath, '%s%s' % (productId, os.path.basename(product)[27:]))
+            targetPath = os.path.join(polarisationPath, '{}'.format(os.path.basename(product)))
             copy(product, targetPath)
             current_progress[polarisation].append(targetPath)
 
@@ -53,9 +46,9 @@ class TransferFinalOutput(luigi.Task):
         current_progress["metadata"] = targetPath
 
     def run(self):
-        inputFileInfo = {}
-        with self.input()[0].open('r') as getInputFileInfo:
-            inputFileInfo = json.load(getInputFileInfo)
+        configuration = {}
+        with self.input()[0].open('r') as getConfiguration:
+            configuration = json.load(getConfiguration)
 
         reprojectToOSGBInfo = {}
         with self.input()[1].open('r') as reprojectToOSGB:
@@ -69,28 +62,28 @@ class TransferFinalOutput(luigi.Task):
         with self.input()[3].open('r') as generateMetadata:
             generateMetadataInfo = json.load(generateMetadata)
 
-        generatedProductPath = self.getPathFromProductId(self.paths["output"], inputFileInfo["productId"])
+        outputPath = configuration["outputPath"]
 
-        if os.path.exists(generatedProductPath):
-            log.info("Removing product path {} from output folder".format(generatedProductPath))
-            shutil.rmtree(generatedProductPath)
+        if os.path.exists(outputPath):
+            log.info("Removing product path {} from output folder".format(outputPath))
+            shutil.rmtree(outputPath)
 
-        os.makedirs(generatedProductPath)
+        os.makedirs(outputPath)
 
         current_progress = {
-            "outputPath" : generatedProductPath,
+            "outputPath" : outputPath,
             'VV': [],
             'VH': [],
             'merged' : '',
             'metadata' : ''
         }
 
-        self.copyPolarisationFiles("VV", generatedProductPath, reprojectToOSGBInfo, current_progress, inputFileInfo["productId"])
-        self.copyPolarisationFiles("VH", generatedProductPath, reprojectToOSGBInfo, current_progress, inputFileInfo["productId"])
+        self.copyPolarisationFiles("VV", outputPath, reprojectToOSGBInfo, current_progress, configuration["productId"])
+        self.copyPolarisationFiles("VH", outputPath, reprojectToOSGBInfo, current_progress, configuration["productId"])
 
-        self.copyMergedProduct(addMergedOverviewsInfo["overviewsAddedTo"], generatedProductPath, current_progress)
+        self.copyMergedProduct(addMergedOverviewsInfo["overviewsAddedTo"], outputPath, current_progress)
 
-        self.copyMetadata(generateMetadataInfo["ardMetadataFile"], generatedProductPath, current_progress)
+        self.copyMetadata(generateMetadataInfo["ardMetadataFile"], outputPath, current_progress)
         
         with self.output().open("w") as outFile:
             outFile.write(json.dumps(current_progress))
