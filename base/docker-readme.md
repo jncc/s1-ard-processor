@@ -1,6 +1,6 @@
 Readme for docker hub - this text must be manually published
 
-# What is this?
+## What is this?
 
 This an Ubuntu 16.04 container with the [ESA SNAP toolbox](http://step.esa.int/main/toolboxes/snap/) installed. 
 
