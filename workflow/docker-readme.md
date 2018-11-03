@@ -12,13 +12,12 @@ This container derives from the [jncc/snap-base:latest](https://hub.docker.com/r
 
 ## Mount points
 
-This ARD processor consumes and generates large ammounts of data and this may require you to mount external file systems to account for this. For this reason there are a number of mount points on the container you may wish to utilise.
+This ARD processor consumes and generates large ammounts of data and this may require you to mount external file systems to account for this. For this reason there are a number of locations in the container file system that you may wish to mount externally.
 
 * Input - This mount point should contain the raw file you will be processing 
 * Static - This should contain the DEM you will be using for terrain adjustment. 
 * Working - Temporary files / paths created during processing. This folder is cleared at the end of each run unless you specify the --noClean switch.  The working data is written to a subfolder of the format <productId> where the date components are derived from the capture date of the source product. The product Id is also derived from the source product.
 * Ouput - This folder wll contain the output. The output is written to a subfolder of the format <Year>/<Month>/<Day>/<productId> where the date components are derived from the capture date of the source product. The product Id is also derived from the source product.
-
 * State - The state files generated for each task in the luigi workflow. This is an optional mount generally for debugging. State files are coppied into the a subfolder of output of the form ../state/<Year>/<Month>/<Day>/<productId> unless the --noStateCopy flag is specified
 
 
@@ -33,9 +32,9 @@ VerifyWorkflowOutput is the luigi task that requries all processing steps to be 
 # Example:
 
 ```
-docker run -i -v /data/input:/input -v /data/output:/output -v /data/state:/state -v /data/static:/static -v 
- data/working:/working jncc/test-s1-ard-processor VerifyWorkflowOutput --inputFileName=S1A_IW_GRDH_1SDV_20180104T062254_20180104T062319_020001_02211F_A294.zip --demFile=DTM_UK_10m_WGS84_CompImg_S1vers3.tif --noClean --local-scheduler
+docker run -i -v /data/input:/input -v /data/output:/output -v /data/state:/state -v /data/static:/static -v data/working:/working jncc/test-s1-ard-processor VerifyWorkflowOutput --inputFileName=S1A_IW_GRDH_1SDV_20180104T062254_20180104T062319_020001_02211F_A294.zip --demFile=DTM_UK_10m_WGS84_CompImg_S1vers3.tif --noClean --local-scheduler
 ```
+
 
 # Luigi options
 
