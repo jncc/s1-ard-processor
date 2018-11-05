@@ -37,7 +37,7 @@ class VerifyWorkflowOutput(luigi.Task):
         yield tasks
 
         removedItems = []
-        if (not self.noClean) and os.path.exists(configuration["workingRoot"):
+        if (not self.noClean) and os.path.exists(configuration["workingRoot"]):
             shutil.rmtree(configuration["workingRoot"])
             removedItems.append(configuration["workingRoot"])
 
