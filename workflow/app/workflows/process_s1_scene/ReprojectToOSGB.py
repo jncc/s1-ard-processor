@@ -83,7 +83,7 @@ class ReprojectToOSGB(luigi.Task):
                 subprocess.run("gdalwarp -overwrite -s_srs EPSG:32630 -t_srs EPSG:27700 -r bilinear -dstnodata 0 -of GTiff -tr 10 10 --config CHECK_DISK_FREE_SPACE NO {} {}".format(sourceFile, outputFile),
                     env=env, 
                     check=True, 
-                    stdout=PIPE, 
+                    stdout=subprocess.PIPE, 
                     stderr=subprocess.STDOUT,
                     shell=True).stdout
                 
