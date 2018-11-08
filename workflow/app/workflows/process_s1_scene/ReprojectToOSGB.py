@@ -76,10 +76,16 @@ class ReprojectToOSGB(luigi.Task):
 
         if not self.testProcessing:
             try:
-                subprocess.check_output(
-                    "gdalwarp -overwrite -s_srs EPSG:32630 -t_srs EPSG:27700 -r bilinear -dstnodata 0 -of GTiff -tr 10 10 --config CHECK_DISK_FREE_SPACE NO {} {}".format(sourceFile, outputFile), 
+                env = {
+                    "GDAL_DATA" : "/usr/share/gdal/2.2"
+                }
+
+                subprocess.run("gdalwarp -overwrite -s_srs EPSG:32630 -t_srs EPSG:27700 -r bilinear -dstnodata 0 -of GTiff -tr 10 10 --config CHECK_DISK_FREE_SPACE NO {} {}".format(sourceFile, outputFile),
+                    env=env, 
+                    check=True, 
+                    stdout=PIPE, 
                     stderr=subprocess.STDOUT,
-                    shell=True)
+                    shell=True).stdout
                 
             except subprocess.CalledProcessError as e:
                 errStr = "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output)
