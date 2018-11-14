@@ -45,6 +45,13 @@ class TransferFinalOutput(luigi.Task):
         copy(metadata, targetPath)
         current_progress["metadata"] = targetPath
 
+    def getOutputPath(self, root, productId, productName):
+        year = productId[4:8]
+        month = productId[8:10]
+        day = productId[10:12]
+
+        return os.path.join(os.path.join(os.path.join(os.path.join(root, year), month), day), productName)
+
     def run(self):
         configuration = {}
         with self.input()[0].open('r') as getConfiguration:
@@ -62,7 +69,8 @@ class TransferFinalOutput(luigi.Task):
         with self.input()[3].open('r') as generateMetadata:
             generateMetadataInfo = json.load(generateMetadata)
 
-        outputPath = configuration["outputPath"]
+        productName = os.path.splitext(os.path.basename(addMergedOverviewsInfo["overviewsAddedTo"]))[0]
+        outputPath = self.getOutputPathFromProductName(self.paths["output"], configuration["productId"], productName)
 
         if os.path.exists(outputPath):
             log.info("Removing product path {} from output folder".format(outputPath))
