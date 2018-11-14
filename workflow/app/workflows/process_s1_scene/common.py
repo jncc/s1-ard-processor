@@ -86,7 +86,7 @@ def getOutputFileName(self, inputFileName, polarisation, manifest):
     f = inputFileSegments[5].split('T')[1]
     g = polarisation
 
-        return "{0}_{1}_{2}_{3}_{4}_{5}_{6}_Gamma-0_GB_OSGB_RCTK_SpkRL.tif".format(a,b,c,d,e,f,g)
+    return "{0}_{1}_{2}_{3}_{4}_{5}_{6}_Gamma-0_GB_OSGB_RCTK_SpkRL.tif".format(a,b,c,d,e,f,g)
 
 
             
