@@ -70,7 +70,7 @@ class TransferFinalOutput(luigi.Task):
             generateMetadataInfo = json.load(generateMetadata)
 
         productName = os.path.splitext(os.path.basename(addMergedOverviewsInfo["overviewsAddedTo"]))[0]
-        outputPath = self.getOutputPathFromProductName(self.paths["output"], configuration["productId"], productName)
+        outputPath = self.getOutputPath(self.paths["output"], configuration["productId"], productName)
 
         if os.path.exists(outputPath):
             log.info("Removing product path {} from output folder".format(outputPath))

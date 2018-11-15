@@ -29,10 +29,6 @@ with open(configFile, 'r') as getConfiguration:
 if configuration["noCopyState"]:
     log.warning("noCopySate flag set")
     sys.exit()
-
-if pathElements[1] != "output":
-    log.warning("Output root path changed")
-    sys.exit()
     
 targetStatePath = os.path.join("/output", "state", configuration["productId"])
 

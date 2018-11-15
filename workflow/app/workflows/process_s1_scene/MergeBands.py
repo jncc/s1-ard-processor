@@ -36,7 +36,7 @@ class MergeBands(luigi.Task):
             configuration = json.load(getConfiguration)
 
         getManifestInfo = {}
-        with self.input()[1].open('r') as getManifest:
+        with self.input()[3].open('r') as getManifest:
             getManifestInfo = json.load(getManifest)
 
         sourceFiles = reprojectToOSGBInfo['reprojectedFiles']['VV'] + reprojectToOSGBInfo['reprojectedFiles']['VH']
