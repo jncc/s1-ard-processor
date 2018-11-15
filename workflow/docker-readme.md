@@ -6,7 +6,7 @@ This container provides a luigi workflow that processes raw Sentinal 1 files fro
 
 It is designed to generate data in the OSGB projection.
 
-It can run standalone or with a central scheduler.
+The luigi workflow can run standalone or with a luigi central scheduler.
 
 This container derives from the [jncc/snap-base:latest](https://hub.docker.com/r/jncc/snap-base/) container that provides SNAP.
 
@@ -17,7 +17,7 @@ This ARD processor consumes and generates large ammounts of data and this may re
 * Input - This mount point should contain the raw file you will be processing 
 * Static - This should contain the DEM you will be using for terrain adjustment. 
 * Working - Temporary files / paths created during processing. This folder is cleared at the end of each run unless you specify the --noClean switch.  The working data is written to a subfolder of the format <productId> where the date components are derived from the capture date of the source product. The product Id is also derived from the source product.
-* Ouput - This folder wll contain the output. The output is written to a subfolder of the format <Year>/<Month>/<Day>/<productId> where the date components are derived from the capture date of the source product. The product Id is also derived from the source product.
+* Ouput - This folder wll contain the output. The output is written to a subfolder of the format <Year>/<Month>/<Day>/<product name> where the date components are derived from the capture date of the source product. The product name is also derived from the input product data.
 * State - The state files generated for each task in the luigi workflow. This is an optional mount generally for debugging. State files are coppied into the a subfolder of output of the form ../state/<Year>/<Month>/<Day>/<productId> unless the --noStateCopy flag is specified
 
 
@@ -57,6 +57,7 @@ These parameters are relevant to the luigi worker running inside the container: 
 
 Following a successful run the output folder will contain the following structure.
 
+    ../output
     ├── <Year>
     │   └── <Month>
     │       └── <Day>
