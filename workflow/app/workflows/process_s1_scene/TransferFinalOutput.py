@@ -50,7 +50,7 @@ class TransferFinalOutput(luigi.Task):
         month = productId[8:10]
         day = productId[10:12]
 
-        return os.path.join(os.path.join(os.path.join(os.path.join(root, year), month), day), productName)
+        return os.path.join(root, year, month, day, productName)
 
     def run(self):
         configuration = {}

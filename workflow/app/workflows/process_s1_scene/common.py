@@ -1,6 +1,7 @@
 import logging
 import luigi
 import os
+import re
 import shutil
 from datetime import datetime
 from os.path import basename, join
@@ -54,7 +55,7 @@ def createWorkingPath(workingPathRoot, workingPath):
 
     return newPath
 
-def getOutputFileName(self, inputFileName, polarisation, manifest):
+def getOutputFileName(inputFileName, polarisation, manifest):
     inputFileSegments = inputFileName.split('_')
 
     a = inputFileSegments[0]
