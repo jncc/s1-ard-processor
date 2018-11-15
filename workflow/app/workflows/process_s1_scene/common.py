@@ -1,6 +1,7 @@
 import logging
 import luigi
 import os
+import re
 import shutil
 from datetime import datetime
 from os.path import basename, join
@@ -53,6 +54,40 @@ def createWorkingPath(workingPathRoot, workingPath):
         os.makedirs(newPath)
 
     return newPath
+
+def getOutputFileName(inputFileName, polarisation, manifest):
+    inputFileSegments = inputFileName.split('_')
+
+    a = inputFileSegments[0]
+    b = inputFileSegments[4].split('T')[0] #date part
+
+    c = ''
+    absOrbitNo = int(inputFileSegments[6])
+    if a == "S1A":
+        c = str(((absOrbitNo - 73) % 175) + 1)
+    elif a == "S1B":
+        c = str(((absOrbitNo - 27) % 175) + 1)
+    else:
+        msg = "Invalid input file name, should begin S1A or S1B not {0}".format(a)
+        raise Exception(msg)
+
+    pattern = "<s1:pass>(.+)<\/s1:pass>"
+    orbitDirectionRaw = re.search(pattern, manifest).group(1)
+
+    d = ''
+    if orbitDirectionRaw == "ASCENDING":
+        d = "asc"
+    elif orbitDirectionRaw == "DESCENDING":
+        d = "desc"
+    else:
+        msg = "Invalid orbit direction in manifest, must be ASCENDING or DESCENDING but is {0}".format(orbitDirectionRaw)
+        raise Exception(msg)
+
+    e = inputFileSegments[4].split('T')[1]
+    f = inputFileSegments[5].split('T')[1]
+    g = polarisation
+
+    return "{0}_{1}_{2}_{3}_{4}_{5}_{6}_Gamma-0_GB_OSGB_RCTK_SpkRL.tif".format(a,b,c,d,e,f,g)
 
 
             

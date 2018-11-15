@@ -29,18 +29,8 @@ with open(configFile, 'r') as getConfiguration:
 if configuration["noCopyState"]:
     log.warning("noCopySate flag set")
     sys.exit()
-
-pathElements = configuration["outputPath"].split('/')
-
-if pathElements[1] != "output":
-    log.warning("Output root path changed")
-    sys.exit()
     
-targetStatePath = os.path.join("/output", 
-            "state", 
-            seq(pathElements)
-            .drop(2)
-            .reduce(lambda x, f: x + '/' + f))
+targetStatePath = os.path.join("/output", "state", configuration["productId"])
 
 if os.path.exists(targetStatePath):
     log.info("Removing state path {} from output folder".format(targetStatePath))
