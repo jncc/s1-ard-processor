@@ -10,6 +10,8 @@ The luigi workflow can run standalone or with a luigi central scheduler.
 
 This container derives from the [jncc/snap-base:latest](https://hub.docker.com/r/jncc/snap-base/) container that provides SNAP.
 
+The source code for both containers is on [github](https://github.com/jncc/s1-ard-processor)
+
 ## Mount points
 
 This ARD processor consumes and generates large ammounts of data and this may require you to mount external file systems to account for this. For this reason there are a number of locations in the container file system that you may wish to mount externally.
