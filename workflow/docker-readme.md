@@ -49,7 +49,7 @@ These parameters are relevant to the luigi worker running inside the container: 
 # Workflow options
 
 * --inputFileName FILENAME (required) - The raw input file name. This file should reside in the Input folder.
-* --demFile FILENAME (required) - The terrain model used in the processing. This should reside in the static folder.
+* --demFileName FILENAME (required) - The terrain model used in the processing. This should reside in the static folder.
 * --memoryLimit LIMIT (in GB) - The memory limit set for the snap process. This should be not exceed about 75% of the host machine memory - Default 14GB.
 * --noClean - Don't remove the temporary files created in the working folder - May be useful for determining why a processing run failed by analysing preserved intermediate outputs and SNAP logs.
 * --noStateCopy - Don't copy the luigi state files to a subfolder of output.
