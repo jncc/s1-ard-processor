@@ -17,14 +17,18 @@ class EnforceZip(luigi.Task):
     def run(self):
         unzippedFilePath = os.path.join(self.paths["input"], self.productName)
 
-        zipf = zipfile.ZipFile(unzippedFilePath+".zip", 'w', zipfile.ZIP_DEFLATED)
-        try:
-            os.rename(unzippedFilePath, unzippedFilePath+".SAFE")
-        except Exception as e:
-            log.warning(f"renaming folder failed, folder probably already contains .SAFE extension: {e}")
+        if os.path.isfile(unzippedFilePath+".zip"):
+            log.info("Input file is already a zip, nothing to do")
+        else:
+            log.info("Zipping input folder")
+            zipf = zipfile.ZipFile(unzippedFilePath+".zip", 'w', zipfile.ZIP_DEFLATED)
+            try:
+                os.rename(unzippedFilePath, unzippedFilePath+".SAFE")
+            except Exception as e:
+                log.warning(f"renaming folder failed, folder probably already contains .SAFE extension: {e}")
 
-        self.zipdir(unzippedFilePath+".SAFE", zipf)
-        zipf.close()
+            self.zipdir(unzippedFilePath+".SAFE", zipf)
+            zipf.close()
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
