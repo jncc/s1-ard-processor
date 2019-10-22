@@ -1,4 +1,4 @@
-FROM jncc/snap-base:latest
+FROM jncc/snap-base:0.0.0.2
 
 # Setup app folder
 WORKDIR /app
