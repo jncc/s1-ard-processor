@@ -25,7 +25,7 @@ class VerifyWorkflowOutput(luigi.Task):
         with self.input()[1].open('r') as getConfiguration:
             configuration = json.load(getConfiguration)
 
-        outputFiles = []
+        outputFiles = transferFinalOutputInfo["VV"] + transferFinalOutputInfo["VH"]
         outputFiles.append(transferFinalOutputInfo["merged"])
         outputFiles.append(transferFinalOutputInfo["metadata"])
 
