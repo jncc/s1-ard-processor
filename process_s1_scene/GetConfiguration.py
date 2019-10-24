@@ -11,6 +11,9 @@ from luigi.util import requires
 @requires(EnforceZip)
 class GetConfiguration(luigi.Task):
     paths = luigi.DictParameter()
+    sourceSrs = luigi.Parameter()
+    targetSrs = luigi.Parameter()
+    finalSrsName = luigi.Parameter()
     #For state copy options in the docker container
     noStateCopy = luigi.BoolParameter()
 
@@ -39,7 +42,10 @@ class GetConfiguration(luigi.Task):
                 "productId" : productId,
                 "workingRoot" : os.path.join(self.paths['working'], productId),
                 "noCopyState" : self.noStateCopy,
-                "outputPath" : self.getOutputPathFromProductId(self.paths['output'], productId)
+                "outputPath" : self.getOutputPathFromProductId(self.paths['output'], productId),
+                "sourceSrs" : self.sourceSrs,
+                "targetSrs" : self.targetSrs,
+                "finalSrsName" : self.finalSrsName
             }))
 
     def output(self):

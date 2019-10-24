@@ -12,13 +12,13 @@ from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.GetManifest import GetManifest
 from process_s1_scene.ConfigureProcessing import ConfigureProcessing
-from process_s1_scene.ModifyNoDataTif import ModifyNoDataTif
+from process_s1_scene.MergeBands import MergeBands
 from process_s1_scene.CheckFileExists import CheckFileExists
 
 
 log = logging.getLogger('luigi-interface')
 
-@requires(GetManifest, ConfigureProcessing, ModifyNoDataTif)
+@requires(GetManifest, ConfigureProcessing, MergeBands)
 class GenerateMetadata(luigi.Task):
     paths = luigi.DictParameter()
     metadataTemplate = luigi.Parameter()
@@ -32,9 +32,9 @@ class GenerateMetadata(luigi.Task):
         with self.input()[1].open('r') as configureProcessing:
             configureProcessingInfo = json.load(configureProcessing)
 
-        modifyNoDataTifInfo = {}
-        with self.input()[2].open('r') as modifyNoDataTif:
-            modifyNoDataTifInfo = json.load(modifyNoDataTif)
+        mergeBandsInfo = {}
+        with self.input()[2].open('r') as mergeBands:
+            mergeBandsInfo = json.load(mergeBands)
 
         manifestLoader = CheckFileExists(filePath=getManifestInfo["manifestFile"])
         yield manifestLoader
@@ -72,7 +72,7 @@ class GenerateMetadata(luigi.Task):
             template = Template(templateFile.read())
             ardMetadata = template.substitute(metadataParams)
 
-        filename = os.path.splitext(os.path.basename(modifyNoDataTifInfo["modifyNoDataTif"]))[0] + ".xml"
+        filename = os.path.splitext(os.path.basename(mergeBandsInfo["mergedOutputFile"]))[0] + ".xml"
         ardMetadataFile = os.path.join(configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"], filename)
 
         with open(ardMetadataFile, 'w') as out:

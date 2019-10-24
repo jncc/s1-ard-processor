@@ -16,6 +16,10 @@ log = logging.getLogger('luigi-interface')
 @requires(CutDEM, CopyInputFile, GetConfiguration)
 class ConfigureProcessing(luigi.Task):
     paths = luigi.DictParameter()
+    snapRunArguments = luigi.Parameter()
+    snapConfigUtmProj = luigi.Parameter()
+    snapConfigCentralMeridian = luigi.Parameter()
+    snapConfigFalseNorthing = luigi.Parameter()
     memoryLimit = luigi.IntParameter()
 
     def run(self):
@@ -42,12 +46,16 @@ class ConfigureProcessing(luigi.Task):
         processingConfiguration = {
                 "scriptConfigFilePath" : configFilePath,
                 "vmOptionsFilePath" : vmOptionsFilePath,
+                "arguments" : self.snapRunArguments,
                 "parameters" : {
                     "s1_ard_main_dir" : configuration["workingRoot"],
                     "s1_ard_basket_dir" : copyInputFileInfo["tempInputPath"],
                     "s1_ard_ext_dem" : cutDemInfo["cutDemPath"],
                     "s1_ard_temp_output_dir" : tempOutputPath,
-                    "s1_ard_snap_memory" : str(self.memoryLimit)
+                    "s1_ard_snap_memory" : str(self.memoryLimit),
+                    "s1_ard_utm_proj" : self.snapConfigUtmProj,
+                    "s1_ard_central_meridian" : self.snapConfigCentralMeridian,
+                    "s1_ard_false_northing" : self.snapConfigFalseNorthing
                 }
             }
 

@@ -32,7 +32,7 @@ class ReprojectToOSGB(luigi.Task):
 
     reprojectionFilePattern = "^[\w\/-]+_Gamma0_APGB_UTMWGS84_RTC_SpkRL_dB.tif"
 
-    def getOutputFileName(self, inputFileName, polarisation, manifest):
+    def getOutputFileName(self, inputFileName, polarisation, manifest, finalSrsName):
         inputFileSegments = inputFileName.split('_')
 
         a = inputFileSegments[0]
@@ -63,21 +63,23 @@ class ReprojectToOSGB(luigi.Task):
         e = inputFileSegments[4].split('T')[1]
         f = inputFileSegments[5].split('T')[1]
         g = polarisation
+        h = finalSrsName
 
-        return "{0}_{1}_{2}_{3}_{4}_{5}_{6}_Gamma-0_GB_OSGB_RCTK_SpkRL.tif".format(a,b,c,d,e,f,g)
+        return "{0}_{1}_{2}_{3}_{4}_{5}_{6}_Gamma-0_{7}_RCTK_SpkRL.tif".format(a,b,c,d,e,f,g,h)
 
-    def reprojectPolorisation(self, polarisation, sourceFile, state, manifest, inputFileName, outputRoot):
+    def reprojectPolorisation(self, polarisation, sourceFile, state, manifest, configuration, inputFileName, outputRoot):
         outputPath = joinPath(outputRoot, polarisation)
 
         if not os.path.exists(outputPath):
             os.makedirs(outputPath)
 
-        outputFile = joinPath(outputPath, self.getOutputFileName(inputFileName, polarisation, manifest))
+        outputFile = joinPath(outputPath, self.getOutputFileName(inputFileName, polarisation, manifest, configuration["finalSrsName"]))
 
         if not self.testProcessing:
             try:
                 subprocess.check_output(
-                    "gdalwarp -overwrite -s_srs EPSG:32630 -t_srs EPSG:27700 -r bilinear -dstnodata 0 -of GTiff -tr 10 10 --config CHECK_DISK_FREE_SPACE NO {} {}".format(sourceFile, outputFile), 
+                    "gdalwarp -overwrite -s_srs {} -t_srs {} -r bilinear -dstnodata 0 -of GTiff -tr 10 10 --config CHECK_DISK_FREE_SPACE NO {} {}"
+                        .format(configuration["sourceSrs"], configuration["targetSrs"], sourceFile, outputFile), 
                     stderr=subprocess.STDOUT,
                     shell=True)
                 
@@ -125,9 +127,7 @@ class ReprojectToOSGB(luigi.Task):
         }
 
         polarisations = ["VV","VH"]
-
         inputFileName = os.path.basename(configuration["inputFilePath"])
-
         outputRoot = configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"]
 
         for polarisation in polarisations:
@@ -140,7 +140,7 @@ class ReprojectToOSGB(luigi.Task):
                 log.error(errorMsg)
                 raise RuntimeError(errorMsg)
         
-            self.reprojectPolorisation(polarisation, src, state, manifest, inputFileName, outputRoot)
+            self.reprojectPolorisation(polarisation, src, state, manifest, configuration, inputFileName, outputRoot)
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps(state))
