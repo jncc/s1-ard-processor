@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"
+                 xmlns:gco="http://www.isotc211.org/2005/gco"
+                 xmlns:gml="http://www.opengis.net/gml/3.2"
+                 xmlns:xlink="http://www.w3.org/1999/xlink">
+  <gmd:fileIdentifier>
+    <gco:CharacterString>$uuid</gco:CharacterString>
+  </gmd:fileIdentifier>
+  <gmd:language>
+    <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">eng</gmd:LanguageCode>
+  </gmd:language>
+  <gmd:hierarchyLevel>
+    <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
+  </gmd:hierarchyLevel>
+  <gmd:contact>
+    <gmd:CI_ResponsibleParty>
+      <gmd:organisationName>
+        <gco:CharacterString>Department for Environment, Food and Rural Affairs</gco:CharacterString>
+      </gmd:organisationName>
+      <gmd:contactInfo>
+        <gmd:CI_Contact>
+          <gmd:address>
+            <gmd:CI_Address>
+              <gmd:electronicMailAddress>
+                <gco:CharacterString>Earthobs@jncc.gov.uk</gco:CharacterString>
+              </gmd:electronicMailAddress>
+            </gmd:CI_Address>
+          </gmd:address>
+        </gmd:CI_Contact>
+      </gmd:contactInfo>
+      <gmd:role>
+        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+      </gmd:role>
+    </gmd:CI_ResponsibleParty>
+  </gmd:contact>
+  <gmd:dateStamp>
+    <gco:Date>$metadataDate</gco:Date>
+  </gmd:dateStamp>
+  <gmd:identificationInfo>
+    <gmd:MD_DataIdentification id="_$uuid">
+      <gmd:citation>
+        <gmd:CI_Citation>
+          <gmd:title>
+            <gco:CharacterString>Sentinel-1 backscatter for the UK</gco:CharacterString>
+          </gmd:title>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>$publishedDate</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">$publishedDate</gmd:CI_DateTypeCode>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:identifier>
+            <gmd:MD_Identifier>
+              <gmd:code>
+                <gco:CharacterString>$uuid</gco:CharacterString>
+              </gmd:code>
+            </gmd:MD_Identifier>
+          </gmd:identifier>
+        </gmd:CI_Citation>
+      </gmd:citation>
+      <gmd:abstract>
+        <gco:CharacterString>
+          These data have been created by the Department for Environment, Food and Rural Affairs (Defra). They contain modified Copernicus Sentinel-1 (C-Band SAR) data processed into a backscatter product. Products acquired from ESA are ground-range detected (GRD) interferometric wide-swath (IW). Images are named in accordance with the sensor information and processing parameters employed, delineated by the alphanumeric characters separated by an underscore (_). The relative orbit number is displayed in each name as ORBXXX, where XXX is the relative orbit number (ESA Sentinel-1 Orbit). They have been processed to Gamma-0 (G0) and Sigma-0 (S0) using SNAP Toolbox (ESA SNAP).  These Sentinel-1 data are obtained in the DV mode, as indicated by ESA (ESA Sentinel-1 Naming Conventions), where both VV and VH polarisations are collected; the naming convention reflects these polarisations.
+        </gco:CharacterString>
+      </gmd:abstract>
+      <gmd:pointOfContact>
+        <gmd:CI_ResponsibleParty>
+          <gmd:organisationName>
+            <gco:CharacterString>Department for Environment, Food and Rural Affairs</gco:CharacterString>
+          </gmd:organisationName>
+          <gmd:contactInfo>
+            <gmd:CI_Contact>
+              <gmd:address>
+                <gmd:CI_Address>
+                  <gmd:electronicMailAddress>
+                    <gco:CharacterString>Earthobs@jncc.gov.uk</gco:CharacterString>
+                  </gmd:electronicMailAddress>
+                </gmd:CI_Address>
+              </gmd:address>
+            </gmd:CI_Contact>
+          </gmd:contactInfo>
+          <gmd:role>
+            <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="owner">owner</gmd:CI_RoleCode>
+          </gmd:role>
+        </gmd:CI_ResponsibleParty>
+      </gmd:pointOfContact>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword>
+            <gco:CharacterString>Sentinel-1</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>Synthetic Aperture Radar</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>Backscatter</gco:CharacterString>
+          </gmd:keyword>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:resourceConstraints>
+        <gmd:MD_LegalConstraints>
+          <gmd:useLimitation>
+            <gco:CharacterString>
+              Released under the Open Government Licence v3
+            </gco:CharacterString>
+          </gmd:useLimitation>
+          <gmd:accessConstraints>
+            <gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
+          </gmd:accessConstraints>
+          <gmd:otherConstraints>
+            <gco:CharacterString>None</gco:CharacterString>
+          </gmd:otherConstraints>
+        </gmd:MD_LegalConstraints>
+      </gmd:resourceConstraints>
+      <gmd:language>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">eng</gmd:LanguageCode>
+      </gmd:language>
+      <gmd:topicCategory>
+        <gmd:MD_TopicCategoryCode>imageryBaseMapsEarthCover</gmd:MD_TopicCategoryCode>
+      </gmd:topicCategory>
+      <gmd:extent>
+        <gmd:EX_Extent>
+          <gmd:geographicElement>
+            <gmd:EX_GeographicBoundingBox>
+              <gmd:westBoundLongitude>
+                <gco:Decimal>$extentWestBound</gco:Decimal>
+              </gmd:westBoundLongitude>
+              <gmd:eastBoundLongitude>
+                <gco:Decimal>$extentEastBound</gco:Decimal>
+              </gmd:eastBoundLongitude>
+              <gmd:southBoundLatitude>
+                <gco:Decimal>$extentSouthBound</gco:Decimal>
+              </gmd:southBoundLatitude>
+              <gmd:northBoundLatitude>
+                <gco:Decimal>$extentNorthBound</gco:Decimal>
+              </gmd:northBoundLatitude>
+            </gmd:EX_GeographicBoundingBox>
+          </gmd:geographicElement>
+          <gmd:temporalElement>
+            <gmd:EX_TemporalExtent>
+              <gmd:extent>
+                <gml:TimePeriod gml:id="t1">
+                  <gml:beginPosition>$extentStartDate</gml:beginPosition>
+                  <gml:endPosition>$extentEndDate</gml:endPosition>
+                </gml:TimePeriod>
+              </gmd:extent>
+            </gmd:EX_TemporalExtent>
+          </gmd:temporalElement>
+        </gmd:EX_Extent>
+      </gmd:extent>
+      <gmd:supplementalInformation>
+        <gco:CharacterString>Dataset Version: $datasetVersion &#xD;&#xA;Instrument: C-SAR &#xD;&#xA;Sensor acquisition mode: IW - Interferometric Wideswath Mode &#xD;&#xA;Algorithms: Radiometric normalisation and Terrain correction use Small (Small, 2011) or Kellndorfer (Kellndorfer et al., 1998) algorithms implemented in SNAP toolbox (http://step.esa.int). Speckle filtering uses Refined Lee (Lee &amp; Pottier, 2009), also implemented in SNAP toolbox. &#xD;&#xA;Ancilliary data: Digital Terrain Model used: [GB derived from APGB &#169; Bluesky International Ltd/Getmapping PLC] and [NI DTM released as OSNI open data under OGL] resampled to 10m spatial resolution to match Sentinel-1 resolution of 10m. &#xD;&#xA;Projection: $projection &#xD;&#xA;Spatial Resolution: 10m &#xD;&#xA;Polarisation: $polarisation &#xD;&#xA;Collection Mode: $collectionMode &#xD;&#xA;Type: Raster Data</gco:CharacterString>
+      </gmd:supplementalInformation>
+    </gmd:MD_DataIdentification>
+  </gmd:identificationInfo>
+  <gmd:distributionInfo>
+    <gmd:MD_Distribution>
+      <gmd:distributionFormat>
+        <gmd:MD_Format>
+          <gmd:name>
+            <gco:CharacterString>GeoTIFF</gco:CharacterString>
+          </gmd:name>
+          <gmd:version>
+            <gco:CharacterString>Unknown</gco:CharacterString>
+          </gmd:version>
+        </gmd:MD_Format>
+      </gmd:distributionFormat>
+    </gmd:MD_Distribution>
+  </gmd:distributionInfo>
+  <gmd:dataQualityInfo>
+    <gmd:DQ_DataQuality>
+      <gmd:scope>
+        <gmd:DQ_Scope>
+          <gmd:level>
+            <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
+          </gmd:level>
+        </gmd:DQ_Scope>
+      </gmd:scope>
+      <gmd:lineage>
+        <gmd:LI_Lineage>
+          <gmd:statement>
+            <gco:CharacterString>
+              Data originally from European Space Agency (ESA) was GRD from Sentinel 1. Processed using SNAP v5. Processing included, but was not limited to, the following steps: apply orbit file, border and thermal noise removal, radiometric calibration, terrain correction using external 10m resolution DEM, speckle filter. The processing parameters in the filename indicate that these data have been terrain corrected and radiometrically normalised with Kellndorfer (RTCK) and Small (RTCS) methods, _dB indicates that these data have been converted to linear scales.
+            </gco:CharacterString>
+          </gmd:statement>
+        </gmd:LI_Lineage>
+      </gmd:lineage>
+    </gmd:DQ_DataQuality>
+  </gmd:dataQualityInfo>
+</gmd:MD_Metadata>
