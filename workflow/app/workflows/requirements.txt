@@ -14,7 +14,6 @@ lockfile==0.12.2
 logger==1.4
 luigi==2.8.9
 Pebble==4.3.6
-pkg-resources==0.0.0
 PyFunctional==1.0.0
 python-daemon==2.1.2
 python-dateutil==2.8.0
