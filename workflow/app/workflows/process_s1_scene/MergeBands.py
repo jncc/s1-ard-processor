@@ -9,7 +9,7 @@ import subprocess
 from luigi import LocalTarget
 from luigi.util import requires
 from functional import seq
-from process_s1_scene.ReprojectToOSGB import ReprojectToOSGB
+from process_s1_scene.ReprojectToTargetSrs import ReprojectToTargetSrs
 from process_s1_scene.ConfigureProcessing import ConfigureProcessing
 from process_s1_scene.CheckArdFilesExist import CheckFileExists
 from process_s1_scene.GetConfiguration import GetConfiguration
@@ -17,15 +17,15 @@ from process_s1_scene.GetManifest import GetManifest
 
 log = logging.getLogger('luigi-interface')
 
-@requires(ReprojectToOSGB, ConfigureProcessing, GetConfiguration, GetManifest)
+@requires(ReprojectToTargetSrs, ConfigureProcessing, GetConfiguration, GetManifest)
 class MergeBands(luigi.Task):
     paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
 
     def run(self):
-        reprojectToOSGBInfo = {}
-        with self.input()[0].open('r') as reprojectToOSGB:
-            reprojectToOSGBInfo = json.load(reprojectToOSGB)
+        reprojectToTargetSrsInfo = {}
+        with self.input()[0].open('r') as reprojectToTargetSrs:
+            reprojectToTargetSrsInfo = json.load(reprojectToTargetSrs)
 
         configureProcessingInfo = {}
         with self.input()[1].open('r') as configureProcessing:
@@ -39,7 +39,7 @@ class MergeBands(luigi.Task):
         with self.input()[3].open('r') as getManifest:
             getManifestInfo = json.load(getManifest)
 
-        sourceFiles = reprojectToOSGBInfo['reprojectedFiles']['VV'] + reprojectToOSGBInfo['reprojectedFiles']['VH']
+        sourceFiles = reprojectToTargetSrsInfo['reprojectedFiles']['VV'] + reprojectToTargetSrsInfo['reprojectedFiles']['VH']
         
         checkTasks = []
         for sourceFile in sourceFiles:

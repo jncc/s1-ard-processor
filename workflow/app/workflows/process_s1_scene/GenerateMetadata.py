@@ -87,6 +87,7 @@ class GenerateMetadata(luigi.Task):
         startDate = self.getStartDate(manifest)
         endDate = self.getEndDate(manifest)
         collectionMode = self.getCollectionMode(manifest)
+        projection = configuration["metadataProjection"]
 
         metadataParams = {
             "uuid": uuid.uuid4(),
@@ -99,7 +100,7 @@ class GenerateMetadata(luigi.Task):
             "extentStartDate": startDate,
             "extentEndDate": endDate,
             "datasetVersion": "v1.0",
-            "projection": "OSGB1936",
+            "projection": projection,
             "polarisation": "VV+VH",
             "collectionMode": collectionMode
         }
@@ -112,7 +113,7 @@ class GenerateMetadata(luigi.Task):
             ardMetadata = template.substitute(metadataParams)
 
         inputFileName = os.path.basename(configuration["inputFilePath"])
-        filename = os.path.splitext(wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["finalSrsName"]))[0] + ".xml"
+        filename = os.path.splitext(wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["finalSrsName"]))[0] + "_meta.xml"
         ardMetadataFile = os.path.join(configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"], filename)
 
         with open(ardMetadataFile, 'w') as out:
