@@ -10,7 +10,7 @@ from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.GetConfiguration import GetConfiguration
 from process_s1_scene.ProcessRawToArd import ProcessRawToArd
-from process_s1_scene.ReprojectToOSGB import ReprojectToOSGB
+from process_s1_scene.ReprojectToTargetSrs import ReprojectToTargetSrs
 from process_s1_scene.AddMergedOverviews import AddMergedOverviews
 from process_s1_scene.GenerateMetadata import GenerateMetadata
 
@@ -19,18 +19,18 @@ from shutil import copy
 log = logging.getLogger('luigi-interface')
 
 @requires(GetConfiguration, 
-    ReprojectToOSGB, 
+    ReprojectToTargetSrs, 
     AddMergedOverviews,
     GenerateMetadata)
 class TransferFinalOutput(luigi.Task):
     paths = luigi.DictParameter()
 
-    def copyPolarisationFiles(self, polarisation, generatedProductPath, reprojectToOSGBInfo, current_progress, productId):
+    def copyPolarisationFiles(self, polarisation, generatedProductPath, reprojectToTargetSrsInfo, current_progress, productId):
         polarisationPath = os.path.join(generatedProductPath, polarisation)
 
         os.makedirs(polarisationPath)
 
-        for product in reprojectToOSGBInfo["reprojectedFiles"][polarisation]:
+        for product in reprojectToTargetSrsInfo["reprojectedFiles"][polarisation]:
             targetPath = os.path.join(polarisationPath, '{}'.format(os.path.basename(product)))
             copy(product, targetPath)
             current_progress[polarisation].append(targetPath)
@@ -57,9 +57,9 @@ class TransferFinalOutput(luigi.Task):
         with self.input()[0].open('r') as getConfiguration:
             configuration = json.load(getConfiguration)
 
-        reprojectToOSGBInfo = {}
-        with self.input()[1].open('r') as reprojectToOSGB:
-            reprojectToOSGBInfo = json.load(reprojectToOSGB)
+        reprojectToTargetSrsInfo = {}
+        with self.input()[1].open('r') as reprojectToTargetSrs:
+            reprojectToTargetSrsInfo = json.load(reprojectToTargetSrs)
 
         addMergedOverviewsInfo = {}
         with self.input()[2].open('r') as addMergedOverviews:
@@ -86,8 +86,8 @@ class TransferFinalOutput(luigi.Task):
             'metadata' : ''
         }
 
-        self.copyPolarisationFiles("VV", outputPath, reprojectToOSGBInfo, current_progress, configuration["productId"])
-        self.copyPolarisationFiles("VH", outputPath, reprojectToOSGBInfo, current_progress, configuration["productId"])
+        self.copyPolarisationFiles("VV", outputPath, reprojectToTargetSrsInfo, current_progress, configuration["productId"])
+        self.copyPolarisationFiles("VH", outputPath, reprojectToTargetSrsInfo, current_progress, configuration["productId"])
 
         self.copyMergedProduct(addMergedOverviewsInfo["overviewsAddedTo"], outputPath, current_progress)
 

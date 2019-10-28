@@ -14,6 +14,7 @@ class GetConfiguration(luigi.Task):
     sourceSrs = luigi.Parameter()
     targetSrs = luigi.Parameter()
     finalSrsName = luigi.Parameter()
+    metadataProjection = luigi.Parameter()
     #For state copy options in the docker container
     noStateCopy = luigi.BoolParameter()
 
@@ -37,7 +38,8 @@ class GetConfiguration(luigi.Task):
                 "noCopyState" : self.noStateCopy,
                 "sourceSrs" : self.sourceSrs,
                 "targetSrs" : self.targetSrs,
-                "finalSrsName" : self.finalSrsName
+                "finalSrsName" : self.finalSrsName,
+                "metadataProjection" : self.metadataProjection
             }))
 
     def output(self):

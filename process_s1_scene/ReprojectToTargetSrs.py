@@ -24,7 +24,7 @@ log = logging.getLogger('luigi-interface')
     GetConfiguration,
     ConfigureProcessing, 
     CheckArdFilesExist)
-class ReprojectToOSGB(luigi.Task):
+class ReprojectToTargetSrs(luigi.Task):
     paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
 
@@ -117,5 +117,5 @@ class ReprojectToOSGB(luigi.Task):
             outFile.write(json.dumps(state))
                 
     def output(self):
-        outputFile = os.path.join(self.paths["state"], 'ReprojectToOSGB.json')
+        outputFile = os.path.join(self.paths["state"], 'ReprojectToTargetSrs.json')
         return LocalTarget(outputFile)
