@@ -3,6 +3,7 @@ import json
 import os
 import logging
 import zipfile
+import shutil
 import process_s1_scene.common as wc
 
 from luigi import LocalTarget
@@ -15,20 +16,23 @@ class EnforceZip(luigi.Task):
     productName = luigi.Parameter()
 
     def run(self):
-        unzippedFilePath = os.path.join(self.paths["input"], self.productName)
+        unzippedDirPath = os.path.join(self.paths["input"], self.productName)
+        zipFilePath = unzippedDirPath+".zip"
 
-        if os.path.isfile(unzippedFilePath+".zip"):
+        if os.path.isfile(zipFilePath):
             log.info("Input file is already a zip, nothing to do")
         else:
             log.info("Zipping input folder")
-            zipf = zipfile.ZipFile(unzippedFilePath+".zip", 'w', zipfile.ZIP_DEFLATED)
+            unzippedSAFEPath = unzippedDirPath+".SAFE"
+            zipf = zipfile.ZipFile(zipFilePath, 'w', zipfile.ZIP_DEFLATED)
             try:
-                os.rename(unzippedFilePath, unzippedFilePath+".SAFE")
+                os.rename(unzippedDirPath, unzippedSAFEPath)
             except Exception as e:
                 log.warning(f"renaming folder failed, folder probably already contains .SAFE extension: {e}")
 
-            self.zipdir(unzippedFilePath+".SAFE", zipf)
+            self.zipdir(unzippedSAFEPath, zipf)
             zipf.close()
+            shutil.rmtree(unzippedSAFEPath)
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
