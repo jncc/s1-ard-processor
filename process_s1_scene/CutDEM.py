@@ -18,7 +18,6 @@ log = logging.getLogger('luigi-interface')
 class CutDEM(luigi.Task):
     paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
-    demFileName = luigi.Parameter()
 
     def run(self):
 
@@ -31,7 +30,7 @@ class CutDEM(luigi.Task):
         cutDemPathRoot = wc.createWorkingPath(configuration["workingRoot"], 'dem')
         cutDemPath = os.path.join(cutDemPathRoot, 'cutDem.tif')
         cutLinePath = os.path.join(cutDemPathRoot, "cutline.geojson") 
-        demPath = os.path.join(self.paths["static"], self.demFileName)
+        demPath = os.path.join(self.paths["static"], configuration["demFilename"])
         
         inputFilePath = configuration["inputFilePath"]
 
@@ -58,7 +57,7 @@ class CutDEM(luigi.Task):
 
             try:
                 subprocess.check_output(
-                    "gdalwarp -of GTiff -crop_to_cutline -overwrite --config CHECK_DISK_FREE_SPACE NO -cutline {} {} {}".format(cutLinePath ,demPath, cutDemPath), 
+                    "gdalwarp -of GTiff -crop_to_cutline -overwrite --config CHECK_DISK_FREE_SPACE NO -cutline {} {} {}".format(cutLinePath, demPath, cutDemPath), 
                     stderr=subprocess.STDOUT,
                     shell=True)
             except subprocess.CalledProcessError as e:

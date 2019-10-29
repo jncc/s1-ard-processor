@@ -11,10 +11,7 @@ from luigi.util import requires
 @requires(EnforceZip)
 class GetConfiguration(luigi.Task):
     paths = luigi.DictParameter()
-    sourceSrs = luigi.Parameter()
-    targetSrs = luigi.Parameter()
-    finalSrsName = luigi.Parameter()
-    metadataProjection = luigi.Parameter()
+    spatialConfig = luigi.DictParameter()
     #For state copy options in the docker container
     noStateCopy = luigi.BoolParameter()
 
@@ -36,10 +33,14 @@ class GetConfiguration(luigi.Task):
                 "productId" : productId,
                 "workingRoot" : os.path.join(self.paths['working'], productId),
                 "noCopyState" : self.noStateCopy,
-                "sourceSrs" : self.sourceSrs,
-                "targetSrs" : self.targetSrs,
-                "finalSrsName" : self.finalSrsName,
-                "metadataProjection" : self.metadataProjection
+                "sourceSrs" : self.spatialConfig["sourceSrs"],
+                "targetSrs" : self.spatialConfig["targetSrs"],
+                "filenameSrs" : self.spatialConfig["filenameSrs"],
+                "metadataProjection" : self.spatialConfig["metadataProjection"],
+                "demFilename": self.spatialConfig["demFilename"],
+                "demTitle" : self.spatialConfig["demTitle"],
+                "placeName" : self.spatialConfig["placeName"],
+                "parentPlaceName" : self.spatialConfig["parentPlaceName"]
             }))
 
     def output(self):

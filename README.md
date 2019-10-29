@@ -6,7 +6,7 @@ The luigi workflow for processing Sentinel 1 ARD data. Processes both zipped dat
 ### Process S1 Scene
 The processing of each ARD is a time intensive procedure, you can skip this part of the process by providing the `--testProcessing` parameter. The workflow will still execute all tasks but the `ProcessRawToArd` task will create dummy outputs instead of processing the ARD. Check the luigi.cfg file for default parameters.
 ```
-PYTHONPATH='.' luigi --module process_s1_scene VerifyWorkflowOutput --productName <productName> --demFileName dem.tif
+PYTHONPATH='.' luigi --module process_s1_scene VerifyWorkflowOutput --productName <productName>
 ```
 
 ## Development
