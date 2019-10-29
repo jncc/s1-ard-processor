@@ -36,11 +36,11 @@ class GetConfiguration(luigi.Task):
                 "sourceSrs" : self.spatialConfig["sourceSrs"],
                 "targetSrs" : self.spatialConfig["targetSrs"],
                 "filenameSrs" : self.spatialConfig["filenameSrs"],
-                "metadataProjection" : self.spatialConfig["metadataProjection"],
                 "demFilename": self.spatialConfig["demFilename"],
                 "demTitle" : self.spatialConfig["demTitle"],
-                "placeName" : self.spatialConfig["placeName"],
-                "parentPlaceName" : self.spatialConfig["parentPlaceName"]
+                "metadataProjection" : self.spatialConfig["metadataProjection"],
+                "placeName" : self.spatialConfig["metadataPlaceName"],
+                "parentPlaceName" : self.spatialConfig["metadataParentPlaceName"]
             }))
 
     def output(self):
