@@ -3,7 +3,6 @@ import os
 import json
 import logging
 import process_s1_scene.common as wc
-import uuid
 import datetime
 import re
 import zipfile
@@ -82,15 +81,23 @@ class GenerateMetadata(luigi.Task):
         with manifestLoader.output().open('r') as manifestFile:
             manifest = manifestFile.read()
 
+        inputFileName = os.path.basename(configuration["inputFilePath"])
+
+        fileIdentifier = os.path.splitext(wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["filenameSrs"]))[0]
         dateToday = str(datetime.date.today())
         boundingBox = self.getBoundingBox(manifest)
         startDate = self.getStartDate(manifest)
         endDate = self.getEndDate(manifest)
         collectionMode = self.getCollectionMode(manifest)
         projection = configuration["metadataProjection"]
+        referenceSystemCodeSpace = configuration["targetSrs"].split(":")[0]
+        referenceSystemCode = configuration["targetSrs"].split(":")[1]
+        demTitle = configuration["demTitle"]
+        placeName = configuration["placeName"]
+        parentPlaceName = configuration["parentPlaceName"]
 
         metadataParams = {
-            "uuid": uuid.uuid4(),
+            "fileIdentifier": fileIdentifier,
             "metadataDate": dateToday,
             "publishedDate": dateToday,
             "extentWestBound": boundingBox["west"],
@@ -101,8 +108,13 @@ class GenerateMetadata(luigi.Task):
             "extentEndDate": endDate,
             "datasetVersion": "v1.0",
             "projection": projection,
+            "referenceSystemCodeSpace": referenceSystemCodeSpace,
+            "referenceSystemCode": referenceSystemCode,
             "polarisation": "VV+VH",
-            "collectionMode": collectionMode
+            "collectionMode": collectionMode,
+            "demTitle": demTitle,
+            "placeName": placeName,
+            "parentPlaceName": parentPlaceName
         }
 
         template = ''
@@ -113,7 +125,7 @@ class GenerateMetadata(luigi.Task):
             ardMetadata = template.substitute(metadataParams)
 
         inputFileName = os.path.basename(configuration["inputFilePath"])
-        filename = os.path.splitext(wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["finalSrsName"]))[0] + "_meta.xml"
+        filename = fileIdentifier + "_meta.xml"
         ardMetadataFile = os.path.join(configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"], filename)
 
         with open(ardMetadataFile, 'w') as out:

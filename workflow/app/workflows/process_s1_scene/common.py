@@ -55,7 +55,7 @@ def createWorkingPath(workingPathRoot, workingPath):
 
     return newPath
 
-def getOutputFileName(inputFileName, polarisation, manifest, finalSrsName):
+def getOutputFileName(inputFileName, polarisation, manifest, filenameSrs):
     inputFileSegments = inputFileName.split('_')
 
     a = inputFileSegments[0]
@@ -86,9 +86,9 @@ def getOutputFileName(inputFileName, polarisation, manifest, finalSrsName):
     e = inputFileSegments[4].split('T')[1]
     f = inputFileSegments[5].split('T')[1]
     g = polarisation
-    h = finalSrsName
+    h = filenameSrs
 
-    return "{0}_{1}_{2}_{3}_{4}_{5}_{6}_G0_{7}_RCTK_SpkRL.tif".format(a,b,c,d,e,f,g,h)
+    return "{0}_{1}_{2}_{3}_{4}_{5}_{6}_G0_{7}_RTCK_SpkRL.tif".format(a,b,c,d,e,f,g,h)
 
 
             

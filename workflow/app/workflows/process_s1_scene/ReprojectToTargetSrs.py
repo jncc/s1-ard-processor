@@ -36,7 +36,7 @@ class ReprojectToTargetSrs(luigi.Task):
         if not os.path.exists(outputPath):
             os.makedirs(outputPath)
 
-        outputFile = joinPath(outputPath, wc.getOutputFileName(inputFileName, polarisation, manifest, configuration["finalSrsName"]))
+        outputFile = joinPath(outputPath, wc.getOutputFileName(inputFileName, polarisation, manifest, configuration["filenameSrs"]))
 
         if not self.testProcessing:
             try:
