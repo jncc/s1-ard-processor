@@ -1,4 +1,4 @@
-FROM jncc/snap-base:latest
+FROM jncc/snap-base:0.0.0.2
 
 # Setup app folder
 WORKDIR /app
@@ -12,6 +12,11 @@ RUN apt-get update && apt-get -y install \
     bc 
 
 # Install packages from apt
+# RUN apt-get update && apt-get -y install \
+#     python3 \
+#     python-setuptools \
+#     python-gdal \
+#     gdal-bin
 RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable \
     && add-apt-repository -y ppa:deadsnakes/ppa \
     && apt-get update && apt-get -y install \ 
@@ -20,6 +25,7 @@ RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable \
     python3.6
 
 # Setup python3
+# RUN easy_install pip && pip install virtualenv
 RUN rm /usr/bin/python3 \
     && ln -s /usr/bin/python3.6 /usr/bin/python3 \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \

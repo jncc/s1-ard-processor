@@ -66,17 +66,17 @@ class ProcessRawToArd(luigi.Task):
             "BASKET_INDIR" : parameters["s1_ard_basket_dir"],
             "EXTDEMFILE" : parameters["s1_ard_ext_dem"],
             "MAIN_OUTDIR" : parameters["s1_ard_temp_output_dir"],
-            "SNAP_OPTS" : "-J-Xmx{0}G -J-Xms4G -J-XX:-UseGCOverheadLimit".format(parameters["s1_ard_snap_memory"])
+            "SNAP_OPTS" : "-J-Xmx{0}G -J-Xms4G -J-XX:-UseGCOverheadLimit".format(parameters["s1_ard_snap_memory"]),
+            "UTMPROJ" : parameters["s1_ard_utm_proj"],
+            "centralmeridian" : parameters["s1_ard_central_meridian"],
+            "false_northing" : parameters["s1_ard_false_northing"]
         }
 
         return subprocess.run("sh {0} {1}".format(script, arguments), env=env, shell=runAsShell).returncode        
 
-    def createTestFiles(expectedFiles):
-        tasks = []
+    def createTestFiles(self, expectedFiles):
         for filePath in expectedFiles:
-            tasks.append(CreateLocalFile(filePath = filePath, content='Test File'))
-
-        yield tasks
+            wc.createTestFile(filePath)
             
     def run(self):
         # copy input file to temp.
@@ -103,7 +103,7 @@ class ProcessRawToArd(luigi.Task):
         # Runs shell process to create the ard products
         retcode = 0
         if not self.testProcessing:
-            retcode = self.runShellScript('JNCC_S1_GRD_MAIN_v2.1.1.sh', '1 1 1 1 1 1 2 1 3 1', configureProcessingInfo["parameters"])
+            retcode = self.runShellScript('JNCC_S1_GRD_MAIN_v2.1.1.sh', configureProcessingInfo["arguments"], configureProcessingInfo["parameters"])
         else:
             expectedFiles = expectedOutput["files"]["VV"] + expectedOutput["files"]["VH"]
             self.createTestFiles(expectedFiles)

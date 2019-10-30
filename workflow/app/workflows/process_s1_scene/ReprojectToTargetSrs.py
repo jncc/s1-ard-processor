@@ -24,19 +24,19 @@ log = logging.getLogger('luigi-interface')
     GetConfiguration,
     ConfigureProcessing, 
     CheckArdFilesExist)
-class ReprojectToOSGB(luigi.Task):
+class ReprojectToTargetSrs(luigi.Task):
     paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
 
     reprojectionFilePattern = "^[\w\/-]+_Gamma0_APGB_UTMWGS84_RTC_SpkRL_dB.tif"
 
-    def reprojectPolorisation(self, polarisation, sourceFile, state, manifest, inputFileName, outputRoot):
+    def reprojectPolorisation(self, polarisation, sourceFile, state, manifest, configuration, inputFileName, outputRoot):
         outputPath = joinPath(outputRoot, polarisation)
 
         if not os.path.exists(outputPath):
             os.makedirs(outputPath)
 
-        outputFile = joinPath(outputPath, wc.getOutputFileName(inputFileName, polarisation, manifest))
+        outputFile = joinPath(outputPath, wc.getOutputFileName(inputFileName, polarisation, manifest, configuration["filenameSrs"]))
 
         if not self.testProcessing:
             try:
@@ -44,7 +44,8 @@ class ReprojectToOSGB(luigi.Task):
                     "GDAL_DATA" : "/usr/share/gdal/2.2"
                 }
 
-                subprocess.run("gdalwarp -overwrite -s_srs EPSG:32630 -t_srs EPSG:27700 -r bilinear -dstnodata 0 -of GTiff -tr 10 10 --config CHECK_DISK_FREE_SPACE NO {} {}".format(sourceFile, outputFile),
+                subprocess.run("gdalwarp -overwrite -s_srs {} -t_srs {} -r bilinear -dstnodata 0 -of GTiff -tr 10 10 --config CHECK_DISK_FREE_SPACE NO {} {}"
+                    .format(configuration["sourceSrs"], configuration["targetSrs"], sourceFile, outputFile),
                     env=env, 
                     check=True, 
                     stdout=subprocess.PIPE, 
@@ -110,11 +111,11 @@ class ReprojectToOSGB(luigi.Task):
                 log.error(errorMsg)
                 raise RuntimeError(errorMsg)
         
-            self.reprojectPolorisation(polarisation, src, state, manifest, inputFileName, outputRoot)
+            self.reprojectPolorisation(polarisation, src, state, manifest, configuration, inputFileName, outputRoot)
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps(state))
                 
     def output(self):
-        outputFile = os.path.join(self.paths["state"], 'ReprojectToOSGB.json')
+        outputFile = os.path.join(self.paths["state"], 'ReprojectToTargetSrs.json')
         return LocalTarget(outputFile)
