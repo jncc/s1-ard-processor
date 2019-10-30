@@ -72,7 +72,7 @@ To change eo-s1-workflow to a different branch:
 
 Current:
 
-    git subtree add --prefix=workflow/app/workflows eo-s1-workflow <branch> --squash
+    git subtree add --prefix=workflow/app/workflows eo-s1-workflow master --squash
 
 ### Fetching changes from the subtree
 
@@ -83,7 +83,7 @@ All changes to the current working tree need to be commited
 
 ### Pulling changes from the subtree
 
-    git subtree pull --prefix workflow/app/workflows eo-s1-workflow <branch> --squash
+    git subtree pull --prefix workflow/app/workflows eo-s1-workflow master --squash
 
 Current:
 
@@ -96,7 +96,7 @@ Current:
 
 Current:
 
-    git subtree push --prefix app/workflows eo-s1-workflow <branch> 
+    git subtree push --prefix app/workflows eo-s1-workflow master 
 
 Build and run instructions
 --------------------------
