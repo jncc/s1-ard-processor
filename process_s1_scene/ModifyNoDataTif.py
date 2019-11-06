@@ -65,7 +65,7 @@ class ModifyNoDataTif(luigi.Task):
                 log.error(errStr)
                 raise RuntimeError(errStr)
         else:
-            wc.createTestFile(outputFileName, "TEST_FILE")
+            wc.createTestFile(outputFileName)
 
         with self.output().open('w') as out:
             out.write(json.dumps({
