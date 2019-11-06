@@ -12,27 +12,35 @@ RUN apt-get update && apt-get -y install \
     bc 
 
 # Install packages from apt
-# RUN apt-get update && apt-get -y install \
-#     python3 \
-#     python-setuptools \
-#     python-gdal \
-#     gdal-bin
-RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable \
-    && add-apt-repository -y ppa:deadsnakes/ppa \
-    && apt-get update && apt-get -y install \ 
-    gdal-bin \
+RUN add-apt-repository -y ppa:deadsnakes/ppa \
+    && apt-get update && apt-get -y install \
+    python3.7 \
+    python-setuptools \
     python-gdal \
-    python3.6
+    gdal-bin
+    
+# RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable \
+#     && add-apt-repository -y ppa:deadsnakes/ppa \
+#     && apt-get update && apt-get -y install \ 
+#     gdal-bin \
+#     python-gdal \
+#     python3.6
+
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1 \
+    && easy_install pip \
+    && pip install \
+        virtualenv
+    
 
 # Setup python3
 # RUN easy_install pip && pip install virtualenv
-RUN rm /usr/bin/python3 \
-    && ln -s /usr/bin/python3.6 /usr/bin/python3 \
-    && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
-    && easy_install3 pip \
-    && pip install \
-        awscli \
-        virtualenv
+# RUN rm /usr/bin/python3 \
+#     && ln -s /usr/bin/python3.6 /usr/bin/python3 \
+#     && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
+#     && easy_install3 pip \
+#     && pip install \
+#         awscli \
+#         virtualenv
 
 # --------- Place machine build layers before this line ---------
 
