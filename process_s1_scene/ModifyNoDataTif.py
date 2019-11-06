@@ -6,11 +6,12 @@ import logging
 import process_s1_scene.common as wc
 import subprocess
 import re
+from os.path import join as joinPath
 from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.AddMergedOverviews import AddMergedOverviews
 from process_s1_scene.ConfigureProcessing import ConfigureProcessing
-from os.path import join as joinPath
+from process_s1_scene.CheckFileExists import CheckFileExists
 
 log = logging.getLogger('luigi-interface')
 
@@ -31,12 +32,12 @@ class ModifyNoDataTif(luigi.Task):
         tempOutputDir = configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"]
         mergedFilePath = addMergedOverviewsInfo["overviewsAddedTo"]
         mergedFileName = os.path.splitext(os.path.basename(mergedFilePath))[0]
-        outputFileName = os.path.join(tempOutputDir, mergedFileName+"-mode.tif")
 
         tmpBand1Path = os.path.join(tempOutputDir, "tmp-band1.tif")
         tmpBand2Path = os.path.join(tempOutputDir, "tmp-band2.tif")
         tempStackedPath = os.path.join(tempOutputDir, "tmp.vrt")
         tempModePrePath = os.path.join(tempOutputDir, mergedFileName+"-mode-pre.tif")
+        outputFileName = os.path.join(tempOutputDir, mergedFileName+".tif")
         
         cmdString1 = 'gdal_calc.py --debug -A {} --A_band=1 --outfile={} --calc="nan_to_num(A)" --NoDataValue=0 --overwrite' \
             .format(mergedFilePath, tmpBand1Path)

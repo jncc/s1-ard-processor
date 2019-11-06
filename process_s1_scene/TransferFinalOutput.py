@@ -52,7 +52,7 @@ class TransferFinalOutput(luigi.Task):
         with self.input()[2].open('r') as generateMetadata:
             generateMetadataInfo = json.load(generateMetadata)
 
-        productName = os.path.splitext(os.path.basename(addMergedOverviewsInfo["overviewsAddedTo"]))[0]
+        productName = os.path.splitext(os.path.basename(modifyNoDataTifInfo["modifyNoDataTif"]))[0]
         outputPath = self.getOutputPath(self.paths["output"], configuration["productId"], productName)
 
         if os.path.exists(outputPath):
