@@ -59,7 +59,7 @@ class MergeBands(luigi.Task):
         log.debug('merging files %s', srcFilesArg)
 
         inputFileName = os.path.basename(configuration["inputFilePath"])
-        outputFileName = wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["filenameSrs"])
+        outputFileName = wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["filenameDemData"], configuration["filenameSrs"])
 
         outputFile = os.path.join(configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"], outputFileName)
 
