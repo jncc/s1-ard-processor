@@ -1,14 +1,12 @@
-Readme for docker hub - this text must be manually published
-
 ## What is this?
 
 This container provides a luigi workflow that processes raw Sentinel 1 scenes from ESA to an Analysis Ready Data (ARD) product utilising the SNAP toolbox from ESA. 
 
-It takes a raw ESA file and a WSG84 DEM and produces ARD in the form of VV, VH, and VV+VH stacked GeoTIFF files in the OSGB projection, as well as a GEMINI XML metadata file.
+It takes a raw input (ESA zip file or Mundi folder) and a DEM and produces ARD as a VV+VH stacked GeoTIFF file in the configured projection, as well as a GEMINI 2.3 metadata XML file.
 
 The luigi workflow can run standalone or with a luigi central scheduler.
 
-This container derives from the [jncc/snap-base:latest](https://hub.docker.com/r/jncc/snap-base/) container that provides SNAP.
+This container derives from the [jncc/snap-base:0.0.0.2](https://hub.docker.com/r/jncc/snap-base/) container that provides SNAP.
 
 The source code for both containers is on [github](https://github.com/jncc/s1-ard-processor)
 
@@ -16,10 +14,10 @@ The source code for both containers is on [github](https://github.com/jncc/s1-ar
 
 This ARD processor consumes and generates large amounts of data and this may require you to mount external file systems to account for this. For this reason there are a number of locations in the container file system that you may wish to mount externally.
 
-* Input - This mount point should contain the raw file you will be processing.
+* Input - This mount point should contain the raw data you will be processing.
 * Static - This should contain the DEM you will be using for terrain adjustment. 
 * Working - Temporary files / paths created during processing. This folder is cleared at the end of each run unless you specify the --noClean switch.  The working data is written to a subfolder of the format <productId> where the date components are derived from the capture date of the source product. The product Id is also derived from the source product.
-* Output - This folder wlll contain the output. The output is written to a subfolder of the format <Year>/<Month>/<Day>/<product name> where the date components are derived from the capture date of the source product. The product name is also derived from the input product data.
+* Output - This folder wlll contain the output. The output is written to a subfolder of the format <Year>/<Month>/<Day>/<ARD product name> where the date components are derived from the capture date of the source product. The ARD product name is also derived from the input product data.
 * State - The state files generated for each task in the luigi workflow. This is an optional mount generally for debugging. State files are copied into a subfolder of output with the structure ../state/<Year>/<Month>/<Day>/<productId> unless the --noStateCopy flag is specified
 
 
@@ -34,7 +32,7 @@ VerifyWorkflowOutput is the luigi task that requires all processing steps to be 
 # Example:
 
 ```
-docker run -i -v /data/input:/input -v /data/output:/output -v /data/state:/state -v /data/static:/static -v data/working:/working jncc/test-s1-ard-processor VerifyWorkflowOutput --inputFileName=S1A_IW_GRDH_1SDV_20180104T062254_20180104T062319_020001_02211F_A294.zip --demFile=uk_wgs84_dtm.tif --noClean --local-scheduler
+docker run -i -v /data/input:/input -v /data/output:/output -v /data/state:/state -v /data/static:/static -v data/working:/working jncc/s1-ard-processor VerifyWorkflowOutput --productName=S1A_IW_GRDH_1SDV_20180104T062254_20180104T062319_020001_02211F_A294 --noClean --local-scheduler
 ```
 
 # Luigi options
@@ -48,8 +46,8 @@ These parameters are relevant to the luigi worker running inside the container: 
 
 # Workflow options
 
-* --inputFileName FILENAME (required) - The raw input file name. This file should reside in the Input folder.
-* --demFileName FILENAME (required) - The terrain model used in the processing. This should reside in the static folder.
+* --productName PRODUCT_NAME (required) - The raw input product name. This zipfile or folder should reside in the Input folder.
+* --spatialConfig JSON_FORMATTED_CONFIG - Defaults to values for UK processing (see /app/workflows/luigi.cfg). Change these as required for processing for different geographies. This includes the filename of the digital terrain model used in the processing which should be placed in the static folder.
 * --memoryLimit LIMIT (in GB) - The memory limit set for the snap process. This should be not exceed about 75% of the host machine memory - Default 14GB.
 * --noClean - Don't remove the temporary files created in the working folder - May be useful for determining why a processing run failed by analysing preserved intermediate outputs and SNAP logs.
 * --noStateCopy - Don't copy the luigi state files to a subfolder of output.
@@ -64,12 +62,8 @@ Following a successful run the output folder will contain the following structur
     │   └── <Month>
     │       └── <Day>
     │           └── <Merged Output Product Name>
-    │               ├── <Merged Output Product Name.tif> - Merged product data
+    │               ├── <Merged Output Product Name_meta.tif> - Merged product data
     │               ├── <Merged Output Product Name.xml> - Product metadata
-    │               ├── VH
-    │               │   └── <VH Polarised Product Name.tif> - VH polarised product
-    │               └── VV
-    │                   └── <VH Polarised Product Name.tif> - VH polarised product
     └── state
         └── <Workflow Product ID>
             ├── AddMergedOverviews.json
@@ -77,20 +71,22 @@ Following a successful run the output folder will contain the following structur
             ├── ConfigureProcessing.json
             ├── CopyInputFile.json
             ├── CutDEM.json
+            ├── EnforceZip.json
             ├── GenerateMetadata.json
             ├── GetConfiguration.json
             ├── GetManifest.json
             ├── MergeBands.json
+            ├── ModifyNoDataTif.json
             ├── ProcessRawToArd.json
-            ├── ReprojectToOSGB.json
+            ├── ReprojectToTargetSrs.json
             ├── TransferFinalOutput.json
             └── VerifyWorkflowOutput.json
 
 # Output Product Name
 
 The output product name is derived from data acquired at various stages of the workflow and consists of the following elements:
-S1A_20180113_ORB001_Asc_062939_063004_VV_G0_GB_OSGB_RTCK
-aaa_bbbbbbbb_cccccc_ddd_eeeeee_ffffff_gg_hh_ii_jjjj_kkkk
+S1A_20180113_001_asc_062939_063004_VVVH_G0_GB_OSGB_RTCK_SpkRL
+aaa_bbbbbbbb_ccc_ddd_eeeeee_ffffff_gggg_hh_ii_jjjj_kkkk_lllll
 
 The raw file name is divided into elements separated by an underscore 
 
@@ -112,9 +108,9 @@ g – Polarisation (VV, VH or DV for the merged bands)
 
 h – Gamma-0
 
-i – Elevation data used in processing - **hard coded to GB**
+i – Elevation data used in processing - taken from the spatial config
 
-j – CRS for terrain corrected outputs - **Always OSGB**
+j – CRS for terrain corrected outputs - taken from the spatial config
 
 k – Radiometric Normalisation method - **Always RCTK**
 
@@ -147,10 +143,6 @@ Processing the product S1A_IW_GRDH_1SDV_20180104T062254_20180104T062319_020001_0
     │           └── S1A_20180104_154_desc_062254_062319_DV_Gamma-0_GB_OSGB_RCTK_SpkRL
     │               ├── S1A_20180104_154_desc_062254_062319_DV_Gamma-0_GB_OSGB_RCTK_SpkRL.tif
     │               ├── S1A_20180104_154_desc_062254_062319_DV_Gamma-0_GB_OSGB_RCTK_SpkRL.xml
-    │               ├── VH
-    │               │   └── S1A_20180104_154_desc_062254_062319_VH_Gamma-0_GB_OSGB_RCTK_SpkRL.tif
-    │               └── VV
-    │                   └── S1A_20180104_154_desc_062254_062319_VV_Gamma-0_GB_OSGB_RCTK_SpkRL.tif
     └── state
         └── S1A_20180104_062254_062319
             ├── AddMergedOverviews.json
@@ -158,12 +150,14 @@ Processing the product S1A_IW_GRDH_1SDV_20180104T062254_20180104T062319_020001_0
             ├── ConfigureProcessing.json
             ├── CopyInputFile.json
             ├── CutDEM.json
+            ├── EnforceZip.json
             ├── GenerateMetadata.json
             ├── GetConfiguration.json
             ├── GetManifest.json
             ├── MergeBands.json
+            ├── ModifyNoDataTif.json
             ├── ProcessRawToArd.json
-            ├── ReprojectToOSGB.json
+            ├── ReprojectToTargetSrs.json
             ├── TransferFinalOutput.json
             └── VerifyWorkflowOutput.json
 
