@@ -83,7 +83,7 @@ class GenerateMetadata(luigi.Task):
 
         inputFileName = os.path.basename(configuration["inputFilePath"])
 
-        fileIdentifier = os.path.splitext(wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["filenameSrs"]))[0]
+        fileIdentifier = os.path.splitext(wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["filenameDemData"], configuration["filenameSrs"]))[0]
         dateToday = str(datetime.date.today())
         boundingBox = self.getBoundingBox(manifest)
         startDate = self.getStartDate(manifest)
