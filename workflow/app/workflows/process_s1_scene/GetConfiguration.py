@@ -35,6 +35,7 @@ class GetConfiguration(luigi.Task):
                 "noCopyState" : self.noStateCopy,
                 "sourceSrs" : self.spatialConfig["sourceSrs"],
                 "targetSrs" : self.spatialConfig["targetSrs"],
+                "filenameDemData" : self.spatialConfig["filenameDemData"],
                 "filenameSrs" : self.spatialConfig["filenameSrs"],
                 "demFilename": self.spatialConfig["demFilename"],
                 "demTitle" : self.spatialConfig["demTitle"],
