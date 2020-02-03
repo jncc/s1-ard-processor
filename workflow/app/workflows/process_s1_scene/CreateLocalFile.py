@@ -7,7 +7,7 @@ class CreateLocalFile(luigi.Task):
     content = luigi.Parameter()
 
     def run(self):
-        wc.createTestFile(self.filePath)
+        wc.createTestFile(self.filePath, self.content)
 
     def output(self):
         return LocalTarget(self.filePath)

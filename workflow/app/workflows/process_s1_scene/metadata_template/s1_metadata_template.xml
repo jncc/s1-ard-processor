@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"
-                 xmlns:gco="http://www.isotc211.org/2005/gco"
-                 xmlns:gml="http://www.opengis.net/gml/3.2"
-                 xmlns:xlink="http://www.w3.org/1999/xlink">
+<gmd:MD_Metadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd">
   <gmd:fileIdentifier>
-    <gco:CharacterString>$uuid</gco:CharacterString>
+    <gco:CharacterString>$fileIdentifier</gco:CharacterString>
   </gmd:fileIdentifier>
   <gmd:language>
-    <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">eng</gmd:LanguageCode>
+    <gco:CharacterString>eng</gco:CharacterString>
   </gmd:language>
+  <gmd:characterSet>
+    <gmd:MD_CharacterSetCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8" codeSpace="ISOTC211/19115">utf8</gmd:MD_CharacterSetCode>
+  </gmd:characterSet>
   <gmd:hierarchyLevel>
-    <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
+    <gmd:MD_ScopeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset" codeSpace="ISOTC211/19115">dataset</gmd:MD_ScopeCode>
   </gmd:hierarchyLevel>
   <gmd:contact>
     <gmd:CI_ResponsibleParty>
@@ -36,12 +36,33 @@
   <gmd:dateStamp>
     <gco:Date>$metadataDate</gco:Date>
   </gmd:dateStamp>
+  <gmd:metadataStandardName>
+    <gco:CharacterString>ISO 19115:2003 - Geographic information - Metadata</gco:CharacterString>
+  </gmd:metadataStandardName>
+  <gmd:metadataStandardVersion>
+    <gco:CharacterString>ISO 19115:2003</gco:CharacterString>
+  </gmd:metadataStandardVersion>
+  <gmd:spatialRepresentationInfo />
+  <gmd:referenceSystemInfo>
+    <gmd:MD_ReferenceSystem>
+      <gmd:referenceSystemIdentifier>
+        <gmd:RS_Identifier>
+          <gmd:code>
+            <gco:CharacterString>$referenceSystemCode</gco:CharacterString>
+          </gmd:code>
+          <gmd:codeSpace>
+            <gco:CharacterString>$referenceSystemCodeSpace</gco:CharacterString>
+          </gmd:codeSpace>
+        </gmd:RS_Identifier>
+      </gmd:referenceSystemIdentifier>
+    </gmd:MD_ReferenceSystem>
+  </gmd:referenceSystemInfo>
   <gmd:identificationInfo>
-    <gmd:MD_DataIdentification id="_$uuid">
+    <gmd:MD_DataIdentification>
       <gmd:citation>
         <gmd:CI_Citation>
           <gmd:title>
-            <gco:CharacterString>Sentinel-1 backscatter for the UK</gco:CharacterString>
+            <gco:CharacterString>$fileIdentifier</gco:CharacterString>
           </gmd:title>
           <gmd:date>
             <gmd:CI_Date>
@@ -49,24 +70,30 @@
                 <gco:Date>$publishedDate</gco:Date>
               </gmd:date>
               <gmd:dateType>
-                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">$publishedDate</gmd:CI_DateTypeCode>
+                <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation" codeSpace="ISOTC211/19115">creation</gmd:CI_DateTypeCode>
               </gmd:dateType>
             </gmd:CI_Date>
           </gmd:date>
-          <gmd:identifier>
-            <gmd:MD_Identifier>
-              <gmd:code>
-                <gco:CharacterString>$uuid</gco:CharacterString>
-              </gmd:code>
-            </gmd:MD_Identifier>
-          </gmd:identifier>
+          <gmd:presentationForm>
+            <gmd:CI_PresentationFormCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode" codeListValue="mapDigital" codeSpace="ISOTC211/19115">mapDigital</gmd:CI_PresentationFormCode>
+          </gmd:presentationForm>
         </gmd:CI_Citation>
       </gmd:citation>
       <gmd:abstract>
         <gco:CharacterString>
-          These data have been created by the Department for Environment, Food and Rural Affairs (Defra). They contain modified Copernicus Sentinel-1 (C-Band SAR) data processed into a backscatter product. Products acquired from ESA are ground-range detected (GRD) interferometric wide-swath (IW). Images are named in accordance with the sensor information and processing parameters employed, delineated by the alphanumeric characters separated by an underscore (_). The relative orbit number is displayed in each name as ORBXXX, where XXX is the relative orbit number (ESA Sentinel-1 Orbit). They have been processed to Gamma-0 (G0) and Sigma-0 (S0) using SNAP Toolbox (ESA SNAP).  These Sentinel-1 data are obtained in the DV mode, as indicated by ESA (ESA Sentinel-1 Naming Conventions), where both VV and VH polarisations are collected; the naming convention reflects these polarisations.
+          These data have been created by the Department for Environment, Food and Rural Affairs (Defra) in order to cost effectively provide high quality, analysis ready data for a wide range of applications.  Data is supplied under the Open Government Licence.  They contain modified Copernicus Sentinel-1 (C-Band SAR) data processed into a backscatter product, using ESA SNAP v6.0. Products acquired from ESA are ground-range detected (GRD) interferometric wide-swath (IW). Processing used the following steps: apply orbit file, border and thermal noise removal, radiometric calibration, multilook, terrain correction using the $demTitle, radiometric normalisation (Kellndorfer approach, Kellndorfer et al., 1998) and refined Lee speckle filter. Data is outputted on a linear scale in dB. A final reprojection is applied to transform the data to $projection ($referenceSystemCodeSpace:$referenceSystemCode) using GDAL v2.XX. The processed product is stacked, containing VV_dB in Band 1 and VH_dB in Band 2. Images are named in accordance with the sensor information and processing parameters employed, delineated by the alphanumeric characters separated by an underscore (_). The relative orbit number is displayed in each name as ORBXXX, where XXX is the relative orbit number (ESA Sentinel-1 Orbit). They have been processed to Gamma-0 (G0) using SNAP Toolbox v6.0 (ESA SNAP).  These Sentinel-1 data are obtained in the DV mode, as indicated by ESA (ESA Sentinel-1 Naming Conventions), where both VV and VH polarisations are collected; the naming convention reflects these polarisations.
         </gco:CharacterString>
       </gmd:abstract>
+      <gmd:status>
+        <gmd:MD_ProgressCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="completed" codeSpace="ISOTC211/19115">completed</gmd:MD_ProgressCode> 
+      </gmd:status>
+      <gmd:resourceMaintenance>
+        <gmd:MD_MaintenanceInformation>
+          <gmd:maintenanceAndUpdateFrequency>
+            <gmd:MD_MaintenanceFrequencyCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="notPlanned" codeSpace="ISOTC211/19115">notPlanned</gmd:MD_MaintenanceFrequencyCode>
+          </gmd:maintenanceAndUpdateFrequency>
+        </gmd:MD_MaintenanceInformation>
+      </gmd:resourceMaintenance>
       <gmd:pointOfContact>
         <gmd:CI_ResponsibleParty>
           <gmd:organisationName>
@@ -91,36 +118,82 @@
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
           <gmd:keyword>
-            <gco:CharacterString>Sentinel-1</gco:CharacterString>
+            <gco:CharacterString>Analysis Ready Data</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>Earth Observation</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>Backscatter</gco:CharacterString>
           </gmd:keyword>
           <gmd:keyword>
             <gco:CharacterString>Synthetic Aperture Radar</gco:CharacterString>
           </gmd:keyword>
           <gmd:keyword>
-            <gco:CharacterString>Backscatter</gco:CharacterString>
+            <gco:CharacterString>Sentinel-1</gco:CharacterString>
           </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>Surface Reflectance</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>Satellite Imagery</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme" codeSpace="ISOTC211/19115">theme</gmd:MD_KeywordTypeCode>
+          </gmd:type>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword>
+            <gco:CharacterString>$parentPlaceName</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="place" codeSpace="ISOTC211/19115">place</gmd:MD_KeywordTypeCode>
+          </gmd:type>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword>
+            <gco:CharacterString>$placeName</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="place" codeSpace="ISOTC211/19115">place</gmd:MD_KeywordTypeCode>
+          </gmd:type>
         </gmd:MD_Keywords>
       </gmd:descriptiveKeywords>
       <gmd:resourceConstraints>
         <gmd:MD_LegalConstraints>
-          <gmd:useLimitation>
-            <gco:CharacterString>
-              Released under the Open Government Licence v3
-            </gco:CharacterString>
-          </gmd:useLimitation>
-          <gmd:accessConstraints>
-            <gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
-          </gmd:accessConstraints>
+          <gmd:useConstraints>
+            <gmd:MD_RestrictionCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="license" codeSpace="ISOTC211/19115">license</gmd:MD_RestrictionCode>
+          </gmd:useConstraints>
           <gmd:otherConstraints>
-            <gco:CharacterString>None</gco:CharacterString>
+            <gco:CharacterString>OGL (OGL): Open Government Licence v3 (OGL): This data is licensed pen Government Licence v3. The Keeper of the Public Records has authority to license Information subject to copyright and database right owned by the Crown. The extent of the offer to license this Information under the terms of this licence is set out in the UK Government Licensing Framework. (http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/)</gco:CharacterString>
           </gmd:otherConstraints>
         </gmd:MD_LegalConstraints>
       </gmd:resourceConstraints>
+      <gmd:resourceConstraints>
+        <gmd:MD_LegalConstraints>
+          <gmd:useConstraints>
+            <gmd:MD_RestrictionCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions" codeSpace="ISOTC211/19115">otherRestrictions</gmd:MD_RestrictionCode>
+          </gmd:useConstraints>
+          <gmd:otherConstraints>
+            <gco:CharacterString>Other Restrictions</gco:CharacterString>
+          </gmd:otherConstraints>
+        </gmd:MD_LegalConstraints>
+      </gmd:resourceConstraints>
+      <gmd:spatialRepresentationType>
+        <gmd:MD_SpatialRepresentationTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="grid" codeSpace="ISOTC211/19115">grid</gmd:MD_SpatialRepresentationTypeCode>
+      </gmd:spatialRepresentationType>
       <gmd:language>
-        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">eng</gmd:LanguageCode>
+        <gco:CharacterString>eng</gco:CharacterString>
       </gmd:language>
+      <gmd:characterSet>
+        <gmd:MD_CharacterSetCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8" codeSpace="ISOTC211/19115">utf8</gmd:MD_CharacterSetCode>
+      </gmd:characterSet>
       <gmd:topicCategory>
-        <gmd:MD_TopicCategoryCode>imageryBaseMapsEarthCover</gmd:MD_TopicCategoryCode>
+        <gmd:MD_TopicCategoryCode>imagerybasemapsearthcover</gmd:MD_TopicCategoryCode>
       </gmd:topicCategory>
       <gmd:extent>
         <gmd:EX_Extent>
@@ -140,10 +213,14 @@
               </gmd:northBoundLatitude>
             </gmd:EX_GeographicBoundingBox>
           </gmd:geographicElement>
+        </gmd:EX_Extent>
+      </gmd:extent>
+      <gmd:extent>
+        <gmd:EX_Extent>
           <gmd:temporalElement>
             <gmd:EX_TemporalExtent>
               <gmd:extent>
-                <gml:TimePeriod gml:id="t1">
+                <gml:TimePeriod gml:id="T_01">
                   <gml:beginPosition>$extentStartDate</gml:beginPosition>
                   <gml:endPosition>$extentEndDate</gml:endPosition>
                 </gml:TimePeriod>
@@ -153,30 +230,30 @@
         </gmd:EX_Extent>
       </gmd:extent>
       <gmd:supplementalInformation>
-        <gco:CharacterString>Dataset Version: $datasetVersion &#xD;&#xA;Instrument: C-SAR &#xD;&#xA;Sensor acquisition mode: IW - Interferometric Wideswath Mode &#xD;&#xA;Algorithms: Radiometric normalisation and Terrain correction use Small (Small, 2011) or Kellndorfer (Kellndorfer et al., 1998) algorithms implemented in SNAP toolbox (http://step.esa.int). Speckle filtering uses Refined Lee (Lee &amp; Pottier, 2009), also implemented in SNAP toolbox. &#xD;&#xA;Ancilliary data: Digital Terrain Model used: [GB derived from APGB &#169; Bluesky International Ltd/Getmapping PLC] and [NI DTM released as OSNI open data under OGL] resampled to 10m spatial resolution to match Sentinel-1 resolution of 10m. &#xD;&#xA;Projection: $projection &#xD;&#xA;Spatial Resolution: 10m &#xD;&#xA;Polarisation: $polarisation &#xD;&#xA;Collection Mode: $collectionMode &#xD;&#xA;Type: Raster Data</gco:CharacterString>
+        <gco:CharacterString>
+          Dataset Version: $datasetVersion
+          Instrument: Sentinel-1  C-band synthetic aperture radar instrument operating at a centre frequency of 5.405 GHz
+          Software Info: : SNAP. URL:https://step.esa.int/main/toolboxes/snap/. Version: 6.0
+          Algorithms: Radiometric normalisation and Terrain correction use Kellndorfer (Kellndorfer et al., 1998) algorithms implemented in SNAP toolbox (http://step.esa.int). Speckle filtering uses Refined Lee (Lee Pottier, 2009), also implemented in SNAP toolbox. Reprojection applied using GDAL v2.XX
+          CEOS Analysis Ready Data for Land (CARD4L): http://ceos.org/ard/files/CARD4L_Product_Specification_Backscatter_v4.0.pdf
+        </gco:CharacterString>
       </gmd:supplementalInformation>
     </gmd:MD_DataIdentification>
   </gmd:identificationInfo>
-  <gmd:distributionInfo>
-    <gmd:MD_Distribution>
-      <gmd:distributionFormat>
-        <gmd:MD_Format>
-          <gmd:name>
-            <gco:CharacterString>GeoTIFF</gco:CharacterString>
-          </gmd:name>
-          <gmd:version>
-            <gco:CharacterString>Unknown</gco:CharacterString>
-          </gmd:version>
-        </gmd:MD_Format>
-      </gmd:distributionFormat>
-    </gmd:MD_Distribution>
-  </gmd:distributionInfo>
+  <gmd:contentInfo>
+    <gmd:MD_CoverageDescription>
+      <gmd:attributeDescription gco:nilReason="inapplicable" />
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml" codeListValue="image">image</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+    </gmd:MD_CoverageDescription>
+  </gmd:contentInfo>
   <gmd:dataQualityInfo>
     <gmd:DQ_DataQuality>
       <gmd:scope>
         <gmd:DQ_Scope>
           <gmd:level>
-            <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
+            <gmd:MD_ScopeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset" codeSpace="ISOTC211/19115">dataset</gmd:MD_ScopeCode>
           </gmd:level>
         </gmd:DQ_Scope>
       </gmd:scope>
@@ -184,7 +261,7 @@
         <gmd:LI_Lineage>
           <gmd:statement>
             <gco:CharacterString>
-              Data originally from European Space Agency (ESA) was GRD from Sentinel 1. Processed using SNAP v5. Processing included, but was not limited to, the following steps: apply orbit file, border and thermal noise removal, radiometric calibration, terrain correction using external 10m resolution DEM, speckle filter. The processing parameters in the filename indicate that these data have been terrain corrected and radiometrically normalised with Kellndorfer (RTCK) and Small (RTCS) methods, _dB indicates that these data have been converted to linear scales.
+              Data originally from European Space Agency (ESA) are ground range detected (GRD) interferometric wide swath (IW) Copernicus Sentinel-1 (C-Band SAR). Processed into a backscatter product using ESA SNAP v6.0. Processing included the following steps: apply orbit file, border and thermal noise removal, radiometric calibration, multilook, terrain correction using the $demTitle, radiometric normalisation (Kellndorfer approach, Kellndorfer et al., 1998) and refined Lee speckle filter. Data is outputted on a linear scale in dB. A final reprojection is applied to transform the data to $projection ($referenceSystemCodeSpace:$referenceSystemCode) using GDAL v2.XX. The processed product is stacked, containing VV_dB in Band 1 and VH_dB in Band 2. JNCC, in collaboration with Defra, Aberystwyth University, Satellite Applications Catapult and Airbus Defence and Space, have produced standardised data processing pipelines for producing Sentinel-1 and Sentinel-2 ARD currently being considered as datasets for approval in the CEOS Analysis Ready Data for Land (CARD4L) project.
             </gco:CharacterString>
           </gmd:statement>
         </gmd:LI_Lineage>
