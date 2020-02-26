@@ -20,6 +20,7 @@ log = logging.getLogger('luigi-interface')
 class GenerateMetadata(luigi.Task):
     paths = luigi.DictParameter()
     metadataTemplate = luigi.Parameter()
+    buildConfigFile = luigi.Parameter()
 
     def getBoundingBox(self, manifestString):
         pattern = "<gml:coordinates>.+<\/gml:coordinates>"
@@ -81,6 +82,11 @@ class GenerateMetadata(luigi.Task):
         with manifestLoader.output().open('r') as manifestFile:
             manifest = manifestFile.read()
 
+        getBuildConfigTask = CheckFileExists(filePath=self.buildConfigFile)
+        buildConfig = {}
+        with getBuildConfigTask.output().open('r') as b:
+            buildConfig = json.load(b)
+
         inputFileName = os.path.basename(configuration["inputFilePath"])
 
         fileIdentifier = os.path.splitext(wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["filenameDemData"], configuration["filenameSrs"]))[0]
@@ -95,6 +101,8 @@ class GenerateMetadata(luigi.Task):
         demTitle = configuration["demTitle"]
         placeName = configuration["placeName"]
         parentPlaceName = configuration["parentPlaceName"]
+        snapVersion = buildConfig["snapVersion"]
+        dockerImage = buildConfig["dockerImage"]
 
         metadataParams = {
             "fileIdentifier": fileIdentifier,
@@ -106,7 +114,6 @@ class GenerateMetadata(luigi.Task):
             "extentNorthBound": boundingBox["north"],
             "extentStartDate": startDate,
             "extentEndDate": endDate,
-            "datasetVersion": "v1.0",
             "projection": projection,
             "referenceSystemCodeSpace": referenceSystemCodeSpace,
             "referenceSystemCode": referenceSystemCode,
@@ -114,7 +121,9 @@ class GenerateMetadata(luigi.Task):
             "collectionMode": collectionMode,
             "demTitle": demTitle,
             "placeName": placeName,
-            "parentPlaceName": parentPlaceName
+            "parentPlaceName": parentPlaceName,
+            "snapVersion": snapVersion,
+            "dockerImage": dockerImage
         }
 
         template = ''
