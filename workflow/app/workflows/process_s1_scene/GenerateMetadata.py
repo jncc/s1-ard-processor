@@ -6,6 +6,7 @@ import process_s1_scene.common as wc
 import datetime
 import re
 import zipfile
+import uuid
 from string import Template
 from luigi import LocalTarget
 from luigi.util import requires
@@ -45,17 +46,26 @@ class GenerateMetadata(luigi.Task):
 
         return boundingBox
 
-    def getStartDate(self, manifestString):
+    def getAcquisitionDate(self, manifestString):
         pattern = "<safe:startTime>(.+)<\/safe:startTime>"
         dateString = re.search(pattern, manifestString).group(1)
         date = datetime.datetime.strptime(dateString, "%Y-%m-%dT%H:%M:%S.%f")
-        return date.strftime("%Y-%m-%d")
+        return self.getFormattedDateTime(date)
 
-    def getEndDate(self, manifestString):
+    def getStartDateTime(self, manifestString):
+        pattern = "<safe:startTime>(.+)<\/safe:startTime>"
+        dateString = re.search(pattern, manifestString).group(1)
+        date = datetime.datetime.strptime(dateString, "%Y-%m-%dT%H:%M:%S.%f")
+        return self.getFormattedDateTime(date)
+
+    def getEndDateTime(self, manifestString):
         pattern = "<safe:stopTime>(.+)<\/safe:stopTime>"
         dateString = re.search(pattern, manifestString).group(1)
         date = datetime.datetime.strptime(dateString, "%Y-%m-%dT%H:%M:%S.%f")
-        return date.strftime("%Y-%m-%d")
+        return self.getFormattedDateTime(date)
+
+    def getFormattedDateTime(self, date):
+        return str(date.strftime("%Y-%m-%dT%H:%M:%SZ"))
 
     def getCollectionMode(self, manifestString):
         pattern = "<s1sarl1:mode>(.+)<\/s1sarl1:mode>"
@@ -89,12 +99,15 @@ class GenerateMetadata(luigi.Task):
 
         inputFileName = os.path.basename(configuration["inputFilePath"])
 
-        fileIdentifier = os.path.splitext(wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["filenameDemData"], configuration["filenameSrs"]))[0]
-        dateToday = str(datetime.date.today())
+        fileIdentifier = str(uuid.uuid4())
+        title = os.path.splitext(wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["filenameDemData"], configuration["filenameSrs"]))[0]
+        dateToday = self.getFormattedDateTime(datetime.datetime.now())
+        acquisitionDate = self.getAcquisitionDate(manifest)
         boundingBox = self.getBoundingBox(manifest)
-        startDate = self.getStartDate(manifest)
-        endDate = self.getEndDate(manifest)
+        startDatetime = self.getStartDateTime(manifest)
+        endDatetime = self.getEndDateTime(manifest)
         collectionMode = self.getCollectionMode(manifest)
+        collectionTime = startDatetime.split("T")[1].split("Z")[0]
         projection = configuration["metadataProjection"]
         referenceSystemCodeSpace = configuration["targetSrs"].split(":")[0]
         referenceSystemCode = configuration["targetSrs"].split(":")[1]
@@ -106,19 +119,21 @@ class GenerateMetadata(luigi.Task):
 
         metadataParams = {
             "fileIdentifier": fileIdentifier,
+            "title": title,
             "metadataDate": dateToday,
-            "publishedDate": dateToday,
+            "publishedDate": acquisitionDate,
             "extentWestBound": boundingBox["west"],
             "extentEastBound": boundingBox["east"],
             "extentSouthBound": boundingBox["south"],
             "extentNorthBound": boundingBox["north"],
-            "extentStartDate": startDate,
-            "extentEndDate": endDate,
+            "extentStartDate": startDatetime,
+            "extentEndDate": endDatetime,
             "projection": projection,
             "referenceSystemCodeSpace": referenceSystemCodeSpace,
             "referenceSystemCode": referenceSystemCode,
             "polarisation": "VV+VH",
             "collectionMode": collectionMode,
+            "collectionTime": collectionTime,
             "demTitle": demTitle,
             "placeName": placeName,
             "parentPlaceName": parentPlaceName,
@@ -134,7 +149,7 @@ class GenerateMetadata(luigi.Task):
             ardMetadata = template.substitute(metadataParams)
 
         inputFileName = os.path.basename(configuration["inputFilePath"])
-        filename = fileIdentifier + "_meta.xml"
+        filename = title + "_meta.xml"
         ardMetadataFile = os.path.join(configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"], filename)
 
         with open(ardMetadataFile, 'w') as out:

@@ -14,11 +14,24 @@
   </gmd:hierarchyLevel>
   <gmd:contact>
     <gmd:CI_ResponsibleParty>
+      <gmd:individualName gco:nilReason="missing">
+
+      </gmd:individualName>
       <gmd:organisationName>
-        <gco:CharacterString>Department for Environment, Food and Rural Affairs</gco:CharacterString>
+        Department for Environment Food &amp; Rural Affairs
       </gmd:organisationName>
       <gmd:contactInfo>
         <gmd:CI_Contact>
+          <gmd:phone>
+            <gmd:CI_Telephone>
+              <gmd:voice gco:nilReason="missing">
+
+              </gmd:voice>
+              <gmd:facsimile gco:nilReason="missing">
+
+              </gmd:facsimile>
+            </gmd:CI_Telephone>
+          </gmd:phone>
           <gmd:address>
             <gmd:CI_Address>
               <gmd:electronicMailAddress>
@@ -29,12 +42,12 @@
         </gmd:CI_Contact>
       </gmd:contactInfo>
       <gmd:role>
-        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+         <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="author" codeSpace="ISOTC211/19115">author</gmd:CI_RoleCode>
       </gmd:role>
     </gmd:CI_ResponsibleParty>
   </gmd:contact>
   <gmd:dateStamp>
-    <gco:Date>$metadataDate</gco:Date>
+    <gco:DateTime>$metadataDate</gco:DateTime>
   </gmd:dateStamp>
   <gmd:metadataStandardName>
     <gco:CharacterString>ISO 19115:2003 - Geographic information - Metadata</gco:CharacterString>
@@ -62,18 +75,21 @@
       <gmd:citation>
         <gmd:CI_Citation>
           <gmd:title>
-            <gco:CharacterString>$fileIdentifier</gco:CharacterString>
+            <gco:CharacterString>$title</gco:CharacterString>
           </gmd:title>
           <gmd:date>
             <gmd:CI_Date>
               <gmd:date>
-                <gco:Date>$publishedDate</gco:Date>
+                <gco:DateTime>$publishedDate</gco:DateTime>
               </gmd:date>
               <gmd:dateType>
                 <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation" codeSpace="ISOTC211/19115">creation</gmd:CI_DateTypeCode>
               </gmd:dateType>
             </gmd:CI_Date>
           </gmd:date>
+          <gmd:edition gco:nilReason="missing">
+
+          </gmd:edition>
           <gmd:presentationForm>
             <gmd:CI_PresentationFormCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode" codeListValue="mapDigital" codeSpace="ISOTC211/19115">mapDigital</gmd:CI_PresentationFormCode>
           </gmd:presentationForm>
@@ -84,6 +100,9 @@
           These data have been created by the Department for Environment, Food and Rural Affairs (Defra) in order to cost effectively provide high quality, analysis ready data for a wide range of applications.  Data is supplied under the Open Government Licence.  They contain modified Copernicus Sentinel-1 (C-Band SAR) data processed into a backscatter product, using ESA SNAP v$snapVersion using a singularity image based on docker image $dockerImage produced by JNCC. Products acquired from ESA are ground-range detected (GRD) interferometric wide-swath (IW). Processing used the following steps: apply orbit file, border and thermal noise removal, radiometric calibration, multilook, terrain correction using the $demTitle, radiometric normalisation (Kellndorfer approach, Kellndorfer et al., 1998) and refined Lee speckle filter. Data is outputted on a linear scale in dB. A final reprojection is applied to transform the data to $projection ($referenceSystemCodeSpace:$referenceSystemCode) using GDAL v2.3.0. The processed product is stacked, containing VV_dB in Band 1 and VH_dB in Band 2. Images are named in accordance with the sensor information and processing parameters employed, delineated by the alphanumeric characters separated by an underscore (_). The relative orbit number is displayed in each name as ORBXXX, where XXX is the relative orbit number (ESA Sentinel-1 Orbit). They have been processed to Gamma-0 (G0) using SNAP Toolbox v$snapVersion (ESA SNAP).  These Sentinel-1 data are obtained in the DV mode, as indicated by ESA (ESA Sentinel-1 Naming Conventions), where both VV and VH polarisations are collected; the naming convention reflects these polarisations.
         </gco:CharacterString>
       </gmd:abstract>
+      <gmd:purpose gco:nilReason="missing">
+
+      </gmd:purpose>
       <gmd:status>
         <gmd:MD_ProgressCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="completed" codeSpace="ISOTC211/19115">completed</gmd:MD_ProgressCode> 
       </gmd:status>
@@ -94,27 +113,6 @@
           </gmd:maintenanceAndUpdateFrequency>
         </gmd:MD_MaintenanceInformation>
       </gmd:resourceMaintenance>
-      <gmd:pointOfContact>
-        <gmd:CI_ResponsibleParty>
-          <gmd:organisationName>
-            <gco:CharacterString>Department for Environment, Food and Rural Affairs</gco:CharacterString>
-          </gmd:organisationName>
-          <gmd:contactInfo>
-            <gmd:CI_Contact>
-              <gmd:address>
-                <gmd:CI_Address>
-                  <gmd:electronicMailAddress>
-                    <gco:CharacterString>Earthobs@jncc.gov.uk</gco:CharacterString>
-                  </gmd:electronicMailAddress>
-                </gmd:CI_Address>
-              </gmd:address>
-            </gmd:CI_Contact>
-          </gmd:contactInfo>
-          <gmd:role>
-            <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="owner">owner</gmd:CI_RoleCode>
-          </gmd:role>
-        </gmd:CI_ResponsibleParty>
-      </gmd:pointOfContact>
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
           <gmd:keyword>
@@ -169,7 +167,7 @@
             <gmd:MD_RestrictionCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="license" codeSpace="ISOTC211/19115">license</gmd:MD_RestrictionCode>
           </gmd:useConstraints>
           <gmd:otherConstraints>
-            <gco:CharacterString>OGL (OGL): Open Government Licence v3 (OGL): This data is licensed pen Government Licence v3. The Keeper of the Public Records has authority to license Information subject to copyright and database right owned by the Crown. The extent of the offer to license this Information under the terms of this licence is set out in the UK Government Licensing Framework. (http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/)</gco:CharacterString>
+            <gco:CharacterString>OGL (OGL): Open Government Licence v3 (OGL): This data is licensed under the Open Government Licence v3. The Keeper of the Public Records has authority to license Information subject to copyright and database right owned by the Crown. The extent of the offer to license this Information under the terms of this licence is set out in the UK Government Licensing Framework. (http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/)</gco:CharacterString>
           </gmd:otherConstraints>
         </gmd:MD_LegalConstraints>
       </gmd:resourceConstraints>
@@ -231,6 +229,7 @@
       </gmd:extent>
       <gmd:supplementalInformation>
         <gco:CharacterString>
+          Data Collection Time: $collectionTime
           Instrument: Sentinel-1  C-band synthetic aperture radar instrument operating at a centre frequency of 5.405 GHz
           Software Info: : SNAP. URL:https://step.esa.int/main/toolboxes/snap/. Version: $snapVersion using a singularity image based on docker image $dockerImage produced by JNCC
           Algorithms: Radiometric normalisation and Terrain correction use Kellndorfer (Kellndorfer et al., 1998) algorithms implemented in SNAP toolbox (http://step.esa.int). Speckle filtering uses Refined Lee (Lee Pottier, 2009), also implemented in SNAP toolbox. Reprojection applied using GDAL v2.3.0
