@@ -6,7 +6,6 @@ import process_s1_scene.common as wc
 import datetime
 import re
 import zipfile
-import uuid
 from string import Template
 from luigi import LocalTarget
 from luigi.util import requires
@@ -99,8 +98,7 @@ class GenerateMetadata(luigi.Task):
 
         inputFileName = os.path.basename(configuration["inputFilePath"])
 
-        fileIdentifier = str(uuid.uuid4())
-        title = os.path.splitext(wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["filenameDemData"], configuration["filenameSrs"]))[0]
+        fileIdentifier = os.path.splitext(wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["filenameDemData"], configuration["filenameSrs"]))[0]
         dateToday = self.getFormattedDateTime(datetime.datetime.now())
         acquisitionDate = self.getAcquisitionDate(manifest)
         boundingBox = self.getBoundingBox(manifest)
@@ -119,7 +117,7 @@ class GenerateMetadata(luigi.Task):
 
         metadataParams = {
             "fileIdentifier": fileIdentifier,
-            "title": title,
+            "title": fileIdentifier,
             "metadataDate": dateToday,
             "publishedDate": acquisitionDate,
             "extentWestBound": boundingBox["west"],
@@ -149,7 +147,7 @@ class GenerateMetadata(luigi.Task):
             ardMetadata = template.substitute(metadataParams)
 
         inputFileName = os.path.basename(configuration["inputFilePath"])
-        filename = title + "_meta.xml"
+        filename = fileIdentifier + "_meta.xml"
         ardMetadataFile = os.path.join(configureProcessingInfo["parameters"]["s1_ard_temp_output_dir"], filename)
 
         with open(ardMetadataFile, 'w') as out:
