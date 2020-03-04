@@ -5,6 +5,7 @@ import json
 import logging
 import process_s1_scene.common as wc
 import subprocess
+import glob
 
 from luigi import LocalTarget
 from luigi.util import requires
@@ -21,11 +22,26 @@ class ProcessRawToArd(luigi.Task):
     paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
 
-    def getExpectedOutput(self, productPattern, outputRoot): 
+    def checkFileExistsWithPattern(self, filePattern):
+        matchingFiles = glob.glob(filePattern)
+
+        if len(matchingFiles) < 1:
+            raise Exception("Something went wrong, did not find any matching files for pattern {}".format(filePattern))
+        elif len(matchingFiles) > 1:
+            raise Exception("Something went wrong, found more than one file for pattern {}".format(filePattern))
+        elif not os.path.isfile(matchingFiles[0]):
+            raise Exception("Something went wrong, {} is not a file".format(matchingFiles[0]))
+        elif not os.path.getsize(matchingFiles[0]) > 0:
+            log.error("ARD processing error, file size is 0 for {} ".format(matchingFiles[0]))
+            raise Exception("Something went wrong, file size is 0 for {}".format(matchingFiles[0]))
+
+        return matchingFiles[0]
+
+    def getExpectedOutput(self, productPattern, outputRoot):
         vv_path = os.path.join(os.path.join(outputRoot, productPattern), "VV/GEO")
         vh_path = os.path.join(os.path.join(outputRoot, productPattern), "VH/GEO")
+        log_path = os.path.join(os.path.join(outputRoot, productPattern), "log_{}_PROCESSING_*.txt".format(productPattern))
 
-        # Write locations to S3 target
         expectedOutput = {
             'files': {
                 'VV': [
@@ -53,7 +69,8 @@ class ProcessRawToArd(luigi.Task):
                     os.path.join(vh_path, '{}_VH_Sigma0_APGB_UTMWGS84_RTC_SpkRL.tif'.format(productPattern)),
                     os.path.join(vh_path, '{}_VH_Sigma0_APGB_UTMWGS84_RTC.tif'.format(productPattern)),
                     os.path.join(vh_path, '{}_VH_Sigma0_APGB_UTMWGS84_TC.tif'.format(productPattern))
-                ]
+                ],
+                'log': log_path
             }
         }
 
@@ -106,7 +123,15 @@ class ProcessRawToArd(luigi.Task):
             retcode = self.runShellScript('JNCC_S1_GRD_MAIN_v2.1.1.sh', configureProcessingInfo["arguments"], configureProcessingInfo["parameters"])
         else:
             expectedFiles = expectedOutput["files"]["VV"] + expectedOutput["files"]["VH"]
+            expectedFiles.append(expectedOutput["files"]["log"])
             self.createTestFiles(expectedFiles)
+
+        snapLogPath = self.checkFileExistsWithPattern(expectedOutput["files"]["log"])
+    
+        log.info("Contents of SNAP log {}".format(snapLogPath))
+        with open(snapLogPath) as f:
+            for line in f.readlines():
+                log.info(line)
 
         if retcode != 0:
             raise "Return code from snap process not 0, code was: {0}".format(retcode)
