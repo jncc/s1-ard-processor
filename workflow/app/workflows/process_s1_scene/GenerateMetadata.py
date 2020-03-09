@@ -20,6 +20,7 @@ log = logging.getLogger('luigi-interface')
 class GenerateMetadata(luigi.Task):
     paths = luigi.DictParameter()
     metadataTemplate = luigi.Parameter()
+    buildConfigFile = luigi.Parameter()
 
     def getBoundingBox(self, manifestString):
         pattern = "<gml:coordinates>.+<\/gml:coordinates>"
@@ -44,17 +45,26 @@ class GenerateMetadata(luigi.Task):
 
         return boundingBox
 
-    def getStartDate(self, manifestString):
+    def getAcquisitionDate(self, manifestString):
         pattern = "<safe:startTime>(.+)<\/safe:startTime>"
         dateString = re.search(pattern, manifestString).group(1)
         date = datetime.datetime.strptime(dateString, "%Y-%m-%dT%H:%M:%S.%f")
-        return date.strftime("%Y-%m-%d")
+        return self.getFormattedDateTime(date)
 
-    def getEndDate(self, manifestString):
+    def getStartDateTime(self, manifestString):
+        pattern = "<safe:startTime>(.+)<\/safe:startTime>"
+        dateString = re.search(pattern, manifestString).group(1)
+        date = datetime.datetime.strptime(dateString, "%Y-%m-%dT%H:%M:%S.%f")
+        return self.getFormattedDateTime(date)
+
+    def getEndDateTime(self, manifestString):
         pattern = "<safe:stopTime>(.+)<\/safe:stopTime>"
         dateString = re.search(pattern, manifestString).group(1)
         date = datetime.datetime.strptime(dateString, "%Y-%m-%dT%H:%M:%S.%f")
-        return date.strftime("%Y-%m-%d")
+        return self.getFormattedDateTime(date)
+
+    def getFormattedDateTime(self, date):
+        return str(date.strftime("%Y-%m-%dT%H:%M:%SZ"))
 
     def getCollectionMode(self, manifestString):
         pattern = "<s1sarl1:mode>(.+)<\/s1sarl1:mode>"
@@ -81,40 +91,52 @@ class GenerateMetadata(luigi.Task):
         with manifestLoader.output().open('r') as manifestFile:
             manifest = manifestFile.read()
 
+        getBuildConfigTask = CheckFileExists(filePath=self.buildConfigFile)
+        buildConfig = {}
+        with getBuildConfigTask.output().open('r') as b:
+            buildConfig = json.load(b)
+
         inputFileName = os.path.basename(configuration["inputFilePath"])
 
         fileIdentifier = os.path.splitext(wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["filenameDemData"], configuration["filenameSrs"]))[0]
-        dateToday = str(datetime.date.today())
+        dateToday = self.getFormattedDateTime(datetime.datetime.now())
+        acquisitionDate = self.getAcquisitionDate(manifest)
         boundingBox = self.getBoundingBox(manifest)
-        startDate = self.getStartDate(manifest)
-        endDate = self.getEndDate(manifest)
+        startDatetime = self.getStartDateTime(manifest)
+        endDatetime = self.getEndDateTime(manifest)
         collectionMode = self.getCollectionMode(manifest)
+        collectionTime = startDatetime.split("T")[1].split("Z")[0]
         projection = configuration["metadataProjection"]
         referenceSystemCodeSpace = configuration["targetSrs"].split(":")[0]
         referenceSystemCode = configuration["targetSrs"].split(":")[1]
         demTitle = configuration["demTitle"]
         placeName = configuration["placeName"]
         parentPlaceName = configuration["parentPlaceName"]
+        snapVersion = buildConfig["snapVersion"]
+        dockerImage = buildConfig["dockerImage"]
 
         metadataParams = {
             "fileIdentifier": fileIdentifier,
+            "title": fileIdentifier,
             "metadataDate": dateToday,
-            "publishedDate": dateToday,
+            "publishedDate": acquisitionDate,
             "extentWestBound": boundingBox["west"],
             "extentEastBound": boundingBox["east"],
             "extentSouthBound": boundingBox["south"],
             "extentNorthBound": boundingBox["north"],
-            "extentStartDate": startDate,
-            "extentEndDate": endDate,
-            "datasetVersion": "v1.0",
+            "extentStartDate": startDatetime,
+            "extentEndDate": endDatetime,
             "projection": projection,
             "referenceSystemCodeSpace": referenceSystemCodeSpace,
             "referenceSystemCode": referenceSystemCode,
             "polarisation": "VV+VH",
             "collectionMode": collectionMode,
+            "collectionTime": collectionTime,
             "demTitle": demTitle,
             "placeName": placeName,
-            "parentPlaceName": parentPlaceName
+            "parentPlaceName": parentPlaceName,
+            "snapVersion": snapVersion,
+            "dockerImage": dockerImage
         }
 
         template = ''

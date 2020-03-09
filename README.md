@@ -50,53 +50,6 @@ Current:
 
     git subtree push --prefix=workflow/app/toolchain/scripts s1-processing-scripts master --squash
 
-Luigi workflows subtree
------------------------
-The luigi workflows project is required at build time
-
-### Add the remote
-Create a link to the proper remote repo
-
-    git remote add -f eo-s1-workflow https://github.com/jncc/eo-s1-workflow.git
-
-### Linking to the correct branch
-At development time you will need to link to a development branch for testing.
-Before building a production contain this branch should be merged into master and this project should be set to master.
-
-To change eo-s1-workflow to a different branch:
-
-    git rm -rf workflow/app/workflows
-    git commit
-    git subtree add --prefix=workflow/app/workflows eo-s1-workflow <branch> --squash
-
-
-Current:
-
-    git subtree add --prefix=workflow/app/workflows eo-s1-workflow master --squash
-
-### Fetching changes from the subtree
-
-All changes to the current working tree need to be commited
-
-    git fetch eo-s1-workflow
-    git subtree add --prefix workflow/app/workflows eo-s1-workflow <branch> --squash
-
-### Pulling changes from the subtree
-
-    git subtree pull --prefix workflow/app/workflows eo-s1-workflow master --squash
-
-Current:
-
-    git subtree pull --prefix workflow/app/workflows eo-s1-workflow <branch> --squash
-
-### Pushing changes from the subtree back to the workflows repo
-
-
-    git subtree push --prefix workflow/app/workflows eo-s1-workflow <branch> 
-
-Current:
-
-    git subtree push --prefix app/workflows eo-s1-workflow master 
 
 Build and run instructions
 --------------------------
@@ -107,7 +60,7 @@ Build to image:
 
 Use --no-cache to build from scratch
 
-Run Interactivly:
+Run Interactively:
 
 docker run -i --entrypoint /bin/bash 
     -v /<hostPath>/input:/input 
@@ -122,13 +75,6 @@ Where <hostpath> is the path on the host to the mounted fole
 Convert Docker image to Singularity image
 -----------------------------------------
 
-Create a Singularity file
-
-    Bootstrap: docker
-    Registry: http://localhost:5000
-    Namespace:
-    From: s1-ard-processor:latest
-
 Run a local docker registry
 	
     docker run -d -p 5000:5000 --restart=always --name registry registry:2
@@ -140,7 +86,7 @@ Tag and push your docker image to the registry
 
 Build a Singularity image using your Docker image
 
-    sudo SINGULARITY_NOHTTPS=1 singularity build s1-ard-processor.simg Singularity
+    sudo SINGULARITY_NOHTTPS=1 singularity build s1-ard-processor.simg docker://localhost:5000/s1-ard-processor
 
 Run:
 

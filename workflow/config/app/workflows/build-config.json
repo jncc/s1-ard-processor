@@ -1,0 +1,4 @@
+{
+    "snapVersion": "$snapVersion",
+    "dockerImage" : "$dockerImage"
+}
