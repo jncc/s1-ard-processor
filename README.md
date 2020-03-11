@@ -117,7 +117,7 @@ docker run -i --entrypoint /bin/bash
     -v /<hostPath>/working:/working 
     -t jncc/test-s1-ard-processor 
 
-Where <hostpath> is the path on the host to the mounted fole
+Where <hostpath> is the path on the host to the mounted folder
 
 Convert Docker image to Singularity image
 -----------------------------------------
