@@ -1,4 +1,5 @@
 {
     "snapVersion": "$snapVersion",
+    "gdalVersion": "$gdalVersion",
     "dockerImage" : "$dockerImage"
 }

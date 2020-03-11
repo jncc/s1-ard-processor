@@ -114,6 +114,7 @@ class GenerateMetadata(luigi.Task):
         parentPlaceName = configuration["parentPlaceName"]
         snapVersion = buildConfig["snapVersion"]
         dockerImage = buildConfig["dockerImage"]
+        gdalVersion = buildConfig["gdalVersion"]
 
         metadataParams = {
             "fileIdentifier": fileIdentifier,
@@ -136,7 +137,8 @@ class GenerateMetadata(luigi.Task):
             "placeName": placeName,
             "parentPlaceName": parentPlaceName,
             "snapVersion": snapVersion,
-            "dockerImage": dockerImage
+            "dockerImage": dockerImage,
+            "gdalVersion": gdalVersion
         }
 
         template = ''
