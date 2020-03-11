@@ -5,13 +5,7 @@ import re
 import shutil
 from datetime import datetime
 from os.path import basename, join
-from luigi.contrib.s3 import S3Target, S3Client
-from workflow_common.s3 import getBucketNameFromS3Path, getPathFromS3Path
 from luigi import LocalTarget
-
-def getS3Target(key):
-    client = S3Client()
-    return S3Target(path=key, client=client)
 
 def getLocalTarget(key):
     return LocalTarget(key)
@@ -19,10 +13,6 @@ def getLocalTarget(key):
 def getLocalStateTarget(targetPath, fileName):
     targetKey = join(targetPath, fileName)
     return getLocalTarget(targetKey)
-
-def getS3StateTarget(targetPath, fileName):
-    targetKey = join(targetPath, fileName)
-    return getS3Target(targetKey)
 
 def getProductIdFromSourceFile(sourceFile):
     productFilename = basename(sourceFile)
@@ -36,7 +26,6 @@ def createTestFile(outputfile):
     os.makedirs(os.path.dirname(outputfile), exist_ok=True)
     with open(outputfile, 'w') as f:
         f.write('TEST_FILE')
-
 
 def createWorkingPath(workingPathRoot, workingPath): 
     newPath = os.path.join(workingPathRoot, workingPath)
