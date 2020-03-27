@@ -25,6 +25,8 @@ class VerifyWorkflowOutput(luigi.Task):
         with self.input()[1].open('r') as getConfiguration:
             configuration = json.load(getConfiguration)
 
+        sourceProductId = os.path.basename(configuration["inputFilePath"]).split('.')[0]
+
         outputFiles = []
         outputFiles.append(transferFinalOutputInfo["merged"])
         outputFiles.append(transferFinalOutputInfo["metadata"])
@@ -45,8 +47,17 @@ class VerifyWorkflowOutput(luigi.Task):
                 os.remove(configuration["inputFilePath"])
                 removedItems.append(configuration["inputFilePath"])
 
+        ## Products list needs:
+        # Source Product name
+        # Platform [S1A | S1B]
+        # Capture Date
+        # Capture time
+        # Bucket path
+        # Output product name`
+
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
+                "sourceProductId" : sourceProductId,
                 "verifiedFiles": outputFiles,
                 "cleanUp" : {
                     "removedItems" : removedItems
