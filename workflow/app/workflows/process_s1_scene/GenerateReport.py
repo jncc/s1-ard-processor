@@ -5,6 +5,7 @@ import sqlite3
 import json
 import re
 
+from datetime import datetime
 from luigi import LocalTarget
 from luigi.util import requires
 
@@ -52,13 +53,14 @@ class GenerateReport(luigi.Task):
 
         if c.fetchone()[0] != 1: 
             c.execute('''CREATE TABLE s1ArdProducts
-                        (productId text, platform text, captureDate text, CaptureTime text, ardProductId text)''')
+                        (productId text, platform text, captureDate text, CaptureTime text, ardProductId text, recordTimestamp text)''')
             
             conn.commit()
 
-        sql = "INSERT INTO s1ArdProducts VALUES (?,?,?,?,?)"
+        sql = "INSERT INTO s1ArdProducts VALUES (?,?,?,?,?,?)"
 
-        row = (reportLine[0], reportLine[1], reportLine[2], reportLine[3], reportLine[4])
+        recordTimestamp = str(datetime.now())
+        row = (reportLine[0], reportLine[1], reportLine[2], reportLine[3], reportLine[4], recordTimestamp)
 
         c.execute(sql, row)
 
