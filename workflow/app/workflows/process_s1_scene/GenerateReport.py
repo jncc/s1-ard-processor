@@ -87,7 +87,7 @@ class GenerateReport(luigi.Task):
         self.writeToCsv(reportLine, reportFilePath)
 
         if self.dbFileName:
-            dbFilePath = os.path.join(self.paths["report"], self.dbFileName)
+            dbFilePath = os.path.join(self.paths["database"], self.dbFileName)
 
             self.writeToDb(reportLine, dbFilePath)
 
