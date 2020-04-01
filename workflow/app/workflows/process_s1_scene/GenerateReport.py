@@ -10,9 +10,9 @@ from luigi import LocalTarget
 from luigi.util import requires
 
 from process_s1_scene.TransferFinalOutput import TransferFinalOutput
-from process_s1_scene.GetConfiguration import GetConfiguration
+from process_s1_scene.VerifyWorkflowOutput import VerifyWorkflowOutput
 
-@requires(TransferFinalOutput, GetConfiguration)
+@requires(TransferFinalOutput, VerifyWorkflowOutput)
 class GenerateReport(luigi.Task):
     paths = luigi.DictParameter()
     reportFileName = luigi.Parameter()
@@ -69,14 +69,14 @@ class GenerateReport(luigi.Task):
 
     def run(self):
         transferFinalOutputInfo = {}
-        with self.input()[0].open('r') as transferFinalOutput:
-            transferFinalOutputInfo = json.load(transferFinalOutput)
+        with self.input()[0].open('r') as stateFile:
+            transferFinalOutputInfo = json.load(stateFile)
 
-        configuration = {}
-        with self.input()[1].open('r') as getConfiguration:
-            configuration = json.load(getConfiguration)
+        verifyWorkflowOutput = {}
+        with self.input()[1].open('r') as stateFile:
+            verifyWorkflowOutput = json.load(stateFile)
 
-        inputProductName = os.path.basename(configuration["inputFilePath"]).split('.')[0]
+        inputProductName = verifyWorkflowOutput["sourceProductId"]
         outputProductName = os.path.basename(transferFinalOutputInfo["outputPath"])
 
         reportLine = self.parseInputName(inputProductName)
