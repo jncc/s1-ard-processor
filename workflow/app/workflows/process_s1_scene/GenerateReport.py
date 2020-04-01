@@ -46,7 +46,7 @@ class GenerateReport(luigi.Task):
             writer.writerow(reportLine)   
 
     def writeToDb(self, reportLine, dbPath):
-        conn = sqlite3.connect(dbPath)
+        conn = sqlite3.connect(dbPath, timeout=20)
 
         c = conn.cursor()
         c.execute(''' SELECT count(name) FROM sqlite_master WHERE type='table' AND name='s1ArdProducts' ''')
