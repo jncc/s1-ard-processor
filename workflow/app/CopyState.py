@@ -15,7 +15,7 @@ defaultStateFolder = "/state"
 configFile = "/state/GetConfiguration.json"
 
 if not os.listdir(defaultStateFolder):
-    log.warning("No luigi sate files detected in default /state folder")
+    log.warning("No luigi state files detected in default /state folder")
     sys.exit()
 
 if not (os.path.exists(configFile) and os.path.isfile(configFile)):

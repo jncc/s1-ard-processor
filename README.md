@@ -67,7 +67,9 @@ docker run -i --entrypoint /bin/bash
     -v /<hostPath>/output:/output 
     -v /<hostPath>/state:/state 
     -v /<hostPath>/static:/static 
-    -v /<hostPath>/working:/working 
+    -v /<hostPath>/working:/working
+    -v /<hostPath>/report:/report 
+    -v /<hostPath>/database:/database  
     -t jncc/test-s1-ard-processor 
 
 Where <hostpath> is the path on the host to the mounted folder
@@ -96,5 +98,7 @@ Run:
         --bind /<hostPath>/state:/state 
         --bind /<hostPath>/static:/static 
         --bind /<hostPath>/working:/working 
+        --bind /<hostPath>/report:/report 
+        --bind /<hostPath>/database:/database 
         s1-ard-processor.simg /app/exec.sh
         --productName 'S1A_IW_GRDH_1SDV_20180104T062204_20180104T062229_020001_02211F_43DB'

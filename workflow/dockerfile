@@ -54,7 +54,9 @@ RUN mkdir /input/ \
     && mkdir /static/ \
     && mkdir /state/ \
     && mkdir /working/ \
-    && mkdir /output/ 
+    && mkdir /output/ \
+    && mkdir /report/ \
+    && mkdir /database/
 
 # Copy the singularity test script
 COPY app/test-luigi.sh ./
