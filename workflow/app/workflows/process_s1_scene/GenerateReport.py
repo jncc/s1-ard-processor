@@ -23,7 +23,7 @@ class GenerateReport(luigi.Task):
         
         m = pattern.search(productId)
 
-        satellite = "SENTINEL1%s" % m.group(1)
+        satellite = "1%s" % m.group(1)
         captureDate = "%s-%s-%s" % (m.group(3), m.group(4), m.group(5)) 
         captureTime = "%s:%s:%s" % (m.group(6), m.group(7), m.group(8)) 
 
