@@ -4,7 +4,7 @@ dill==0.2.5
 docutils==0.14
 feedparser==5.2.1
 future==0.16.0
-httplib2==0.10.3
+httplib2==0.18.0
 idna==2.6
 jmespath==0.9.3
 lockfile==0.12.2
