@@ -1,7 +1,7 @@
 #!/usr/bin/expect -f
 
 set timeout -1
-spawn sh /app/esa-snap_all_unix_6_0.sh
+spawn sh /app/esa-snap_all_unix_7_0.sh
 expect "OK \\\[o, Enter\\\], Cancel \\\[c\\\]" 
 send "\n"
 
@@ -11,8 +11,8 @@ send "\n"
 expect "\\\[/usr/local/snap\\\]" 
 send "/app/snap\n"
     
-expect "\\\[1,2,3,4,5,6\\\]" 
-send "1\n"
+expect "\\\[2,3,4,5,6,7\\\]" 
+send "\n"
 
 # python install
 expect "Yes \\\[y, Enter\\\], No \\\[n\\\]" 
