@@ -6,6 +6,7 @@ import process_s1_scene.common as wc
 import datetime
 import re
 import zipfile
+import decimal
 from string import Template
 from luigi import LocalTarget
 from luigi.util import requires
@@ -33,14 +34,14 @@ class GenerateMetadata(luigi.Task):
         lonValues = []
         for pair in coordinateStringPairs:
             splitValues = pair.split(",")
-            latValues.append(splitValues[0])
-            lonValues.append(splitValues[1])
+            latValues.append(decimal.Decimal(splitValues[0]))
+            lonValues.append(decimal.Decimal(splitValues[1]))
 
         boundingBox = {
-            "north": max(latValues),
-            "south": min(latValues),
-            "east": max(lonValues),
-            "west": min(lonValues)
+            "north": str(max(latValues)),
+            "south": str(min(latValues)),
+            "east": str(max(lonValues)),
+            "west": str(min(lonValues))
         }
 
         return boundingBox
