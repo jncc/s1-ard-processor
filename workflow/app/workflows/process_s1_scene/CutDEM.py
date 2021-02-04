@@ -73,7 +73,7 @@ class CutDEM(luigi.Task):
             outFile.write(json.dumps({
                 'cutDemPath' : cutDemPath,
                 'cutLine' : cutLine
-            }))
+            }, indent=4))
 
     def output(self):
         outFile = os.path.join(self.paths['state'], 'CutDEM.json')

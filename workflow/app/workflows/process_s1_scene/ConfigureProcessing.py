@@ -60,7 +60,7 @@ class ConfigureProcessing(luigi.Task):
             raise Exception("Invalid working path: Check working path in paths parameter")
 
         with self.output().open("w") as outFile:
-            outFile.write(json.dumps(processingConfiguration))
+            outFile.write(json.dumps(processingConfiguration, indent=4))
                 
     def output(self):
         outFile = os.path.join(self.paths["state"], 'ConfigureProcessing.json')

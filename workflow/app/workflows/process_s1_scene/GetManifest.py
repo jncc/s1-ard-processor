@@ -29,7 +29,7 @@ class GetManifest(luigi.Task):
         with self.output().open('w') as out:
             out.write(json.dumps({
                 "manifestFile" : tempManifestFile
-            }))
+            }, indent=4))
 
     def output(self):
         outFile = os.path.join(self.paths["state"], 'GetManifest.json')

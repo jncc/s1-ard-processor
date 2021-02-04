@@ -101,7 +101,7 @@ class GenerateReport(luigi.Task):
             outFile.write(json.dumps({
                 "reportFilePath" : reportFilePath,
                 "reportLine" : reportLine
-            }))
+            }, indent=4))
             
     def output(self):
         outputFile = os.path.join(self.paths["state"], "GenerateReport.json")

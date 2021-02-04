@@ -71,7 +71,7 @@ class ModifyNoDataTif(luigi.Task):
         with self.output().open('w') as out:
             out.write(json.dumps({
                 "modifyNoDataTif" : outputFileName
-            }))
+            }, indent=4))
                 
     def output(self):
         outputFile = os.path.join(self.paths["state"], 'ModifyNoDataTif.json')
