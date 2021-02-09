@@ -16,29 +16,41 @@ class EnforceZip(luigi.Task):
     productName = luigi.Parameter()
 
     def run(self):
-        unzippedDirPath = os.path.join(self.paths["input"], self.productName)
-        zipFilePath = unzippedDirPath+".zip"
+        zipFilename = self.productName+".zip"
+        unzippedBasketPath = os.path.join(self.paths["input"], self.productName)
+        zippedBasketPath = os.path.join(self.paths["input"], zipFilename)
+        unzippedWorkingPath = os.path.join(self.paths["working"], self.productName)
+        zippedWorkingPath = os.path.join(self.paths["working"], zipFilename)
+        basketProductPath = ""
 
-        if os.path.isfile(zipFilePath):
-            log.info("Input file is already a zip, nothing to do")
+        if os.path.isfile(zippedBasketPath):
+            basketProductPath = zippedBasketPath
+            log.info("Input file is already a zip, copying to working area")
+            shutil.copyfile(zippedBasketPath, zippedWorkingPath)
         else:
-            log.info("Zipping input folder")
-            unzippedSAFEPath = unzippedDirPath+".SAFE"
-            zipf = zipfile.ZipFile(zipFilePath, 'w', zipfile.ZIP_DEFLATED)
+            basketProductPath = unzippedBasketPath
+            log.info("Copying input folder to working area then zipping")
+            shutil.copytree(unzippedBasketPath, unzippedWorkingPath)
+
+            safeDirName = self.productName+".SAFE"
+            safePath = os.path.join(self.paths["working"], safeDirName)
+
+            zipf = zipfile.ZipFile(zippedWorkingPath, 'w', zipfile.ZIP_DEFLATED)
             try:
-                os.rename(unzippedDirPath, unzippedSAFEPath)
+                os.rename(unzippedWorkingPath, safePath)
             except Exception as e:
                 log.warning(f"renaming folder failed, folder probably already contains .SAFE extension: {e}")
 
-            self.zipdir(unzippedSAFEPath, zipf)
+            self.zipdir(safePath, zipf)
             zipf.close()
-            shutil.rmtree(unzippedSAFEPath)
+            shutil.rmtree(safePath)
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
                 "productName": self.productName,
-                "zippedFileName": self.productName+".zip"
-            }))
+                "basketProductPath": basketProductPath,
+                "zipFilePath": zippedWorkingPath
+            }, indent=4))
 
     def zipdir(self, path, ziph):
         # ziph is zipfile handle

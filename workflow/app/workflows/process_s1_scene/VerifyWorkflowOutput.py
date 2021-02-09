@@ -43,9 +43,16 @@ class VerifyWorkflowOutput(luigi.Task):
             shutil.rmtree(configuration["workingRoot"])
             removedItems.append(configuration["workingRoot"])
 
+            os.remove(configuration["inputFilePath"])
+            removedItems.append(configuration["inputFilePath"])
+            
             if self.removeInputFile:
-                os.remove(configuration["inputFilePath"])
-                removedItems.append(configuration["inputFilePath"])
+                if os.path.isfile(configuration["basketProductPath"]):
+                    os.remove(configuration["basketProductPath"])
+                else:
+                    shutil.rmtree(configuration["basketProductPath"])
+                    
+                removedItems.append(configuration["basketProductPath"])
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
@@ -54,7 +61,7 @@ class VerifyWorkflowOutput(luigi.Task):
                 "cleanUp" : {
                     "removedItems" : removedItems
                 }
-            }))
+            }, indent=4))
 
 
     def output(self):

@@ -89,7 +89,7 @@ class ProcessRawToArd(luigi.Task):
             "false_northing" : parameters["s1_ard_false_northing"]
         }
 
-        return subprocess.run("sh {0} {1}".format(script, arguments), env=env, shell=runAsShell).returncode        
+        return subprocess.run("sh {0} {1}".format(script, arguments), env=env, shell=runAsShell, check=True).returncode        
 
     def createTestFiles(self, expectedFiles):
         for filePath in expectedFiles:
@@ -137,7 +137,7 @@ class ProcessRawToArd(luigi.Task):
             raise "Return code from snap process not 0, code was: {0}".format(retcode)
 
         with self.output().open('w') as out:
-            out.write(json.dumps(expectedOutput))
+            out.write(json.dumps(expectedOutput, indent=4))
                 
     def output(self):
         outputFile = os.path.join(self.paths["state"], 'ProcessRawToArd.json')

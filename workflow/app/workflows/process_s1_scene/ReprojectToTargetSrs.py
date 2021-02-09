@@ -114,7 +114,7 @@ class ReprojectToTargetSrs(luigi.Task):
             self.reprojectPolorisation(polarisation, src, state, manifest, configuration, inputFileName, outputRoot)
 
         with self.output().open("w") as outFile:
-            outFile.write(json.dumps(state))
+            outFile.write(json.dumps(state, indent=4))
                 
     def output(self):
         outputFile = os.path.join(self.paths["state"], 'ReprojectToTargetSrs.json')

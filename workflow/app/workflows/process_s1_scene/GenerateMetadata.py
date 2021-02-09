@@ -24,6 +24,8 @@ class GenerateMetadata(luigi.Task):
     buildConfigFile = luigi.Parameter()
 
     def getBoundingBox(self, manifestString):
+        SIXPLACES = decimal.Decimal(10) ** -6 # use this to get the decimals to display six decimal places
+
         pattern = "<gml:coordinates>.+<\/gml:coordinates>"
         coordinatesString = re.search(pattern, manifestString).group(0)
 
@@ -38,10 +40,10 @@ class GenerateMetadata(luigi.Task):
             lonValues.append(decimal.Decimal(splitValues[1]))
 
         boundingBox = {
-            "north": str(max(latValues)),
-            "south": str(min(latValues)),
-            "east": str(max(lonValues)),
-            "west": str(min(lonValues))
+            "north": str(max(latValues).quantize(SIXPLACES)),
+            "south": str(min(latValues).quantize(SIXPLACES)),
+            "east": str(max(lonValues).quantize(SIXPLACES)),
+            "west": str(min(lonValues).quantize(SIXPLACES))
         }
 
         return boundingBox
@@ -159,7 +161,7 @@ class GenerateMetadata(luigi.Task):
         with self.output().open('w') as out:
             out.write(json.dumps({
                 "ardMetadataFile" : ardMetadataFile
-            }))
+            }, indent=4))
 
 
 

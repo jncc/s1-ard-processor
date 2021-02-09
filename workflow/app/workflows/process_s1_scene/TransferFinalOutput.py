@@ -72,7 +72,7 @@ class TransferFinalOutput(luigi.Task):
         self.copyMetadata(generateMetadataInfo["ardMetadataFile"], outputPath, current_progress)
         
         with self.output().open("w") as outFile:
-            outFile.write(json.dumps(current_progress))
+            outFile.write(json.dumps(current_progress, indent=4))
 
     def output(self):
         outFile = os.path.join(self.paths['state'], 'TransferFinalOutput.json')

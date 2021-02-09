@@ -4,3 +4,4 @@ __pycache__
 *.pem
 .vscode/
 *luigi.cfg
+.venv

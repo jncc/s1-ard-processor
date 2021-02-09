@@ -41,7 +41,7 @@ class AddMergedOverviews(luigi.Task):
         with self.output().open('w') as out:
             out.write(json.dumps({
                 "overviewsAddedTo" : mergedProduct
-            }))
+            }, indent=4))
 
     def output(self):
         outputFile = os.path.join(self.paths["state"], "AddMergedOverviews.json")

@@ -20,7 +20,8 @@ class GetConfiguration(luigi.Task):
         with self.input().open('r') as enforceZip:
             enforceZipInfo = json.load(enforceZip)
 
-        inputFilePath = os.path.join(self.paths["input"], enforceZipInfo["zippedFileName"])
+        basketProductPath = enforceZipInfo["basketProductPath"]
+        inputFilePath = enforceZipInfo["zipFilePath"]
 
         check = CheckFileExists(inputFilePath)
         yield check
@@ -28,6 +29,7 @@ class GetConfiguration(luigi.Task):
         productId = wc.getProductIdFromSourceFile(inputFilePath)
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
+                "basketProductPath" : basketProductPath, # original product file or folder
                 "inputFilePath" : inputFilePath,
                 "productPattern" : wc.getProductPatternFromSourceFile(inputFilePath),
                 "productId" : productId,
@@ -42,7 +44,7 @@ class GetConfiguration(luigi.Task):
                 "metadataProjection" : self.spatialConfig["metadataProjection"],
                 "placeName" : self.spatialConfig["metadataPlaceName"],
                 "parentPlaceName" : self.spatialConfig["metadataParentPlaceName"]
-            }))
+            }, indent=4))
 
     def output(self):
         outFile = os.path.join(self.paths['state'], 'GetConfiguration.json')

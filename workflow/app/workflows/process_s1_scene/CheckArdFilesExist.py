@@ -25,7 +25,7 @@ class CheckArdFilesExist(luigi.Task):
         yield tasks
 
         with self.output().open("w") as outFile:
-            outFile.write(json.dumps(processedOutput))
+            outFile.write(json.dumps(processedOutput, indent=4))
 
     def output(self):
         outputFile = os.path.join(self.paths["state"], "CheckArdFilesExist.json")

@@ -80,7 +80,7 @@ class MergeBands(luigi.Task):
         with self.output().open('w') as out:
             out.write(json.dumps({
                 "mergedOutputFile" : outputFile
-            }))
+            }, indent=4))
 
     def output(self):
         outputFile = os.path.join(self.paths["state"], "MergeBands.json")

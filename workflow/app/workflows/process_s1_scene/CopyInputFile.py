@@ -37,7 +37,7 @@ class CopyInputFile(luigi.Task):
             out.write(json.dumps({
                 "tempInputPath" : tempInputPath,
                 "tempInputFile" : tempTatget
-            }))
+            }, indent=4))
 
     def output(self):
         outputFile = os.path.join(self.paths["state"], 'CopyInputFile.json')
