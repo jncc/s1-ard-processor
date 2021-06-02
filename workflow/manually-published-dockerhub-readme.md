@@ -62,8 +62,8 @@ Following a successful run the output folder will contain the following structur
     │   └── <Month>
     │       └── <Day>
     │           └── <Merged Output Product Name>
-    │               ├── <Merged Output Product Name_meta.tif> - Merged product data
-    │               ├── <Merged Output Product Name.xml> - Product metadata
+    │               ├── <Merged Output Product Name.tif> - Merged product data
+    │               ├── <Merged Output Product Name_meta.xml> - Product metadata
     └── state
         └── <Workflow Product ID>
             ├── AddMergedOverviews.json
@@ -140,9 +140,9 @@ Processing the product S1A_IW_GRDH_1SDV_20180104T062254_20180104T062319_020001_0
     ├── 2018
     │   └── 01
     │       └── 04
-    │           └── S1A_20180104_154_desc_062254_062319_DV_Gamma-0_GB_OSGB_RCTK_SpkRL
-    │               ├── S1A_20180104_154_desc_062254_062319_DV_Gamma-0_GB_OSGB_RCTK_SpkRL.tif
-    │               ├── S1A_20180104_154_desc_062254_062319_DV_Gamma-0_GB_OSGB_RCTK_SpkRL.xml
+    │           └── S1A_20180104_154_desc_062254_062319_VVVH_G0_GB_OSGB_RTCK_SpkRL
+    │               ├── S1A_20180104_154_desc_062254_062319_VVVH_G0_GB_OSGB_RTCK_SpkRL.tif
+    │               ├── S1A_20180104_154_desc_062254_062319_VVVH_G0_GB_OSGB_RTCK_SpkRL_meta.xml
     └── state
         └── S1A_20180104_062254_062319
             ├── AddMergedOverviews.json
