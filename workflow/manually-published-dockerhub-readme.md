@@ -1,3 +1,5 @@
+> **JUNE 2021 UPDATE**: All earlier versions of this Docker container (< 0.0.0.33) are deprecated and should not be used. The earlier versions use a bounding box provided by ESA to clip the DEM that is used for topographic correction. This bounding box does not cover the full extent of the data, omitting a strip of up to 2km along the entire northern edge of each scene. As a result, the data within this strip is not topographically corrected and a spatial shift can be observed in topographic features. A line of nodata pixels separates the strip of uncorrected data from the rest of the scene. All newer Docker containers (0.0.0.33 and onwards) use a bounding box derived from the data footprint to clip the DEM for topographic correction, resolving this issue.
+
 ## What is this?
 
 This container provides a luigi workflow that processes raw Sentinel 1 scenes from ESA to an Analysis Ready Data (ARD) product utilising the SNAP toolbox from ESA. 
