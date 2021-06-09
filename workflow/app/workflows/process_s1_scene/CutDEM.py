@@ -1,29 +1,67 @@
 import process_s1_scene.common as wc
-import json
+import simplejson as json
 import logging
 import luigi
 import os
 import subprocess
 import xml.etree.ElementTree
 import zipfile
+import re
+import decimal
 
 from process_s1_scene.CreateLocalFile import CreateLocalFile
 from process_s1_scene.GetConfiguration import GetConfiguration
+from process_s1_scene.GetManifest import GetManifest
+from process_s1_scene.CheckFileExists import CheckFileExists
 from luigi.util import requires
 from luigi import LocalTarget
 
 log = logging.getLogger('luigi-interface')
 
-@requires(GetConfiguration)
+@requires(GetConfiguration, GetManifest)
 class CutDEM(luigi.Task):
     paths = luigi.DictParameter()
     testProcessing = luigi.BoolParameter()
 
+    def getBoundingBoxCoords(self, manifestString):
+        pattern = "<gml:coordinates>.+<\/gml:coordinates>"
+        coordinatesString = re.search(pattern, manifestString).group(0)
+
+        coordinatePattern = "-?\d+\.\d+,-?\d+\.\d+" # finds strings like 60.113426,-7.616333
+        coordinateStringPairs = re.findall(coordinatePattern, coordinatesString)
+
+        latValues = []
+        lonValues = []
+        for pair in coordinateStringPairs:
+            splitValues = pair.split(",")
+            latValues.append(decimal.Decimal(splitValues[0]))
+            lonValues.append(decimal.Decimal(splitValues[1]))
+
+        north = max(latValues)
+        south = min(latValues)
+        east = max(lonValues)
+        west = min(lonValues)
+
+        boundingBoxCoords = [[west, south], [west, north], [east, north], [east, south], [west, south]]
+
+        return boundingBoxCoords
+
     def run(self):
 
         configuration = {}
-        with self.input().open('r') as getConfiguration:
+        with self.input()[0].open('r') as getConfiguration:
             configuration = json.load(getConfiguration)
+
+        getManifestInfo = {}
+        with self.input()[1].open('r') as getManifest:
+            getManifestInfo = json.load(getManifest)
+
+        manifestLoader = CheckFileExists(filePath=getManifestInfo["manifestFile"])
+        yield manifestLoader
+
+        manifest = {}
+        with manifestLoader.output().open('r') as manifestFile:
+            manifest = manifestFile.read()
 
         cutLine = {}
 
@@ -31,30 +69,19 @@ class CutDEM(luigi.Task):
         cutDemPath = os.path.join(cutDemPathRoot, 'cutDem.tif')
         cutLinePath = os.path.join(cutDemPathRoot, "cutline.geojson") 
         demPath = os.path.join(self.paths["static"], configuration["demFilename"])
+        boundingBoxCoords = self.getBoundingBoxCoords(manifest)
         
         inputFilePath = configuration["inputFilePath"]
 
+        cutLine = {
+            "type": "polygon",
+            "coordinates": [boundingBoxCoords]
+        }
+
+        with open(cutLinePath, "w") as cutlineFile:
+            cutlineFile.write(json.dumps(cutLine, use_decimal=True))
+
         if not self.testProcessing:
-
-            with zipfile.ZipFile(inputFilePath) as productZipFile:
-                with productZipFile.open("{}.SAFE/preview/map-overlay.kml".format(os.path.basename(inputFilePath).replace(".zip", ""))) as overlay:
-                    # Grab first latlong element as there should only be one
-                    coordinatesXMLElement = xml.etree.ElementTree.fromstring(overlay.read().decode("utf-8")).findall(".//Document/Folder/GroundOverlay/gx:LatLonQuad/coordinates", {"gx": "http://www.google.com/kml/ext/2.2"})[0]
-                    coordinates = []
-                    # Push coordinates from XML into array, converting to floats
-                    for coord in coordinatesXMLElement.text.split(' '):
-                        coordinates.append(list(map(lambda x: float(x), coord.split(','))))
-                    # Copy first coordinate to end of list to complete polygon
-                    coordinates.append(coordinates[0])
-
-                    cutLine = {
-                            "type": "polygon",
-                            "coordinates": [coordinates]
-                        }
-
-                    with open(cutLinePath, "w") as cutlineFile:
-                        cutlineFile.write(json.dumps(cutLine))
-
             try:
                 subprocess.check_output(
                     "gdalwarp -of GTiff -crop_to_cutline -overwrite --config CHECK_DISK_FREE_SPACE NO -cutline {} {} {}".format(cutLinePath, demPath, cutDemPath), 
@@ -66,14 +93,13 @@ class CutDEM(luigi.Task):
                 raise RuntimeError(errStr)
 
         else:
-            # yield CreateLocalFile(filePath=cutDemPath, content="TEST_FILE")
             wc.createTestFile(cutDemPath)
 
         with self.output().open("w") as outFile:
             outFile.write(json.dumps({
                 'cutDemPath' : cutDemPath,
                 'cutLine' : cutLine
-            }, indent=4))
+            }, use_decimal=True, indent=4))
 
     def output(self):
         outFile = os.path.join(self.paths['state'], 'CutDEM.json')
