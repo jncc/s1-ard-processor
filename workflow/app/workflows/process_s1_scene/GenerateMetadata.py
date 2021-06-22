@@ -112,6 +112,7 @@ class GenerateMetadata(luigi.Task):
         projection = configuration["metadataProjection"]
         referenceSystemCodeSpace = configuration["targetSrs"].split(":")[0]
         referenceSystemCode = configuration["targetSrs"].split(":")[1]
+        esaFilename = os.path.splitext(os.path.basename(configuration["inputFilePath"]))[0]
         demTitle = configuration["demTitle"]
         placeName = configuration["placeName"]
         parentPlaceName = configuration["parentPlaceName"]
@@ -136,6 +137,7 @@ class GenerateMetadata(luigi.Task):
             "polarisation": "VV+VH",
             "collectionMode": collectionMode,
             "collectionTime": collectionTime,
+            "ESAfilename": esaFilename,
             "demTitle": demTitle,
             "placeName": placeName,
             "parentPlaceName": parentPlaceName,
