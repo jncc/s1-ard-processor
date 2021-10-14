@@ -33,19 +33,17 @@ build
 
 * Bump library versions in build script
 
-
 -- caveat : output filenames could change due snap update - causes workflow code changes - 1 week 
 -- move docker image repos into public aws repo - dockerhub deletes old images. ~ ?
-
 
 EO Team testing
 ===============
 1 week ?
 
 Manually run process
-* create linux back
+* create linux machine - dev team
 Check 
 * base os they are running on - wsl, ubunut etc
-* latest gdal
+* latest gdal?
 * snap version
 
