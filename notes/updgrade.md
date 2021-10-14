@@ -39,7 +39,7 @@ build
 EO Team tasks
 =============
 
-Manually run process
+* Coordinate process updates with EODS
 * dev team to supply vm on aws running ubuntu 20.04 
 * EO to determine snap version and gdal version
 * Run through manual process to ensure versions work before containers are build
