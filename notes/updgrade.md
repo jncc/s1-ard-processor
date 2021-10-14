@@ -36,14 +36,11 @@ build
 -- caveat : output filenames could change due snap update - causes workflow code changes - 1 week 
 -- move docker image repos into public aws repo - dockerhub deletes old images. ~ ?
 
-EO Team testing
-===============
-1 week ?
+EO Team tasks
+=============
 
 Manually run process
-* create linux machine - dev team
-Check 
-* base os they are running on - wsl, ubunut etc
-* latest gdal?
-* snap version
-
+* dev team to supply vm on aws running ubuntu 20.04 
+* EO to determine snap version and gdal version
+* Run through manual process to ensure versions work before containers are build
+* QA / QC outputs from new containers. 
