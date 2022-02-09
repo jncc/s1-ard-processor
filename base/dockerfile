@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 # Setup app folder
 WORKDIR /app
@@ -8,7 +8,7 @@ RUN apt-get update && apt-get -y install \
     python3-setuptools \
     wget \
     expect \
-    libgfortran3 \
+    libgfortran5 \
     ttf-dejavu
 
 # Install snap toolbox
