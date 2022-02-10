@@ -24,7 +24,8 @@ RUN expect -f ./install-snap.sh \
 # finished update line and then kill the process
 COPY config/app/update-snap.sh /app
 RUN chmod +x update-snap.sh \ 
-    && ./update-snap.sh
+    && ./update-snap.sh \
+    && rm updates-snap.sh
 
 # Configure snap toolbox
 COPY config/app/snap/bin/gpt.vmoptions ./snap/bin
