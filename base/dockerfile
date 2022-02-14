@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 # Setup app folder
 WORKDIR /app
@@ -8,17 +8,24 @@ RUN apt-get update && apt-get -y install \
     python3-setuptools \
     wget \
     expect \
-    libgfortran3
+    libgfortran5 \
+    ttf-dejavu
 
 # Install snap toolbox
 COPY config/app/install-snap.sh /app
+RUN wget http://step.esa.int/downloads/8.0/installers/esa-snap_all_unix_8_0.sh \
+    && chmod +x install-snap.sh 
 
-RUN wget http://step.esa.int/downloads/7.0/installers/esa-snap_all_unix_7_0.sh \
-    && chmod +x install-snap.sh \
-    && ./install-snap.sh \
+RUN expect -f ./install-snap.sh \
     && rm install-snap.sh \
-    && rm esa-snap_all_unix_7_0.sh \
-    && snap --nosplash --nogui --modules --update-all
+    && rm esa-snap_all_unix_8_0.sh 
+
+# Copy update script, current snap hangs at end of toolbox update so need to scan for
+# finished update line and then kill the process
+COPY config/app/update-snap.sh /app
+RUN chmod +x update-snap.sh \ 
+    && ./update-snap.sh \
+    && rm updates-snap.sh
 
 # Configure snap toolbox
 COPY config/app/snap/bin/gpt.vmoptions ./snap/bin
