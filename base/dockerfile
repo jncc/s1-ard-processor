@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 
 # Setup app folder
 WORKDIR /app
@@ -9,16 +9,18 @@ RUN apt-get update && apt-get -y install \
     wget \
     expect \
     libgfortran5 \
-    ttf-dejavu
+    fonts-dejavu \
+    ttf-dejavu-core \
+    ttf-dejavu-extra
 
 # Install snap toolbox
 COPY config/app/install-snap.sh /app
-RUN wget http://step.esa.int/downloads/8.0/installers/esa-snap_all_unix_9_0.sh \
+RUN wget http://step.esa.int/downloads/9.0/installers/esa-snap_all_unix_9_0_0.sh \
     && chmod +x install-snap.sh 
 
 RUN expect -f ./install-snap.sh \
     && rm install-snap.sh \
-    && rm esa-snap_all_unix_9_0.sh 
+    && rm esa-snap_all_unix_9_0_0.sh 
 
 # Copy update script, current snap hangs at end of toolbox update so need to scan for
 # finished update line and then kill the process

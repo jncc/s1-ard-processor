@@ -1,7 +1,7 @@
 #!/usr/bin/expect -f
 
 set timeout -1
-spawn sh /app/esa-snap_all_unix_9_0.sh
+spawn sh /app/esa-snap_all_unix_9_0_0.sh
 expect "OK \\\[o, Enter\\\], Cancel \\\[c\\\]" 
 send "\n"
 
