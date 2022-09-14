@@ -1,10 +1,8 @@
 import luigi
 import os
-import errno
 import json
 import logging
 import process_s1_scene.common as wc
-import distutils.dir_util as distutils
 from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.CutDEM import CutDEM

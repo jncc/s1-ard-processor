@@ -1,6 +1,5 @@
 import luigi
 import json
-import re
 import logging
 import os
 import process_s1_scene.common as wc

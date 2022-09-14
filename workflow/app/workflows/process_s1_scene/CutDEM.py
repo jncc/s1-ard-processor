@@ -4,12 +4,9 @@ import logging
 import luigi
 import os
 import subprocess
-import xml.etree.ElementTree
-import zipfile
 import re
 import decimal
 
-from process_s1_scene.CreateLocalFile import CreateLocalFile
 from process_s1_scene.GetConfiguration import GetConfiguration
 from process_s1_scene.GetManifest import GetManifest
 from process_s1_scene.CheckFileExists import CheckFileExists

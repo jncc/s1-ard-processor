@@ -1,5 +1,4 @@
 import luigi
-import process_s1_scene.common as wc
 import os
 import json
 from luigi import LocalTarget

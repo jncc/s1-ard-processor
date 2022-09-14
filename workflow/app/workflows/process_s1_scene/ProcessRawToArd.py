@@ -1,6 +1,5 @@
 import luigi
 import os
-import errno
 import json
 import logging
 import process_s1_scene.common as wc
@@ -13,7 +12,6 @@ from process_s1_scene.ConfigureProcessing import ConfigureProcessing
 from process_s1_scene.CutDEM import CutDEM
 from process_s1_scene.GetConfiguration import GetConfiguration
 from process_s1_scene.CheckFileExists import CheckFileExists
-from process_s1_scene.CreateLocalFile import CreateLocalFile
 
 log = logging.getLogger('luigi-interface')
 

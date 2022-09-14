@@ -1,5 +1,4 @@
 import luigi
-import logging
 import zipfile
 import os
 import json

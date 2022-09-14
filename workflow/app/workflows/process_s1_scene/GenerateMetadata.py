@@ -5,7 +5,6 @@ import logging
 import process_s1_scene.common as wc
 import datetime
 import re
-import zipfile
 import decimal
 from string import Template
 from luigi import LocalTarget

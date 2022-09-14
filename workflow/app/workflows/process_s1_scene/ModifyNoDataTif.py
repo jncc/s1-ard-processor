@@ -1,17 +1,13 @@
 import luigi
 import os
-import re
 import json
 import logging
 import process_s1_scene.common as wc
 import subprocess
-import re
-from os.path import join as joinPath
 from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.AddMergedOverviews import AddMergedOverviews
 from process_s1_scene.ConfigureProcessing import ConfigureProcessing
-from process_s1_scene.CheckFileExists import CheckFileExists
 
 log = logging.getLogger('luigi-interface')
 

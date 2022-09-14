@@ -1,7 +1,6 @@
 import luigi
 import json
 import os
-import logging
 import shutil
 
 from luigi import LocalTarget
