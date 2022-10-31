@@ -67,11 +67,9 @@ class CutDEM(luigi.Task):
         cutLinePath = os.path.join(cutDemPathRoot, "cutline.geojson") 
         demPath = os.path.join(self.paths["static"], configuration["demFilename"])
         boundingBoxCoords = self.getBoundingBoxCoords(manifest)
-        
-        inputFilePath = configuration["inputFilePath"]
 
         cutLine = {
-            "type": "polygon",
+            "type": "Polygon",
             "coordinates": [boundingBoxCoords]
         }
 
