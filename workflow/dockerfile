@@ -52,7 +52,7 @@ RUN mkdir /input/ \
     && mkdir /report/ \
     && mkdir /database/
 
-# Copy the singularity test script
+# Copy the apptainer test script
 COPY app/test-luigi.sh ./
 
 # Initialise startup script

@@ -74,7 +74,7 @@ docker run -i --entrypoint /bin/bash
 
 Where <hostpath> is the path on the host to the mounted folder
 
-Convert Docker image to Singularity image
+Convert Docker image to Apptainer image
 -----------------------------------------
 
 Run a local docker registry
@@ -86,13 +86,13 @@ Tag and push your docker image to the registry
     docker tag s1-ard-processor localhost:5000/s1-ard-processor
     docker push localhost:5000/s1-ard-processor
 
-Build a Singularity image using your Docker image
+Build an apptainer image using your Docker image
 
-    sudo SINGULARITY_NOHTTPS=1 singularity build s1-ard-processor.simg docker://localhost:5000/s1-ard-processor
+    sudo apptainer build --no-https s1-ard-processor.sif docker://localhost:5000/s1-ard-processor
 
 Run:
 
-    singularity exec
+    apptainer exec
         -bind /<hostPath>/input:/input 
         --bind /<hostPath>/output:/output 
         --bind /<hostPath>/state:/state 
@@ -100,5 +100,5 @@ Run:
         --bind /<hostPath>/working:/working 
         --bind /<hostPath>/report:/report 
         --bind /<hostPath>/database:/database 
-        s1-ard-processor.simg /app/exec.sh
+        s1-ard-processor.sif /app/exec.sh
         --productName 'S1A_IW_GRDH_1SDV_20180104T062204_20180104T062229_020001_02211F_43DB'
