@@ -231,6 +231,10 @@
           Data Collection Time: $collectionTime
           Instrument: Sentinel-1  C-band synthetic aperture radar instrument operating at a centre frequency of 5.405 GHz
           ESA file name: $ESAfilename
+          RFI detected VV: $rfiDetectedVV
+          RFI detected VH: $rfiDetectedVH
+          RFI mitigation applied VV: $rfiMitigationAppliedVV
+          RFI mitigation applied VH: $rfiMitigationAppliedVH
           Software Info: : SNAP. URL:https://step.esa.int/main/toolboxes/snap/. Version: $snapVersion using an apptainer image based on docker image $dockerImage produced by JNCC
           Algorithms: Radiometric normalisation and Terrain correction use Kellndorfer (Kellndorfer et al., 1998) algorithms implemented in SNAP toolbox (http://step.esa.int). Speckle filtering uses Refined Lee (Lee Pottier, 2009), also implemented in SNAP toolbox. Reprojection applied using GDAL v$gdalVersion
           CEOS Analysis Ready Data for Land (CARD4L): http://ceos.org/ard/files/CARD4L_Product_Specification_Backscatter_v4.0.pdf

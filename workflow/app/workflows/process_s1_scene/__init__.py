@@ -6,6 +6,7 @@ import process_s1_scene.ConfigureProcessing
 import process_s1_scene.CreateLocalFile
 import process_s1_scene.CutDEM
 import process_s1_scene.GetConfiguration
+import process_s1_scene.GetRFIInfo
 import process_s1_scene.MergeBands
 import process_s1_scene.ProcessRawToArd
 import process_s1_scene.ReprojectToTargetSrs
