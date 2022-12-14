@@ -49,7 +49,7 @@ class GetRFIInfo(luigi.Task):
 
         # match the VV and VH RFI filenames
         # e.g. S1A_IW_GRDH_1SDV_20220826T175933_20220826T175958_044727_055726_B7DC.SAFE/annotation/rfi/rfi-s1a-iw-grd-vh-20220826t175933-20220826t175958-044727-055726-002.xml
-        pattern = '(S1[AB]_IW_GRDH_1SDV_[a-zA-Z0-9_]*\.SAFE\/annotation\/rfi\/rfi-s1a-iw-grd-[vv][vh]-[a-zA-Z0-9-]*.xml)' 
+        pattern = '(S1[AB]_IW_GRDH_1SDV_[a-zA-Z0-9_]*\.SAFE\/annotation\/rfi\/rfi-s1[ab]-iw-grd-[vv][vh]-[a-zA-Z0-9-]*.xml)' 
 
         matches = []
         for file in filesInZip:
