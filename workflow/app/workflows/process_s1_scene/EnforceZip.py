@@ -4,10 +4,8 @@ import os
 import logging
 import zipfile
 import shutil
-import process_s1_scene.common as wc
 
 from luigi import LocalTarget
-from process_s1_scene.CheckFileExists import CheckFileExists
 
 log = logging.getLogger('luigi-interface')
 

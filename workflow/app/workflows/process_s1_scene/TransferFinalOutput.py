@@ -1,11 +1,8 @@
 import luigi
 import os
-import re
 import json
 import logging
 import shutil
-import process_s1_scene.common as wc
-from shutil import copyfile
 from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.GetConfiguration import GetConfiguration

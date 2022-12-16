@@ -5,19 +5,19 @@ import logging
 import process_s1_scene.common as wc
 import datetime
 import re
-import zipfile
 import decimal
 from string import Template
 from luigi import LocalTarget
 from luigi.util import requires
 from process_s1_scene.GetConfiguration import GetConfiguration
 from process_s1_scene.GetManifest import GetManifest
+from process_s1_scene.GetRFIInfo import GetRFIInfo
 from process_s1_scene.ConfigureProcessing import ConfigureProcessing
 from process_s1_scene.CheckFileExists import CheckFileExists
 
 log = logging.getLogger('luigi-interface')
 
-@requires(GetConfiguration, GetManifest, ConfigureProcessing)
+@requires(GetConfiguration, GetManifest, ConfigureProcessing, GetRFIInfo)
 class GenerateMetadata(luigi.Task):
     paths = luigi.DictParameter()
     metadataTemplate = luigi.Parameter()
@@ -87,6 +87,10 @@ class GenerateMetadata(luigi.Task):
         with self.input()[2].open('r') as configureProcessing:
             configureProcessingInfo = json.load(configureProcessing)
 
+        rfiInfo = {}
+        with self.input()[3].open('r') as getRFIInfo:
+            rfiInfo = json.load(getRFIInfo)
+
         manifestLoader = CheckFileExists(filePath=getManifestInfo["manifestFile"])
         yield manifestLoader
 
@@ -113,6 +117,10 @@ class GenerateMetadata(luigi.Task):
         referenceSystemCodeSpace = configuration["targetSrs"].split(":")[0]
         referenceSystemCode = configuration["targetSrs"].split(":")[1]
         esaFilename = os.path.splitext(os.path.basename(configuration["inputFilePath"]))[0]
+        rfiDetectedVV = rfiInfo["rfiDetectedVV"]
+        rfiDetectedVH = rfiInfo["rfiDetectedVH"]
+        rfiMitigationAppliedVV = rfiInfo["rfiMitigationAppliedVV"]
+        rfiMitigationAppliedVH = rfiInfo["rfiMitigationAppliedVH"]
         demTitle = configuration["demTitle"]
         placeName = configuration["placeName"]
         parentPlaceName = configuration["parentPlaceName"]
@@ -138,6 +146,10 @@ class GenerateMetadata(luigi.Task):
             "collectionMode": collectionMode,
             "collectionTime": collectionTime,
             "ESAfilename": esaFilename,
+            "rfiDetectedVV": rfiDetectedVV,
+            "rfiDetectedVH": rfiDetectedVH,
+            "rfiMitigationAppliedVV": rfiMitigationAppliedVV,
+            "rfiMitigationAppliedVH": rfiMitigationAppliedVH,
             "demTitle": demTitle,
             "placeName": placeName,
             "parentPlaceName": parentPlaceName,

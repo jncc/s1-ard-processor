@@ -5,7 +5,6 @@ import json
 import logging
 import process_s1_scene.common as wc
 import subprocess
-import distutils.dir_util as distutils
 from luigi import LocalTarget
 from luigi.util import requires
 from functional import seq
