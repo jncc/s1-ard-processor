@@ -62,17 +62,17 @@ Use --no-cache to build from scratch
 
 Run Interactively:
 
-docker run -i --entrypoint /bin/bash 
-    -v /<hostPath>/input:/input 
-    -v /<hostPath>/output:/output 
-    -v /<hostPath>/state:/state 
-    -v /<hostPath>/static:/static 
-    -v /<hostPath>/working:/working
-    -v /<hostPath>/report:/report 
-    -v /<hostPath>/database:/database  
-    -t jncc/test-s1-ard-processor 
+    docker run -i --entrypoint /bin/bash 
+        -v /<hostPath>/input:/input 
+        -v /<hostPath>/output:/output 
+        -v /<hostPath>/state:/state 
+        -v /<hostPath>/static:/static 
+        -v /<hostPath>/working:/working
+        -v /<hostPath>/report:/report 
+        -v /<hostPath>/database:/database  
+        -t jncc/test-s1-ard-processor 
 
-Where <hostpath> is the path on the host to the mounted folder
+Where \<hostpath> is the path on the host to the mounted folder
 
 Convert Docker image to Apptainer image
 -----------------------------------------
