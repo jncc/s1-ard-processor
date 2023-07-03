@@ -102,3 +102,14 @@ Run:
         --bind /<hostPath>/database:/database 
         s1-ard-processor.sif /app/exec.sh
         --productName 'S1A_IW_GRDH_1SDV_20180104T062204_20180104T062229_020001_02211F_43DB'
+
+Code change and deployment process
+----------------------------------
+
+The code in this repo will be jointly maintained by JNCC and DEFRA/CGI. Use the steps below as a guideline for making new changes:
+
+1. Create a new `feature` branch from `main` and commit your changes there until you're ready to merge
+2. Open a pull request to merge back into `main` and add a reviewer from both JNCC and CGI to notify them
+3. JNCC then uses the `feature` branch to build a [jncc/s1-ard-processor-dev](https://hub.docker.com/r/jncc/s1-ard-processor-dev) docker image which both parties can use for testing and QA
+4. Once it passes QA, JNCC will approve the PR, merge it into `main`, and build a live [jncc/s1-ard-processor](https://hub.docker.com/r/jncc/s1-ard-processor) docker image which can be deployed to production
+
