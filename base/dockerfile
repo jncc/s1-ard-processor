@@ -12,7 +12,6 @@ RUN apt-get update && apt-get -y install \
     fonts-dejavu
 
 # Install snap toolbox with default settings
-COPY config/app/install-snap.sh /app
 RUN wget https://download.esa.int/step/snap/10_0/installers/esa-snap_sentinel_linux-10.0.0.sh
 RUN sh esa-snap_sentinel_linux-10.0.0.sh -q
 
