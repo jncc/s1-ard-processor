@@ -4,6 +4,7 @@ import os
 import logging
 import zipfile
 import shutil
+import glob
 
 from luigi import LocalTarget
 
@@ -15,20 +16,25 @@ class EnforceZip(luigi.Task):
 
     def run(self):
         zipFilename = self.productName+".zip"
-        unzippedBasketPath = os.path.join(self.paths["input"], self.productName)
         zippedBasketPath = os.path.join(self.paths["input"], zipFilename)
-        unzippedWorkingPath = os.path.join(self.paths["working"], self.productName)
         zippedWorkingPath = os.path.join(self.paths["working"], zipFilename)
-        basketProductPath = ""
 
+        basketProductPath = ""
         if os.path.isfile(zippedBasketPath):
             basketProductPath = zippedBasketPath
             log.info("Input file is already a zip, copying to working area")
-            shutil.copyfile(zippedBasketPath, zippedWorkingPath)
+            shutil.copyfile(basketProductPath, zippedWorkingPath)
         else:
-            basketProductPath = unzippedBasketPath
+            unzippedBasketPathPattern = os.path.join(self.paths["input"], self.productName + "*") # allow for folders with .SAFE suffix
+            unzippedWorkingPath = os.path.join(self.paths["working"], self.productName)
+
+            paths = glob.glob(unzippedBasketPathPattern)
+            if len(paths) != 1:
+                raise Exception(f"Something went wrong, found {len(paths)} matches for {unzippedBasketPathPattern}")
+            
+            basketProductPath = paths[0]
             log.info("Copying input folder to working area then zipping")
-            shutil.copytree(unzippedBasketPath, unzippedWorkingPath)
+            shutil.copytree(basketProductPath, unzippedWorkingPath)
 
             safeDirName = self.productName+".SAFE"
             safePath = os.path.join(self.paths["working"], safeDirName)
