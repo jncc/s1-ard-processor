@@ -2,7 +2,6 @@ import luigi
 import json
 import os
 import logging
-import zipfile
 import shutil
 import glob
 
@@ -15,7 +14,8 @@ class EnforceZip(luigi.Task):
     productName = luigi.Parameter()
 
     def run(self):
-        zipFilename = self.productName+".zip"
+        productNameWithoutSuffix = self.productName.removesuffix(".SAFE") # make sure name has no .SAFE suffix
+        zipFilename = productNameWithoutSuffix+".zip"
         zippedBasketPath = os.path.join(self.paths["input"], zipFilename)
         zippedWorkingPath = os.path.join(self.paths["working"], zipFilename)
 
@@ -25,8 +25,8 @@ class EnforceZip(luigi.Task):
             log.info("Input file is already a zip, copying to working area")
             shutil.copyfile(basketProductPath, zippedWorkingPath)
         else:
-            unzippedBasketPathPattern = os.path.join(self.paths["input"], self.productName + "*") # allow for folders with .SAFE suffix
-            unzippedWorkingPath = os.path.join(self.paths["working"], self.productName)
+            unzippedBasketPathPattern = os.path.join(self.paths["input"], productNameWithoutSuffix + "*")
+            unzippedWorkingPath = os.path.join(self.paths["working"], productNameWithoutSuffix)
 
             paths = glob.glob(unzippedBasketPathPattern)
             if len(paths) != 1:
@@ -36,17 +36,11 @@ class EnforceZip(luigi.Task):
             log.info("Copying input folder to working area then zipping")
             shutil.copytree(basketProductPath, unzippedWorkingPath)
 
-            safeDirName = self.productName+".SAFE"
+            safeDirName = productNameWithoutSuffix+".SAFE" # add it back in for zipping
             safePath = os.path.join(self.paths["working"], safeDirName)
 
-            zipf = zipfile.ZipFile(zippedWorkingPath, 'w', zipfile.ZIP_DEFLATED)
-            try:
-                os.rename(unzippedWorkingPath, safePath)
-            except Exception as e:
-                log.warning(f"renaming folder failed, folder probably already contains .SAFE extension: {e}")
-
-            self.zipdir(safePath, zipf)
-            zipf.close()
+            os.rename(unzippedWorkingPath, safePath)
+            shutil.make_archive(zippedWorkingPath.removesuffix('.zip'), 'zip', self.paths["working"], safePath)
             shutil.rmtree(safePath)
 
         with self.output().open("w") as outFile:
@@ -55,14 +49,6 @@ class EnforceZip(luigi.Task):
                 "basketProductPath": basketProductPath,
                 "zipFilePath": zippedWorkingPath
             }, indent=4))
-
-    def zipdir(self, path, ziph):
-        # ziph is zipfile handle
-        len_path = len(path)
-        for root, dirs, files in os.walk(path):
-            for file in files:
-                file_path = os.path.join(root, file)
-                ziph.write(file_path, f"/{self.productName}.SAFE"+file_path[len_path:])
 
     def output(self):
         outFile = os.path.join(self.paths['state'], 'EnforceZip.json')
