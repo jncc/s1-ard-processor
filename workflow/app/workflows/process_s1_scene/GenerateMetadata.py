@@ -6,6 +6,7 @@ import process_s1_scene.common as wc
 import datetime
 import re
 import decimal
+from pathlib import Path
 from string import Template
 from luigi import LocalTarget
 from luigi.util import requires
@@ -74,6 +75,14 @@ class GenerateMetadata(luigi.Task):
         mode = re.search(pattern, manifestString).group(1)
         return mode
 
+    def getNameWithoutExtensions(self, inputFilePath):
+        # remove any .SAFE or .zip extensions
+        suffixes = "".join(Path(inputFilePath).suffixes)
+        pathWithoutExtensions = inputFilePath.replace(suffixes, "")
+        nameWithoutExtensions = os.path.basename(pathWithoutExtensions)
+
+        return nameWithoutExtensions
+
     def run(self):
         configuration = {}
         with self.input()[0].open('r') as getConfiguration:
@@ -103,7 +112,7 @@ class GenerateMetadata(luigi.Task):
         with getBuildConfigTask.output().open('r') as b:
             buildConfig = json.load(b)
 
-        inputFileName = os.path.basename(configuration["inputFilePath"])
+        inputFileName = self.getNameWithoutExtensions(configuration["inputFilePath"])
 
         fileIdentifier = os.path.splitext(wc.getOutputFileName(inputFileName, "VVVH", manifest, configuration["filenameDemData"], configuration["filenameSrs"]))[0]
         dateToday = self.getFormattedDateTime(datetime.datetime.now())
@@ -116,7 +125,7 @@ class GenerateMetadata(luigi.Task):
         projection = configuration["metadataProjection"]
         referenceSystemCodeSpace = configuration["targetSrs"].split(":")[0]
         referenceSystemCode = configuration["targetSrs"].split(":")[1]
-        esaFilename = os.path.splitext(os.path.basename(configuration["inputFilePath"]))[0]
+        esaFilename = inputFileName
         rfiDetectedVV = rfiInfo["rfiDetectedVV"]
         rfiDetectedVH = rfiInfo["rfiDetectedVH"]
         rfiMitigationAppliedVV = rfiInfo["rfiMitigationAppliedVV"]
