@@ -31,9 +31,6 @@ COPY config/app/toolchain/scripts/JNCC_S1_GRD_configfile_v.1.1.sh /app/toolchain
 # Copy workflow requirements
 COPY app/workflows/requirements.txt /app/workflows/
 
-# Remove static gpt memory configuration
-RUN rm /app/snap/bin/gpt.vmoptions
-
 # Copy build config
 COPY config/app/workflows/build-config.json ./
 
