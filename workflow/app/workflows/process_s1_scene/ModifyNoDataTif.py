@@ -35,9 +35,9 @@ class ModifyNoDataTif(luigi.Task):
         tempModePrePath = os.path.join(tempOutputDir, mergedFileName+"-mode-pre.tif")
         outputFileName = os.path.join(tempOutputDir, mergedFileName+".tif")
         
-        cmdString1 = 'gdal_calc.py --debug -A {} --A_band=1 --outfile={} --calc="nan_to_num(A)" --NoDataValue=0 --overwrite' \
+        cmdString1 = 'gdal_calc.py -A {} --A_band=1 --outfile={} --calc="nan_to_num(A)" --NoDataValue=0 --overwrite' \
             .format(mergedFilePath, tmpBand1Path)
-        cmdString2 = 'gdal_calc.py --debug -A {} --A_band=2 --outfile={} --calc="nan_to_num(A)" --NoDataValue=0 --overwrite' \
+        cmdString2 = 'gdal_calc.py -A {} --A_band=2 --outfile={} --calc="nan_to_num(A)" --NoDataValue=0 --overwrite' \
             .format(mergedFilePath, tmpBand2Path)
         cmdString3 = 'gdalbuildvrt -separate {} {} {}' \
             .format(tempStackedPath, tmpBand1Path, tmpBand2Path)

@@ -21,7 +21,7 @@ export SCRIPT_DIR="{{ s1_ard_script_dir }}"
 ##### STATIC Variable for Log files   
 #####============================================================
 export logtime=$(date +"%F_%H%M%S")
-export software="@Snap_version5"
+export software="@Snap_version12"
 #### LOG files
 export MAINLOG=${MAIN_OUTDIR}/Mainlog_${logtime}_${software}.txt  ### Generation of logfile for the processing 
 #####============================================================

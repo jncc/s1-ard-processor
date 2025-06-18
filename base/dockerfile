@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ghcr.io/osgeo/gdal:ubuntu-full-3.10.3
 
 # Setup app folder
 WORKDIR /app

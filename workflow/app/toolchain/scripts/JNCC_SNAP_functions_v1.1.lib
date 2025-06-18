@@ -185,7 +185,7 @@ SNAP_ML_TC_OSGB1936()
   echo "=========================================" >> ${logfile}
   echo "==> Range Doppler Terrain Correction by using ${USEDEM} as DEM (output as Geotiff)" >> ${logfile}
   echo "Input product = ${ROOTNAME}_${POL}_${INSUFFIX}" >> ${logfile}
-  echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${USEDEM}_${CRS}_${OUTSUFFIX}.tif" >> ${logfile}
+  echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${USEDEM}_${CRS}_${OUTSUFFIX}.dim" >> ${logfile}
   echo "Output folder: ${TR_GEO_OUTDIR}" >> ${logfile}
   echo "start: $(date +"%F_%H%M%S")" >> ${logfile}
   ### APGB
@@ -195,8 +195,8 @@ SNAP_ML_TC_OSGB1936()
     -Pinput1="${TR_INDIR}/${ROOTNAME}_${POL}_${INSUFFIX}.dim"\
     -Pinput2="${RANGE_LOOK}" -Pinput3="${AZIMUTH_LOOK}" -Pinput4="${BANDNAME}_$POL"\
     -Pinput10="${EXTDEMFILE}" -Pinput5="${demResamplingMethod}" -Pinput6="${imgResamplingMethod}"\
-    -Pinput7="${pixelSpacingInMeter}" -Pinput8="${pixelSpacingInDegree}" -Pinput9="GeoTIFF-BigTIFF"\
-    -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${USEDEM}_${CRS}_${OUTSUFFIX}.tif" >> ${logfile}
+    -Pinput7="${pixelSpacingInMeter}" -Pinput8="${pixelSpacingInDegree}" -Pinput9="BEAM-DIMAP"\
+    -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${USEDEM}_${CRS}_${OUTSUFFIX}.dim" >> ${logfile}
     echo "end: $(date +"%F_%H%M%S")" >> ${logfile}
     echo "=========================================" >> ${logfile}
   fi 
@@ -207,8 +207,8 @@ SNAP_ML_TC_OSGB1936()
     -Pinput1="${TR_INDIR}/${ROOTNAME}_${POL}_${INSUFFIX}.dim"\
     -Pinput2="${RANGE_LOOK}" -Pinput3="${AZIMUTH_LOOK}" -Pinput4="${BANDNAME}_$POL"\
     -Pinput5="${demResamplingMethod}" -Pinput6="${imgResamplingMethod}"\
-    -Pinput7="${pixelSpacingInMeter}" -Pinput8="${pixelSpacingInDegree}" -Pinput9="GeoTIFF-BigTIFF"\
-    -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${USEDEM}_${CRS}_${OUTSUFFIX}.tif" >> ${logfile}
+    -Pinput7="${pixelSpacingInMeter}" -Pinput8="${pixelSpacingInDegree}" -Pinput9="BEAM-DIMAP"\
+    -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${USEDEM}_${CRS}_${OUTSUFFIX}.dim" >> ${logfile}
     echo "end: $(date +"%F_%H%M%S")" >> ${logfile}
     echo "=========================================" >> ${logfile}
   fi          
@@ -256,7 +256,7 @@ SNAP_ML_TC_RNKELL_OSGB1936()
     echo "=========================================" >> ${logfile}
     echo "==> Range Doppler Terrain Correction and Kellndorfer Radiometric Normalisation by using ${SELDEM} as DEM (output as Geotiff)" >> ${logfile}
     echo "Input product = ${ROOTNAME}_${POL}_${INSUFFIX}" >> ${logfile}
-    echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.tif" >> ${logfile}
+    echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.dim" >> ${logfile}
     echo "Output folder: ${TR_GEO_OUTDIR}" >> ${logfile}
     echo "start: $(date +"%F_%H%M%S")" >> ${logfile}
     ## Check Used DEM ==> defined in the positional parameters
@@ -269,7 +269,7 @@ SNAP_ML_TC_RNKELL_OSGB1936()
       -Pinput5="${EXTDEMFILE}" -Pinput6="${demResamplingMethod}" -Pinput7="${imgResamplingMethod}"\
       -Pinput8="${pixelSpacingInMeter}" -Pinput9="${pixelSpacingInDegree}" -Pinput10="${BANDNAME}_${POL}"\
       -Pinput11="Beta0_${POL} * ${TRIG}(projectedLocalIncidenceAngle * PI/180.0)"\
-      -Pinput12="GeoTIFF-BigTIFF" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.tif" >> ${logfile}
+      -Pinput12="BEAM-DIMAP" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.dim" >> ${logfile}
       echo "end: $(date +"%F_%H%M%S")" >> ${logfile}
       echo "=========================================" >> ${logfile}
     fi 
@@ -283,7 +283,7 @@ SNAP_ML_TC_RNKELL_OSGB1936()
       -Pinput5="${demResamplingMethod}" -Pinput6="${imgResamplingMethod}"\
       -Pinput7="${pixelSpacingInMeter}" -Pinput8="${pixelSpacingInDegree}" -Pinput9="${BANDNAME}_${POL}"\
       -Pinput10="Beta0_${POL} * ${TRIG}(projectedLocalIncidenceAngle * PI/180.0)"\
-      -Pinput11="GeoTIFF-BigTIFF" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.tif" >> ${logfile}
+      -Pinput11="BEAM-DIMAP" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.dim" >> ${logfile}
       echo "end: $(date +"%F_%H%M%S")" >> ${logfile}
       echo "=========================================" >> ${logfile}
     fi
@@ -325,7 +325,7 @@ SNAP_ML_TC_EPSG29902()
   echo "=========================================" >> ${logfile}
   echo "==> Range Doppler Terrain Correction by using ${USEDEM} as DEM (output as Geotiff)" >> ${logfile}
   echo "Input product = ${ROOTNAME}_${POL}_${INSUFFIX}" >> ${logfile}
-  echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${USEDEM}_${CRS}_${OUTSUFFIX}.tif" >> ${logfile}
+  echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${USEDEM}_${CRS}_${OUTSUFFIX}.dim" >> ${logfile}
   echo "Output folder: ${TR_GEO_OUTDIR}" >> ${logfile}
   echo "start: $(date +"%F_%H%M%S")" >> ${logfile}
   ### APGB
@@ -335,8 +335,8 @@ SNAP_ML_TC_EPSG29902()
     -Pinput1="${TR_INDIR}/${ROOTNAME}_${POL}_${INSUFFIX}.dim"\
     -Pinput2="${RANGE_LOOK}" -Pinput3="${AZIMUTH_LOOK}" -Pinput4="${BANDNAME}_$POL"\
     -Pinput10="${EXTDEMFILE}" -Pinput5="${demResamplingMethod}" -Pinput6="${imgResamplingMethod}"\
-    -Pinput7="${pixelSpacingInMeter}" -Pinput8="${pixelSpacingInDegree}" -Pinput9="GeoTIFF-BigTIFF"\
-    -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${USEDEM}_${CRS}_${OUTSUFFIX}.tif" >> ${logfile}
+    -Pinput7="${pixelSpacingInMeter}" -Pinput8="${pixelSpacingInDegree}" -Pinput9="BEAM-DIMAP"\
+    -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${USEDEM}_${CRS}_${OUTSUFFIX}.dim" >> ${logfile}
     echo "end: $(date +"%F_%H%M%S")" >> ${logfile}
     echo "=========================================" >> ${logfile}
   fi 
@@ -347,8 +347,8 @@ SNAP_ML_TC_EPSG29902()
     -Pinput1="${TR_INDIR}/${ROOTNAME}_${POL}_${INSUFFIX}.dim"\
     -Pinput2="${RANGE_LOOK}" -Pinput3="${AZIMUTH_LOOK}" -Pinput4="${BANDNAME}_$POL"\
     -Pinput5="${demResamplingMethod}" -Pinput6="${imgResamplingMethod}"\
-    -Pinput7="${pixelSpacingInMeter}" -Pinput8="${pixelSpacingInDegree}" -Pinput9="GeoTIFF-BigTIFF"\
-    -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${USEDEM}_${CRS}_${OUTSUFFIX}.tif" >> ${logfile}
+    -Pinput7="${pixelSpacingInMeter}" -Pinput8="${pixelSpacingInDegree}" -Pinput9="BEAM-DIMAP"\
+    -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${USEDEM}_${CRS}_${OUTSUFFIX}.dim" >> ${logfile}
     echo "end: $(date +"%F_%H%M%S")" >> ${logfile}
     echo "=========================================" >> ${logfile}
   fi          
@@ -396,7 +396,7 @@ SNAP_ML_TC_RNKELL_EPSG29902()
     echo "=========================================" >> ${logfile}
     echo "==> Range Doppler Terrain Correction and Kellndorfer Radiometric Normalisation by using ${SELDEM} as DEM (output as Geotiff)" >> ${logfile}
     echo "Input product = ${ROOTNAME}_${POL}_${INSUFFIX}" >> ${logfile}
-    echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.tif" >> ${logfile}
+    echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.dim" >> ${logfile}
     echo "Output folder: ${TR_GEO_OUTDIR}" >> ${logfile}
     echo "start: $(date +"%F_%H%M%S")" >> ${logfile}
     ## Check Used DEM ==> defined in the positional parameters
@@ -409,7 +409,7 @@ SNAP_ML_TC_RNKELL_EPSG29902()
       -Pinput5="${EXTDEMFILE}" -Pinput6="${demResamplingMethod}" -Pinput7="${imgResamplingMethod}"\
       -Pinput8="${pixelSpacingInMeter}" -Pinput9="${pixelSpacingInDegree}" -Pinput10="${BANDNAME}_${POL}"\
       -Pinput11="Beta0_${POL} * ${TRIG}(projectedLocalIncidenceAngle * PI/180.0)"\
-      -Pinput12="GeoTIFF-BigTIFF" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.tif" >> ${logfile}
+      -Pinput12="BEAM-DIMAP" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.dim" >> ${logfile}
       echo "end: $(date +"%F_%H%M%S")" >> ${logfile}
       echo "=========================================" >> ${logfile}
     fi 
@@ -423,7 +423,7 @@ SNAP_ML_TC_RNKELL_EPSG29902()
       -Pinput5="${demResamplingMethod}" -Pinput6="${imgResamplingMethod}"\
       -Pinput7="${pixelSpacingInMeter}" -Pinput8="${pixelSpacingInDegree}" -Pinput9="${BANDNAME}_${POL}"\
       -Pinput10="Beta0_${POL} * ${TRIG}(projectedLocalIncidenceAngle * PI/180.0)"\
-      -Pinput11="GeoTIFF-BigTIFF" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.tif" >> ${logfile}
+      -Pinput11="BEAM-DIMAP" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.dim" >> ${logfile}
       echo "end: $(date +"%F_%H%M%S")" >> ${logfile}
       echo "=========================================" >> ${logfile}
     fi
@@ -467,7 +467,7 @@ SNAP_ML_TC_UTMWGS84()
 	echo "=========================================" >> ${logfile}
   echo "==> Range Doppler Terrain Correction by using ${SELDEM} as DEM (output as Geotiff)" >> ${logfile}
 	echo "Input product = ${ROOTNAME}_${POL}_${INSUFFIX}" >> ${logfile}
-	echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${OUTSUFFIX}.tif" >> ${logfile}
+	echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${OUTSUFFIX}.dim" >> ${logfile}
 	echo "Output folder: ${TR_GEO_OUTDIR}" >> ${logfile}
 	echo "start: $(date +"%F_%H%M%S")" >> ${logfile}
 	
@@ -481,7 +481,7 @@ SNAP_ML_TC_UTMWGS84()
 		-Pinput5="${EXTDEMFILE}" -Pinput6="${demResamplingMethod}" -Pinput7="${imgResamplingMethod}"\
 		-Pinput8="${pixelSpacingInMeter}" -Pinput9="${pixelSpacingInDegree}" -Pinput10="${UTMPROJ}"\
 		-Pinput11="${centralmeridian}" -Pinput12="${false_northing}"\
-		-Pinput13="GeoTIFF-BigTIFF" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${OUTSUFFIX}.tif" >> ${logfile}
+		-Pinput13="BEAM-DIMAP" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${OUTSUFFIX}.dim" >> ${logfile}
 		echo "end: $(date +"%F_%H%M%S")" >> ${logfile}
 		echo "=========================================" >> ${logfile}
 	fi 
@@ -494,7 +494,7 @@ SNAP_ML_TC_UTMWGS84()
 		-Pinput5="${demResamplingMethod}" -Pinput6="${imgResamplingMethod}"\
 		-Pinput7="${pixelSpacingInMeter}" -Pinput8="${pixelSpacingInDegree}" -Pinput9="${UTMPROJ}"\
 		-Pinput10="${centralmeridian}" -Pinput11="${false_northing}"\
-		-Pinput12="GeoTIFF-BigTIFF" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${OUTSUFFIX}.tif" >> ${logfile}
+		-Pinput12="BEAM-DIMAP" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${OUTSUFFIX}.dim" >> ${logfile}
 		echo "end: $(date +"%F_%H%M%S")" >> ${logfile}
 		echo "=========================================" >> ${logfile}
 	fi 		
@@ -543,7 +543,7 @@ SNAP_ML_TC_RNKELL_UTMWGS84()
 	  echo "=========================================" >> ${logfile}
     echo "==> Range Doppler Terrain Correction and Kellndorfer Radiometric Normalisation by using ${SELDEM} as DEM (output as Geotiff)" >> ${logfile}
 	  echo "Input product = ${ROOTNAME}_${POL}_${INSUFFIX}" >> ${logfile}
-	  echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.tif" >> ${logfile}
+	  echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.dim" >> ${logfile}
 	  echo "Output folder: ${TR_GEO_OUTDIR}" >> ${logfile}
 	  echo "start: $(date +"%F_%H%M%S")" >> ${logfile}
 	  ## Check Used DEM ==> defined in the positional parameters
@@ -557,7 +557,7 @@ SNAP_ML_TC_RNKELL_UTMWGS84()
 		  -Pinput8="${pixelSpacingInMeter}" -Pinput9="${pixelSpacingInDegree}" -Pinput10="${UTMPROJ}"\
 		  -Pinput11="${centralmeridian}" -Pinput12="${false_northing}" -Pinput13="${BANDNAME}_${POL}"\
 		  -Pinput14="Beta0_${POL} * ${TRIG}(projectedLocalIncidenceAngle * PI/180.0)"\
-		  -Pinput15="GeoTIFF-BigTIFF" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.tif" >> ${logfile}
+		  -Pinput15="BEAM-DIMAP" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.dim" >> ${logfile}
 		  echo "end: $(date +"%F_%H%M%S")" >> ${logfile}
 		  echo "=========================================" >> ${logfile}
 	  fi 
@@ -572,7 +572,7 @@ SNAP_ML_TC_RNKELL_UTMWGS84()
 		  -Pinput7="${pixelSpacingInMeter}" -Pinput8="${pixelSpacingInDegree}" -Pinput9="${UTMPROJ}"\
 		  -Pinput10="${centralmeridian}" -Pinput11="${false_northing}" -Pinput12="${BANDNAME}_${POL}"\
 	  	-Pinput13="Beta0_${POL} * ${TRIG}(projectedLocalIncidenceAngle * PI/180.0)"\
-		  -Pinput14="GeoTIFF-BigTIFF" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.tif" >> ${logfile}
+		  -Pinput14="BEAM-DIMAP" -Ptarget1="${TR_GEO_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_RTC.dim" >> ${logfile}
 		  echo "end: $(date +"%F_%H%M%S")" >> ${logfile}
 		  echo "=========================================" >> ${logfile}
 	  fi
@@ -613,14 +613,14 @@ SNAP_SpeckleFiltering()
     echo "=========================================" >> ${logfile}
     echo "==> Speckle Filtering ${Specklefilter} applied (output as Geotiff)" >> ${logfile}
     echo "Input product = ${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${INSUFFIX}" >> ${logfile}
-    echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${INSUFFIX}_${OUTSUFFIX}.tif" >> ${logfile}
+    echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${INSUFFIX}_${OUTSUFFIX}.dim" >> ${logfile}
     echo "Output folder: ${TR_OUTDIR}" >> ${logfile}
     echo "start: $(date +"%F_%H%M%S")" >> ${logfile}
     ## SNAP processing chain 
     $SNAP_HOME/gpt $GRAPHSDIR/S1_Speckle_Filtering.xml $SNAP_OPTS -e -x\
-    -Pinput1="${TR_INDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${INSUFFIX}.tif"\
-    -Pinput2="${BANDNAME}_$POL" -Pinput3="${Specklefilter}" -Pinput4="GeoTIFF-BigTIFF"\
-    -Ptarget1="${TR_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${INSUFFIX}_${OUTSUFFIX}.tif" >> ${logfile}
+    -Pinput1="${TR_INDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${INSUFFIX}.dim"\
+    -Pinput2="${BANDNAME}_$POL" -Pinput3="${Specklefilter}" -Pinput4="BEAM-DIMAP"\
+    -Ptarget1="${TR_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${INSUFFIX}_${OUTSUFFIX}.dim" >> ${logfile}
     echo "end: $(date +"%F_%H%M%S")" >> ${logfile}
     echo "=========================================" >> ${logfile}
 }
@@ -659,13 +659,13 @@ SNAP_ConvLinToDb()
     echo "=========================================" >> ${logfile}
     echo "==> Conversion from liner to dB applied (output as Geotiff)" >> ${logfile}
     echo "Input product = ${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${INSUFFIX}" >> ${logfile}
-    echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${INSUFFIX}_${OUTSUFFIX}.tif" >> ${logfile}
+    echo "Output product = ${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${INSUFFIX}_${OUTSUFFIX}.dim" >> ${logfile}
     echo "Output folder: ${TR_OUTDIR}" >> ${logfile}
     echo "start: $(date +"%F_%H%M%S")" >> ${logfile}
     ## SNAP processing chain 
     $SNAP_HOME/gpt $GRAPHSDIR/S1_BMLinTodB.xml $SNAP_OPTS -e -x\
-    -Pinput1="${TR_INDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${INSUFFIX}.tif"\
-    -Pinput2="${BANDNAME}_${POL}_db" -Pinput3="10*log10(${BANDNAME}_$POL)" -Pinput4="Intesity" -Pinput5="NaN" -Pinput6="GeoTIFF-BigTIFF"\
+    -Pinput1="${TR_INDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${INSUFFIX}.dim"\
+    -Pinput2="${BANDNAME}_${POL}_db" -Pinput3="10*log10(${BANDNAME}_$POL)" -Pinput4="Intensity" -Pinput5="NaN" -Pinput6="GeoTIFF-BigTIFF"\
     -Ptarget1="${TR_OUTDIR}/${ROOTNAME}_${POL}_${BANDNAME}_${SELDEM}_${CRS}_${INSUFFIX}_${OUTSUFFIX}.tif" >> ${logfile}
     echo "end: $(date +"%F_%H%M%S")" >> ${logfile}
     echo "=========================================" >> ${logfile}

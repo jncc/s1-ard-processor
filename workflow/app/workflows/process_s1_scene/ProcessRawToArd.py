@@ -44,23 +44,23 @@ class ProcessRawToArd(luigi.Task):
             'files': {
                 'VV': [
                     os.path.join(vv_path, '{}_VV_Gamma0_APGB_UTMWGS84_RTC_SpkRL_dB.tif'.format(productPattern)),
-                    os.path.join(vv_path, '{}_VV_Gamma0_APGB_UTMWGS84_RTC_SpkRL.tif'.format(productPattern)),
-                    os.path.join(vv_path, '{}_VV_Gamma0_APGB_UTMWGS84_RTC.tif'.format(productPattern)),
-                    os.path.join(vv_path, '{}_VV_Gamma0_APGB_UTMWGS84_TC.tif'.format(productPattern)),
-                    os.path.join(vv_path, '{}_VV_Sigma0_APGB_UTMWGS84_RTC_SpkRL_dB.tif'.format(productPattern)),
-                    os.path.join(vv_path, '{}_VV_Sigma0_APGB_UTMWGS84_RTC_SpkRL.tif'.format(productPattern)),
-                    os.path.join(vv_path, '{}_VV_Sigma0_APGB_UTMWGS84_RTC.tif'.format(productPattern)),
-                    os.path.join(vv_path, '{}_VV_Sigma0_APGB_UTMWGS84_TC.tif'.format(productPattern))
+                    os.path.join(vv_path, '{}_VV_Gamma0_APGB_UTMWGS84_RTC_SpkRL.dim'.format(productPattern)),
+                    os.path.join(vv_path, '{}_VV_Gamma0_APGB_UTMWGS84_RTC.dim'.format(productPattern)),
+                    # os.path.join(vv_path, '{}_VV_Gamma0_APGB_UTMWGS84_TC.tif'.format(productPattern)),
+                    # os.path.join(vv_path, '{}_VV_Sigma0_APGB_UTMWGS84_RTC_SpkRL_dB.tif'.format(productPattern)),
+                    # os.path.join(vv_path, '{}_VV_Sigma0_APGB_UTMWGS84_RTC_SpkRL.tif'.format(productPattern)),
+                    # os.path.join(vv_path, '{}_VV_Sigma0_APGB_UTMWGS84_RTC.tif'.format(productPattern)),
+                    # os.path.join(vv_path, '{}_VV_Sigma0_APGB_UTMWGS84_TC.tif'.format(productPattern))
                 ],
                 'VH': [
                     os.path.join(vh_path, '{}_VH_Gamma0_APGB_UTMWGS84_RTC_SpkRL_dB.tif'.format(productPattern)),
-                    os.path.join(vh_path, '{}_VH_Gamma0_APGB_UTMWGS84_RTC_SpkRL.tif'.format(productPattern)),
-                    os.path.join(vh_path, '{}_VH_Gamma0_APGB_UTMWGS84_RTC.tif'.format(productPattern)),
-                    os.path.join(vh_path, '{}_VH_Gamma0_APGB_UTMWGS84_TC.tif'.format(productPattern)),
-                    os.path.join(vh_path, '{}_VH_Sigma0_APGB_UTMWGS84_RTC_SpkRL_dB.tif'.format(productPattern)),
-                    os.path.join(vh_path, '{}_VH_Sigma0_APGB_UTMWGS84_RTC_SpkRL.tif'.format(productPattern)),
-                    os.path.join(vh_path, '{}_VH_Sigma0_APGB_UTMWGS84_RTC.tif'.format(productPattern)),
-                    os.path.join(vh_path, '{}_VH_Sigma0_APGB_UTMWGS84_TC.tif'.format(productPattern))
+                    os.path.join(vh_path, '{}_VH_Gamma0_APGB_UTMWGS84_RTC_SpkRL.dim'.format(productPattern)),
+                    os.path.join(vh_path, '{}_VH_Gamma0_APGB_UTMWGS84_RTC.dim'.format(productPattern)),
+                    # os.path.join(vh_path, '{}_VH_Gamma0_APGB_UTMWGS84_TC.tif'.format(productPattern)),
+                    # os.path.join(vh_path, '{}_VH_Sigma0_APGB_UTMWGS84_RTC_SpkRL_dB.tif'.format(productPattern)),
+                    # os.path.join(vh_path, '{}_VH_Sigma0_APGB_UTMWGS84_RTC_SpkRL.tif'.format(productPattern)),
+                    # os.path.join(vh_path, '{}_VH_Sigma0_APGB_UTMWGS84_RTC.tif'.format(productPattern)),
+                    # os.path.join(vh_path, '{}_VH_Sigma0_APGB_UTMWGS84_TC.tif'.format(productPattern))
                 ],
                 'log': log_path
             }
