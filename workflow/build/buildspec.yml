@@ -31,7 +31,7 @@ phases:
       - echo Substitute metadata variables
       - GDAL_VERSION=$(docker run --rm --entrypoint /usr/bin/gdalinfo $SNAP_BASE_CONTAINER --version)
       - GDAL_VERSION_ESC=$(sed 's/[\/\*\.]/\\&/g' <<<"$GDAL_VERSION")
-      - SNAP_VERSION=$(docker run --rm --entrypoint cat jncc/snap-base-dev:1.0.16-SNAP-12.0.0 /usr/local/esa-snap/VERSION.txt
+      - SNAP_VERSION=$(docker run --rm --entrypoint cat $SNAP_BASE_CONTAINER /usr/local/esa-snap/VERSION.txt)
       - SNAP_VERSION_ESC=$(sed 's/[\/\*\.]/\\&/g' <<<"$SNAP_VERSION")
       - TAG=1.0.${CODEBUILD_BUILD_NUMBER}-SNAP-${SNAP_VERSION}
       - sed -i "s/\$snapVersion/$SNAP_VERSION/g" config/app/workflows/build-config.json
