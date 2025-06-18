@@ -19,9 +19,7 @@ phases:
       - CONTAINER_NAME=${CONTAINER_NAME}
       - DEPLOYMENT_BUCKET=${DEPLOYMENT_BUCKET}
       - DEPLOYMENT_BUCKET_PATH=${DEPLOYMENT_BUCKET_PATH}
-      - SNAP_VERSION=${SNAP_VERSION}
       - SNAP_BASE_CONTAINER=${SNAP_BASE_CONTAINER}
-      - TAG=1.0.${CODEBUILD_BUILD_NUMBER}-SNAP-${SNAP_VERSION}
       - echo Logging into Docker Hub
       - docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
       - echo Configured pre-build environment
@@ -32,8 +30,12 @@ phases:
       - cd s1-ard-processor/workflow
       - echo Substitute metadata variables
       - GDAL_VERSION=$(docker run --rm --entrypoint /usr/bin/gdalinfo $SNAP_BASE_CONTAINER --version)
+      - GDAL_VERSION_ESC=$(sed 's/[\/\*\.]/\\&/g' <<<"$GDAL_VERSION")
+      - SNAP_VERSION=$(docker run --rm --entrypoint cat jncc/snap-base-dev:1.0.16-SNAP-12.0.0 /usr/local/esa-snap/VERSION.txt
+      - SNAP_VERSION_ESC=$(sed 's/[\/\*\.]/\\&/g' <<<"$SNAP_VERSION")
+      - TAG=1.0.${CODEBUILD_BUILD_NUMBER}-SNAP-${SNAP_VERSION}
       - sed -i "s/\$snapVersion/$SNAP_VERSION/g" config/app/workflows/build-config.json
-      - sed -i "s/\$gdalVersion/$GDAL_VERSION/g" config/app/workflows/build-config.json
+      - sed -i "s/\$gdalVersion/$GDAL_VERSION_ESC/g" config/app/workflows/build-config.json
       - sed -i "s/\$dockerImage/jncc\/$CONTAINER_NAME:$TAG/g" config/app/workflows/build-config.json
       - echo Generate container readme
       - cp manually-published-dockerhub-readme.md app/readme.md
