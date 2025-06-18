@@ -17,9 +17,11 @@ phases:
       - DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}
       - DOCKERHUB_PASSWORD=${DOCKERHUB_PASSWORD}
       - CONTAINER_NAME=${CONTAINER_NAME}
-      - TAG=1.0.${CODEBUILD_BUILD_NUMBER}-SNAP-12.0.0
       - DEPLOYMENT_BUCKET=${DEPLOYMENT_BUCKET}
       - DEPLOYMENT_BUCKET_PATH=${DEPLOYMENT_BUCKET_PATH}
+      - SNAP_VERSION=${SNAP_VERSION}
+      - SNAP_BASE_CONTAINER=${SNAP_BASE_CONTAINER}
+      - TAG=1.0.${CODEBUILD_BUILD_NUMBER}-SNAP-${SNAP_VERSION}
       - echo Logging into Docker Hub
       - docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
       - echo Configured pre-build environment
@@ -27,9 +29,20 @@ phases:
     commands:
       - echo Build started on `env TZ=Europe/London date`
       - git clone --branch $GIT_BRANCH $GIT_REPO
-      - cd s1-ard-processor/base
+      - cd s1-ard-processor/workflow
+      - echo Substitute metadata variables
+      - GDAL_VERSION=$(docker run --rm --entrypoint /usr/bin/gdalinfo $SNAP_BASE_CONTAINER --version)
+      - sed -i "s/\$snapVersion/$SNAP_VERSION/g" config/app/workflows/build-config.json
+      - sed -i "s/\$gdalVersion/$GDAL_VERSION/g" config/app/workflows/build-config.json
+      - sed -i "s/\$dockerImage/jncc\/$CONTAINER_NAME:$TAG/g" config/app/workflows/build-config.json
+      - echo Generate container readme
+      - cp manually-published-dockerhub-readme.md app/readme.md
+      - GIT_COMMIT_HASH=$(git rev-parse HEAD)
+      - echo "Version $TAG" >> app/readme.md
+      - echo "Git commit $GIT_COMMIT_HASH" >> app/readme.md
+      - echo "Built $(date +"%Y-%m-%d %H:%M:%S")" >> app/readme.md
       - echo Building the docker image...
-      - docker build --no-cache -t jncc/$CONTAINER_NAME:$TAG .
+      - docker build --no-cache -t jncc/$CONTAINER_NAME:$TAG --build-arg BASE_IMAGE=$SNAP_BASE_CONTAINER .
       - echo Building the apptainer image...
       - apptainer build $CONTAINER_NAME-$TAG.sif docker-daemon://jncc/$CONTAINER_NAME:$TAG
       - echo Push image to dockerhub
@@ -41,4 +54,6 @@ phases:
       - echo Build completed on `env TZ=Europe/London date`
       - echo Pushing the apptainer image to S3...
       - aws s3 cp $CONTAINER_NAME-$TAG.sif s3://$DEPLOYMENT_BUCKET/$DEPLOYMENT_BUCKET_PATH/
+      - echo Creating a presigned url to allow access for 12 hours...
+      - aws s3 presign s3://$DEPLOYMENT_BUCKET/$DEPLOYMENT_BUCKET_PATH/$CONTAINER_NAME-$TAG.sif --expires-in 43200
       - echo Done!
