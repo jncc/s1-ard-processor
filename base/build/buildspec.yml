@@ -31,7 +31,7 @@ phases:
       - echo Building the docker image...
       - docker build --no-cache -t jncc/$CONTAINER_NAME:$TAG .
       - SNAP_VERSION=$(docker run --rm --entrypoint cat jncc/$CONTAINER_NAME:$TAG  /usr/local/esa-snap/VERSION.txt)
-      - FULL_TAG=1.0.${CODEBUILD_BUILD_NUMBER}-SNAP-${SNAP_VERSION}
+      - FULL_TAG=$TAG-SNAP-${SNAP_VERSION}
       - echo Building the apptainer image...
       - apptainer build $CONTAINER_NAME-$FULL_TAG.sif docker-daemon://jncc/$CONTAINER_NAME:$TAG
       - echo Push image to dockerhub
