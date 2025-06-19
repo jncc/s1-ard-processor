@@ -43,5 +43,5 @@ phases:
     commands:
       - echo Build completed on `env TZ=Europe/London date`
       - echo Pushing the apptainer image to S3...
-      - aws s3 cp $CONTAINER_NAME-$TAG.sif s3://$DEPLOYMENT_BUCKET/$DEPLOYMENT_BUCKET_PATH/
+      - aws s3 cp $CONTAINER_NAME-$FULL_TAG.sif s3://$DEPLOYMENT_BUCKET/$DEPLOYMENT_BUCKET_PATH/
       - echo Done!
