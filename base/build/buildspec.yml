@@ -17,7 +17,7 @@ phases:
       - DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}
       - DOCKERHUB_PASSWORD=${DOCKERHUB_PASSWORD}
       - CONTAINER_NAME=${CONTAINER_NAME}
-      - TAG=1.0.${CODEBUILD_BUILD_NUMBER}-SNAP-12.0.0
+      - TAG=1.0.${CODEBUILD_BUILD_NUMBER}
       - DEPLOYMENT_BUCKET=${DEPLOYMENT_BUCKET}
       - DEPLOYMENT_BUCKET_PATH=${DEPLOYMENT_BUCKET_PATH}
       - echo Logging into Docker Hub
@@ -30,11 +30,14 @@ phases:
       - cd s1-ard-processor/base
       - echo Building the docker image...
       - docker build --no-cache -t jncc/$CONTAINER_NAME:$TAG .
+      - SNAP_VERSION=$(docker run --rm --entrypoint cat jncc/$CONTAINER_NAME:$TAG  /usr/local/esa-snap/VERSION.txt)
+      - FULL_TAG=1.0.${CODEBUILD_BUILD_NUMBER}-SNAP-${SNAP_VERSION}
       - echo Building the apptainer image...
-      - apptainer build $CONTAINER_NAME-$TAG.sif docker-daemon://jncc/$CONTAINER_NAME:$TAG
+      - apptainer build $CONTAINER_NAME-$FULL_TAG.sif docker-daemon://jncc/$CONTAINER_NAME:$TAG
       - echo Push image to dockerhub
-      - docker push jncc/$CONTAINER_NAME:$TAG
-      - docker tag jncc/$CONTAINER_NAME:$TAG jncc/$CONTAINER_NAME:latest
+      - docker tag jncc/$CONTAINER_NAME:$TAG jncc/$CONTAINER_NAME:$FULL_TAG
+      - docker push jncc/$CONTAINER_NAME:$FULL_TAG
+      - docker tag jncc/$CONTAINER_NAME:$FULL_TAG jncc/$CONTAINER_NAME:latest
       - docker push jncc/$CONTAINER_NAME:latest
   post_build:
     commands:
