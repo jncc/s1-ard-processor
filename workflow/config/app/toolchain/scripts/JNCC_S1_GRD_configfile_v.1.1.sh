@@ -18,14 +18,14 @@ export PROZIP_DIR="${MAIN_DIR}/zip_processed"  ##== directory where S1.zip data 
 ##### SW and processing xml chains directories
 export SCRIPT_DIR="/app/toolchain/scripts"
 export GRAPHSDIR="${SCRIPT_DIR}/xml" ##== DIRECTORY with snap xml graphs for the processing 
-export SNAP_HOME="/app/snap/bin" ##== SNAP (version 6) directory
+export SNAP_HOME="/usr/local/esa-snap/bin" ##== SNAP (version 12) directory
 ## Set dynamically in workflow
 # export SNAP_OPTS="-J-Xmx{{ s1_ard_snap_memory }}G -J-Xms4G -J-XX:-UseGCOverheadLimit" ##== SNAP command line arguments
 #####============================================================
 ##### STATIC Variable for Log files   
 #####============================================================
 export logtime=$(date +"%F_%H%M%S")
-export software="@Snap_version6"
+export software="@Snap_version12"
 #### LOG files
 export MAINLOG=${MAIN_OUTDIR}/Mainlog_${logtime}_${software}.txt  ### Generation of logfile for the processing 
 #####============================================================

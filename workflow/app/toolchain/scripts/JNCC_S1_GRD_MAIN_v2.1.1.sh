@@ -316,7 +316,7 @@ if [ "$(ls -A ${BASKET_INDIR})" ]; then
 		    #### Remove Border Noise (RBN), Select polarisation, absolute calibration, apply precise orbit
 	  	  SNAP_S1GRD_RBN_POLS_CAL_PO "${BASKET_INDIR}" "${SLICE_1_ZIP}" "${SLICE_ROOTNAME}" "${SLICE_VV_OUTDIR}" "VV" "${SLICE_LOG}"
 	  	  #### Radiometric normalisation and terrain correction
-        . ${SCRIPT_DIR}/Processing_Polarisation_VV_v2.1.sh
+        . ${SCRIPT_DIR}/Processing_Polarisation_VV_Gamma0_v2.1.sh
       fi
       #### ==================
       #### Polarisation VH
@@ -328,7 +328,7 @@ if [ "$(ls -A ${BASKET_INDIR})" ]; then
         #### Remove Border Noise (RBN), Select polarisation, absolute calibration, apply precise orbit
         SNAP_S1GRD_RBN_POLS_CAL_PO "${BASKET_INDIR}" "${SLICE_1_ZIP}" "${SLICE_ROOTNAME}" "${SLICE_VH_OUTDIR}" "VH" "${SLICE_LOG}"
         #### Radiometric normalisation and terrain correction
-        . ${SCRIPT_DIR}/Processing_Polarisation_VH_v2.1.sh
+        . ${SCRIPT_DIR}/Processing_Polarisation_VH_Gamma0_v2.1.sh
       fi
       ### Moving S1.zip to $PROZIP_DIR
       mv -u "${BASKET_INDIR}/${SLICE_1_ZIP}" "${PROZIP_DIR}" 
@@ -377,7 +377,7 @@ if [ "$(ls -A ${BASKET_INDIR})" ]; then
         #### Remove Border Noise (RBN), Select polarisation, absolute calibration, apply precise orbit
         SNAP_S1GRD_RBN_POLS_CAL_PO "${SLICE_VV_OUTDIR}" "${SLICE_ROOTNAME}_VV.dim" "${SLICE_ROOTNAME}" "${SLICE_VV_OUTDIR}" "VV" "${SLICE_LOG}"
         #### Radiometric normalisation and terrain correction
-        . ${SCRIPT_DIR}/Processing_Polarisation_VV_v2.1.sh
+        . ${SCRIPT_DIR}/Processing_Polarisation_VV_Gamma0_v2.1.sh
       fi
       #### ==================
       #### Polarisation VH
@@ -391,7 +391,7 @@ if [ "$(ls -A ${BASKET_INDIR})" ]; then
         #### Remove Border Noise (RBN), Select polarisation, absolute calibration, apply precise orbit
         SNAP_S1GRD_RBN_POLS_CAL_PO "${SLICE_VH_OUTDIR}" "${SLICE_ROOTNAME}_VH.dim" "${SLICE_ROOTNAME}" "${SLICE_VH_OUTDIR}" "VH" "${SLICE_LOG}"
         #### Radiometric normalisation and terrain correction
-        . ${SCRIPT_DIR}/Processing_Polarisation_VH_v2.1.sh
+        . ${SCRIPT_DIR}/Processing_Polarisation_VH_Gamma0_v2.1.sh
       fi
       #### Moving S1.zip to $PROZIP_DIR
       mv -u "${BASKET_INDIR}/${SLICE_1_ZIP}" "${PROZIP_DIR}" 
@@ -444,7 +444,7 @@ if [ "$(ls -A ${BASKET_INDIR})" ]; then
         #### Remove Border Noise (RBN), Select polarisation, absolute calibration, apply precise orbit
         SNAP_S1GRD_RBN_POLS_CAL_PO "${SLICE_VV_OUTDIR}" "${SLICE_ROOTNAME}_VV.dim" "${SLICE_ROOTNAME}" "${SLICE_VV_OUTDIR}" "VV" "${SLICE_LOG}"
         #### Radiometric normalisation and terrain correction
-        . ${SCRIPT_DIR}/Processing_Polarisation_VV_v2.1.sh
+        . ${SCRIPT_DIR}/Processing_Polarisation_VV_Gamma0_v2.1.sh
       fi
       #### ==================
       #### Polarisation VH
@@ -458,7 +458,7 @@ if [ "$(ls -A ${BASKET_INDIR})" ]; then
         #### Remove Border Noise (RBN), Select polarisation, absolute calibration, apply precise orbit
         SNAP_S1GRD_RBN_POLS_CAL_PO "${SLICE_VH_OUTDIR}" "${SLICE_ROOTNAME}_VH.dim" "${SLICE_ROOTNAME}" "${SLICE_VH_OUTDIR}" "VH" "${SLICE_LOG}"
         #### Radiometric normalisation and terrain correction
-        . ${SCRIPT_DIR}/Processing_Polarisation_VH_v2.1.sh
+        . ${SCRIPT_DIR}/Processing_Polarisation_VH_Gamma0_v2.1.sh
       fi
       #### Moving S1.zip to $PROZIP_DIR
       mv -u "${BASKET_INDIR}/${SLICE_1_ZIP}" "${PROZIP_DIR}" 
