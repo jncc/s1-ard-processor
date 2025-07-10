@@ -1,16 +1,18 @@
-> **JUNE 2021 UPDATE**: All earlier versions of this Docker container (< 0.0.0.33) are deprecated and should not be used. The earlier versions use a bounding box provided by ESA to clip the DEM that is used for topographic correction. This bounding box does not cover the full extent of the data, omitting a strip of up to 2km along the entire northern edge of each scene. As a result, the data within this strip is not topographically corrected and a spatial shift can be observed in topographic features. A line of nodata pixels separates the strip of uncorrected data from the rest of the scene. All newer Docker containers (0.0.0.33 and onwards) use a bounding box derived from the data footprint to clip the DEM for topographic correction, resolving this issue.
-
 ## What is this?
 
 This container provides a luigi workflow that processes raw Sentinel 1 scenes from ESA to an Analysis Ready Data (ARD) product utilising the SNAP toolbox from ESA. 
 
-It takes a raw input (ESA zip file or Mundi folder) and a DEM and produces ARD as a VV+VH stacked GeoTIFF file in the configured projection, as well as a GEMINI 2.3 metadata XML file.
+It takes a raw input (ESA zip file or CDSE folder) and a DEM and produces ARD as a VV+VH stacked GeoTIFF file in the configured projection, as well as a GEMINI 2.3 metadata XML file.
 
 The luigi workflow can run standalone or with a luigi central scheduler.
 
-This container derives from the [jncc/snap-base:0.0.0.2](https://hub.docker.com/r/jncc/snap-base/) container that provides SNAP.
+This container derives from the [jncc/snap-base:1.0.5-SNAP-12.0.0](https://hub.docker.com/r/jncc/snap-base/) container that provides SNAP and GDAL tools.
 
 The source code for both containers is on [github](https://github.com/jncc/s1-ard-processor)
+
+> **JUNE 2025 UPDATE**: The container has been updated to use the latest ESA SNAP toolbox (version 12.0.0) so that it can process the new S1C data. This update includes various bug fixes and improvements to the processing workflow, the base container now uses the OSGEO GDAL container (v3.10.3) which is based on Ubuntu 24.04. We have also updated the tag name convention to include the SNAP version number in the tag name, so that it is clear which version of SNAP is being used in the container. The new tag name convention is `jncc/s1-ard-processor:<version>-SNAP-<snap_version>`, where `<version>` is the version of the ARD processor and `<snap_version>` is the version of SNAP being used.
+
+> **JUNE 2021 UPDATE**: All earlier versions of this Docker container (< 0.0.0.33) are deprecated and should not be used. The earlier versions use a bounding box provided by ESA to clip the DEM that is used for topographic correction. This bounding box does not cover the full extent of the data, omitting a strip of up to 2km along the entire northern edge of each scene. As a result, the data within this strip is not topographically corrected and a spatial shift can be observed in topographic features. A line of nodata pixels separates the strip of uncorrected data from the rest of the scene. All newer Docker containers (0.0.0.33 and onwards) use a bounding box derived from the data footprint to clip the DEM for topographic correction, resolving this issue.
 
 ## Mount points
 
@@ -21,7 +23,6 @@ This ARD processor consumes and generates large amounts of data and this may req
 * Working - Temporary files / paths created during processing. This folder is cleared at the end of each run unless you specify the --noClean switch.  The working data is written to a subfolder of the format <productId> where the date components are derived from the capture date of the source product. The product Id is also derived from the source product.
 * Output - This folder wlll contain the output. The output is written to a subfolder of the format <Year>/<Month>/<Day>/<ARD product name> where the date components are derived from the capture date of the source product. The ARD product name is also derived from the input product data.
 * State - The state files generated for each task in the luigi workflow. This is an optional mount generally for debugging. State files are copied into a subfolder of output with the structure ../state/<Year>/<Month>/<Day>/<productId> unless the --noStateCopy flag is specified
-
 
 ## Command line
 
@@ -97,7 +98,8 @@ a – raw file name element 1
 b – raw file name element 5 - date part only
 
 c – if raw file name element 1 = S1A  -> abs orbit no =  raw file name element 7 --> rel orbit no = mod (Absolute Orbit Number orbit - 73, 175) + 1
-	if raw file name element 2 = S1B  -> abs orbit no =  raw file name element 7 --> rel orbit no = mod (Absolute Orbit Number orbit - 27, 175) + 1
+	if raw file name element 1 = S1B  -> abs orbit no =  raw file name element 7 --> rel orbit no = mod (Absolute Orbit Number orbit - 27, 175) + 1
+    if raw file name element 1 = S1C  -> abs orbit no =  raw file name element 7 --> rel orbit no = mod (Absolute Orbit Number orbit - 172, 175) + 1
 
 d – from source file manifest.xml metadataSection/[metadataObject ID=measurementOrbitReference]/metadataWrap/xmlData/safe:extension/s1:orbitProperties/s1:pass/ ASCENDING or DESCENDING 
 	Output asc or desc
@@ -108,7 +110,7 @@ f – raw file name element 6 - time only part
 
 g – Polarisation (VV, VH or DV for the merged bands)
 
-h – Gamma-0
+h – Gamma-0 **Always G0**
 
 i – Elevation data used in processing - taken from the spatial config
 
