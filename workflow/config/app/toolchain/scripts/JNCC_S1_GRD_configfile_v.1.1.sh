@@ -25,7 +25,7 @@ export SNAP_HOME="/usr/local/esa-snap/bin" ##== SNAP (version 12) directory
 ##### STATIC Variable for Log files   
 #####============================================================
 export logtime=$(date +"%F_%H%M%S")
-export software="@Snap_version12"
+export software="@Snap_version13"
 #### LOG files
 export MAINLOG=${MAIN_OUTDIR}/Mainlog_${logtime}_${software}.txt  ### Generation of logfile for the processing 
 #####============================================================
