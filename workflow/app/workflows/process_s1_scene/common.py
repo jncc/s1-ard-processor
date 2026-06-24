@@ -56,8 +56,10 @@ def getOutputFileName(inputFileName, polarisation, manifest, filenameDemData, fi
         c = str(((absOrbitNo - 27) % 175) + 1)
     elif a == "S1C":
         c = str(((absOrbitNo - 172) % 175) + 1)
+    elif a == "S1D":
+        c = str(((absOrbitNo - 42) % 175) + 1)
     else:
-        msg = "Invalid input file name, should begin S1A, S1B or S1C not {0}".format(a)
+        msg = "Invalid input file name, should begin S1A, S1B, S1C or S1D not {0}".format(a)
         raise Exception(msg)
 
     pattern = "<s1:pass>(.+)<\/s1:pass>"
